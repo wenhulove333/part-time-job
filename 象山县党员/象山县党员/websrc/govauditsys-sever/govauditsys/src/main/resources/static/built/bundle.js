@@ -73,7 +73,7 @@
 	
 			var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 	
-			_this.state = { employees: [], attributes: [], page: 1, pageSize: 2, links: {} };
+			_this.state = { communistInfoes: [], attributes: [], page: 1, pageSize: 2, links: {} };
 			_this.updatePageSize = _this.updatePageSize.bind(_this);
 			_this.onCreate = _this.onCreate.bind(_this);
 			_this.onUpdate = _this.onUpdate.bind(_this);
@@ -89,10 +89,10 @@
 			value: function loadFromServer(pageSize) {
 				var _this2 = this;
 	
-				follow(client, root, [{ rel: 'employees', params: { size: pageSize } }]).then(function (employeeCollection) {
+				follow(client, root, [{ rel: 'communistInfoes', params: { size: pageSize } }]).then(function (communistInfoCollection) {
 					return client({
 						method: 'GET',
-						path: employeeCollection.entity._links.profile.href,
+						path: communistInfoCollection.entity._links.profile.href,
 						headers: { 'Accept': 'application/schema+json' }
 					}).then(function (schema) {
 						// tag::json-schema-filter[]
@@ -109,24 +109,24 @@
 						});
 	
 						_this2.schema = schema.entity;
-						_this2.links = employeeCollection.entity._links;
-						return employeeCollection;
+						_this2.links = communistInfoCollection.entity._links;
+						return communistInfoCollection;
 						// end::json-schema-filter[]
 					});
-				}).then(function (employeeCollection) {
-					_this2.page = employeeCollection.entity.page;
-					return employeeCollection.entity._embedded.employees.map(function (employee) {
+				}).then(function (communistInfoCollection) {
+					_this2.page = communistInfoCollection.entity.page;
+					return communistInfoCollection.entity._embedded.communistInfoes.map(function (communistInfo) {
 						return client({
 							method: 'GET',
-							path: employee._links.self.href
+							path: communistInfo._links.self.href
 						});
 					});
-				}).then(function (employeePromises) {
-					return when.all(employeePromises);
-				}).done(function (employees) {
+				}).then(function (communistInfoPromises) {
+					return when.all(communistInfoPromises);
+				}).done(function (communistInfoes) {
 					_this2.setState({
 						page: _this2.page,
-						employees: employees,
+						communistInfoes: communistInfoes,
 						attributes: Object.keys(_this2.schema.properties),
 						pageSize: pageSize,
 						links: _this2.links
@@ -138,12 +138,12 @@
 	
 		}, {
 			key: 'onCreate',
-			value: function onCreate(newEmployee) {
-				follow(client, root, ['employees']).done(function (response) {
+			value: function onCreate(newCommunistInfo) {
+				follow(client, root, ['communistInfoes']).done(function (response) {
 					client({
 						method: 'POST',
 						path: response.entity._links.self.href,
-						entity: newEmployee,
+						entity: newCommunistInfo,
 						headers: { 'Content-Type': 'application/json' }
 					});
 				});
@@ -154,23 +154,23 @@
 	
 		}, {
 			key: 'onUpdate',
-			value: function onUpdate(employee, updatedEmployee) {
+			value: function onUpdate(communistInfo, updatedCommunistInfo) {
 				client({
 					method: 'PUT',
-					path: employee.entity._links.self.href,
-					entity: updatedEmployee,
+					path: communistInfo.entity._links.self.href,
+					entity: updatedCommunistInfo,
 					headers: {
 						'Content-Type': 'application/json',
-						'If-Match': employee.headers.Etag
+						'If-Match': communistInfo.headers.Etag
 					}
 				}).done(function (response) {
 					/* Let the websocket handler update the state */
 				}, function (response) {
 					if (response.status.code === 403) {
-						alert('ACCESS DENIED: You are not authorized to update ' + employee.entity._links.self.href);
+						alert('ACCESS DENIED: You are not authorized to update ' + communistInfo.entity._links.self.href);
 					}
 					if (response.status.code === 412) {
-						alert('DENIED: Unable to update ' + employee.entity._links.self.href + '. Your copy is stale.');
+						alert('DENIED: Unable to update ' + communistInfo.entity._links.self.href + '. Your copy is stale.');
 					}
 				});
 			}
@@ -180,10 +180,10 @@
 	
 		}, {
 			key: 'onDelete',
-			value: function onDelete(employee) {
-				client({ method: 'DELETE', path: employee.entity._links.self.href }).done(function (response) {/* let the websocket handle updating the UI */}, function (response) {
+			value: function onDelete(communistInfo) {
+				client({ method: 'DELETE', path: communistInfo.entity._links.self.href }).done(function (response) {/* let the websocket handle updating the UI */}, function (response) {
 					if (response.status.code === 403) {
-						alert('ACCESS DENIED: You are not authorized to delete ' + employee.entity._links.self.href);
+						alert('ACCESS DENIED: You are not authorized to delete ' + communistInfo.entity._links.self.href);
 					}
 				});
 			}
@@ -197,22 +197,22 @@
 				client({
 					method: 'GET',
 					path: navUri
-				}).then(function (employeeCollection) {
-					_this3.links = employeeCollection.entity._links;
-					_this3.page = employeeCollection.entity.page;
+				}).then(function (communistInfoCollection) {
+					_this3.links = communistInfoCollection.entity._links;
+					_this3.page = communistInfoCollection.entity.page;
 	
-					return employeeCollection.entity._embedded.employees.map(function (employee) {
+					return communistInfoCollection.entity._embedded.communistInfoes.map(function (communistInfo) {
 						return client({
 							method: 'GET',
-							path: employee._links.self.href
+							path: communistInfo._links.self.href
 						});
 					});
-				}).then(function (employeePromises) {
-					return when.all(employeePromises);
-				}).done(function (employees) {
+				}).then(function (communistInfoPromises) {
+					return when.all(communistInfoPromises);
+				}).done(function (communistInfoes) {
 					_this3.setState({
 						page: _this3.page,
-						employees: employees,
+						communistInfoes: communistInfoes,
 						attributes: Object.keys(_this3.schema.properties),
 						pageSize: _this3.state.pageSize,
 						links: _this3.links
@@ -235,7 +235,7 @@
 				var _this4 = this;
 	
 				follow(client, root, [{
-					rel: 'employees',
+					rel: 'communistInfoes',
 					params: { size: this.state.pageSize }
 				}]).done(function (response) {
 					if (response.entity._links.last !== undefined) {
@@ -251,27 +251,27 @@
 				var _this5 = this;
 	
 				follow(client, root, [{
-					rel: 'employees',
+					rel: 'communistInfoes',
 					params: {
 						size: this.state.pageSize,
 						page: this.state.page.number
 					}
-				}]).then(function (employeeCollection) {
-					_this5.links = employeeCollection.entity._links;
-					_this5.page = employeeCollection.entity.page;
+				}]).then(function (communistInfoCollection) {
+					_this5.links = communistInfoCollection.entity._links;
+					_this5.page = communistInfoCollection.entity.page;
 	
-					return employeeCollection.entity._embedded.employees.map(function (employee) {
+					return communistInfoCollection.entity._embedded.communistInfoes.map(function (communistInfo) {
 						return client({
 							method: 'GET',
-							path: employee._links.self.href
+							path: communistInfo._links.self.href
 						});
 					});
-				}).then(function (employeePromises) {
-					return when.all(employeePromises);
-				}).then(function (employees) {
+				}).then(function (communistInfoPromises) {
+					return when.all(communistInfoPromises);
+				}).then(function (communistInfoes) {
 					_this5.setState({
 						page: _this5.page,
-						employees: employees,
+						communistInfoes: communistInfoes,
 						attributes: Object.keys(_this5.schema.properties),
 						pageSize: _this5.state.pageSize,
 						links: _this5.links
@@ -286,7 +286,7 @@
 			key: 'componentDidMount',
 			value: function componentDidMount() {
 				this.loadFromServer(this.state.pageSize);
-				stompClient.register([{ route: '/topic/newEmployee', callback: this.refreshAndGoToLastPage }, { route: '/topic/updateEmployee', callback: this.refreshCurrentPage }, { route: '/topic/deleteEmployee', callback: this.refreshCurrentPage }]);
+				stompClient.register([{ route: '/topic/newCommunistInfo', callback: this.refreshAndGoToLastPage }, { route: '/topic/updateCommunistInfo', callback: this.refreshCurrentPage }, { route: '/topic/communistInfo', callback: this.refreshCurrentPage }]);
 			}
 			// end::register-handlers[]
 	
@@ -297,8 +297,8 @@
 					'div',
 					null,
 					React.createElement(CreateDialog, { attributes: this.state.attributes, onCreate: this.onCreate }),
-					React.createElement(EmployeeList, { page: this.state.page,
-						employees: this.state.employees,
+					React.createElement(CommunistInfoList, { page: this.state.page,
+						communistInfoes: this.state.communistInfoes,
 						links: this.state.links,
 						pageSize: this.state.pageSize,
 						attributes: this.state.attributes,
@@ -331,11 +331,11 @@
 				var _this7 = this;
 	
 				e.preventDefault();
-				var newEmployee = {};
+				var newCommunistInfo = {};
 				this.props.attributes.forEach(function (attribute) {
-					newEmployee[attribute] = ReactDOM.findDOMNode(_this7.refs[attribute]).value.trim();
+					newCommunistInfo[attribute] = ReactDOM.findDOMNode(_this7.refs[attribute]).value.trim();
 				});
-				this.props.onCreate(newEmployee);
+				this.props.onCreate(newCommunistInfo);
 				this.props.attributes.forEach(function (attribute) {
 					ReactDOM.findDOMNode(_this7.refs[attribute]).value = ''; // clear out the dialog's inputs
 				});
@@ -356,12 +356,12 @@
 					null,
 					React.createElement(
 						'a',
-						{ href: '#createEmployee' },
+						{ href: '#createCommunistInfo' },
 						'Create'
 					),
 					React.createElement(
 						'div',
-						{ id: 'createEmployee', className: 'modalDialog' },
+						{ id: 'createCommunistInfo', className: 'modalDialog' },
 						React.createElement(
 							'div',
 							null,
@@ -373,7 +373,7 @@
 							React.createElement(
 								'h2',
 								null,
-								'Create new employee'
+								'Create new communist information'
 							),
 							React.createElement(
 								'form',
@@ -412,11 +412,11 @@
 				var _this9 = this;
 	
 				e.preventDefault();
-				var updatedEmployee = {};
+				var updatedCommunistInfo = {};
 				this.props.attributes.forEach(function (attribute) {
-					updatedEmployee[attribute] = ReactDOM.findDOMNode(_this9.refs[attribute]).value.trim();
+					updatedCommunistInfo[attribute] = ReactDOM.findDOMNode(_this9.refs[attribute]).value.trim();
 				});
-				this.props.onUpdate(this.props.employee, updatedEmployee);
+				this.props.onUpdate(this.props.communistInfo, updatedCommunistInfo);
 				window.location = "#";
 			}
 		}, {
@@ -427,14 +427,14 @@
 				var inputs = this.props.attributes.map(function (attribute) {
 					return React.createElement(
 						'p',
-						{ key: _this10.props.employee.entity[attribute] },
+						{ key: _this10.props.communistInfo.entity[attribute] },
 						React.createElement('input', { type: 'text', placeholder: attribute,
-							defaultValue: _this10.props.employee.entity[attribute],
+							defaultValue: _this10.props.communistInfo.entity[attribute],
 							ref: attribute, className: 'field' })
 					);
 				});
 	
-				var dialogId = "updateEmployee-" + this.props.employee.entity._links.self.href;
+				var dialogId = "updateCommunistInfo-" + this.props.communistInfo.entity._links.self.href;
 	
 				return React.createElement(
 					'div',
@@ -458,7 +458,7 @@
 							React.createElement(
 								'h2',
 								null,
-								'Update an employee'
+								'Update an communist information'
 							),
 							React.createElement(
 								'form',
@@ -479,13 +479,13 @@
 		return UpdateDialog;
 	}(React.Component);
 	
-	var EmployeeList = function (_React$Component4) {
-		_inherits(EmployeeList, _React$Component4);
+	var CommunistInfoList = function (_React$Component4) {
+		_inherits(CommunistInfoList, _React$Component4);
 	
-		function EmployeeList(props) {
-			_classCallCheck(this, EmployeeList);
+		function CommunistInfoList(props) {
+			_classCallCheck(this, CommunistInfoList);
 	
-			var _this11 = _possibleConstructorReturn(this, (EmployeeList.__proto__ || Object.getPrototypeOf(EmployeeList)).call(this, props));
+			var _this11 = _possibleConstructorReturn(this, (CommunistInfoList.__proto__ || Object.getPrototypeOf(CommunistInfoList)).call(this, props));
 	
 			_this11.handleNavFirst = _this11.handleNavFirst.bind(_this11);
 			_this11.handleNavPrev = _this11.handleNavPrev.bind(_this11);
@@ -495,7 +495,7 @@
 			return _this11;
 		}
 	
-		_createClass(EmployeeList, [{
+		_createClass(CommunistInfoList, [{
 			key: 'handleInput',
 			value: function handleInput(e) {
 				e.preventDefault();
@@ -538,15 +538,15 @@
 				var pageInfo = this.props.page.hasOwnProperty("number") ? React.createElement(
 					'h3',
 					null,
-					'Employees - Page ',
+					'CommunistInfoes - Page ',
 					this.props.page.number + 1,
 					' of ',
 					this.props.page.totalPages
 				) : null;
 	
-				var employees = this.props.employees.map(function (employee) {
-					return React.createElement(Employee, { key: employee.entity._links.self.href,
-						employee: employee,
+				var communistInfoes = this.props.communistInfoes.map(function (communistInfo) {
+					return React.createElement(CommunistInfo, { key: communistInfo.entity._links.self.href,
+						communistInfo: communistInfo,
 						attributes: _this12.props.attributes,
 						onUpdate: _this12.props.onUpdate,
 						onDelete: _this12.props.onDelete });
@@ -599,27 +599,57 @@
 								React.createElement(
 									'th',
 									null,
-									'First Name'
+									'\u515A\u5458\u59D3\u540D'
 								),
 								React.createElement(
 									'th',
 									null,
-									'Last Name'
+									'\u8EAB\u4EFD\u8BC1\u53F7'
 								),
 								React.createElement(
 									'th',
 									null,
-									'Description'
+									'\u6027\u522B'
 								),
 								React.createElement(
 									'th',
 									null,
-									'Manager'
+									'\u5165\u515A\u65E5\u671F'
+								),
+								React.createElement(
+									'th',
+									null,
+									'\u5B66\u5386'
+								),
+								React.createElement(
+									'th',
+									null,
+									'\u515A\u652F\u90E8'
+								),
+								React.createElement(
+									'th',
+									null,
+									'\u4E0A\u7EA7\u7EC4\u7EC7'
+								),
+								React.createElement(
+									'th',
+									null,
+									'\u7C4D\u8D2F'
+								),
+								React.createElement(
+									'th',
+									null,
+									'\u6C11\u65CF'
+								),
+								React.createElement(
+									'th',
+									null,
+									'\u4E2A\u4EBA\u8EAB\u4EFD'
 								),
 								React.createElement('th', null),
 								React.createElement('th', null)
 							),
-							employees
+							communistInfoes
 						)
 					),
 					React.createElement(
@@ -631,28 +661,28 @@
 			}
 		}]);
 	
-		return EmployeeList;
+		return CommunistInfoList;
 	}(React.Component);
 	
 	// tag::employee[]
 	
 	
-	var Employee = function (_React$Component5) {
-		_inherits(Employee, _React$Component5);
+	var CommunistInfo = function (_React$Component5) {
+		_inherits(CommunistInfo, _React$Component5);
 	
-		function Employee(props) {
-			_classCallCheck(this, Employee);
+		function CommunistInfo(props) {
+			_classCallCheck(this, CommunistInfo);
 	
-			var _this13 = _possibleConstructorReturn(this, (Employee.__proto__ || Object.getPrototypeOf(Employee)).call(this, props));
+			var _this13 = _possibleConstructorReturn(this, (CommunistInfo.__proto__ || Object.getPrototypeOf(CommunistInfo)).call(this, props));
 	
 			_this13.handleDelete = _this13.handleDelete.bind(_this13);
 			return _this13;
 		}
 	
-		_createClass(Employee, [{
+		_createClass(CommunistInfo, [{
 			key: 'handleDelete',
 			value: function handleDelete() {
-				this.props.onDelete(this.props.employee);
+				this.props.onDelete(this.props.communistInfo);
 			}
 		}, {
 			key: 'render',
@@ -663,27 +693,57 @@
 					React.createElement(
 						'td',
 						null,
-						this.props.employee.entity.firstName
+						this.props.communistInfo.entity.name
 					),
 					React.createElement(
 						'td',
 						null,
-						this.props.employee.entity.lastName
+						this.props.communistInfo.entity.idNumber
 					),
 					React.createElement(
 						'td',
 						null,
-						this.props.employee.entity.description
+						this.props.communistInfo.entity.gender
 					),
 					React.createElement(
 						'td',
 						null,
-						this.props.employee.entity.manager.name
+						this.props.communistInfo.entity.joinDate
 					),
 					React.createElement(
 						'td',
 						null,
-						React.createElement(UpdateDialog, { employee: this.props.employee,
+						this.props.communistInfo.entity.education
+					),
+					React.createElement(
+						'td',
+						null,
+						this.props.communistInfo.entity.partyBranch
+					),
+					React.createElement(
+						'td',
+						null,
+						this.props.communistInfo.entity.superiorOrg
+					),
+					React.createElement(
+						'td',
+						null,
+						this.props.communistInfo.entity.nativePlace
+					),
+					React.createElement(
+						'td',
+						null,
+						this.props.communistInfo.entity.nation
+					),
+					React.createElement(
+						'td',
+						null,
+						this.props.communistInfo.entity.individualStatus
+					),
+					React.createElement(
+						'td',
+						null,
+						React.createElement(UpdateDialog, { communistInfo: this.props.communistInfo,
 							attributes: this.props.attributes,
 							onUpdate: this.props.onUpdate })
 					),
@@ -700,7 +760,7 @@
 			}
 		}]);
 	
-		return Employee;
+		return CommunistInfo;
 	}(React.Component);
 	// end::employee[]
 	

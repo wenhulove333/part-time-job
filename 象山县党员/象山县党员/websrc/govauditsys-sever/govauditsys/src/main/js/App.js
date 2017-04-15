@@ -15,7 +15,7 @@ class App extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {employees: [], attributes: [], page: 1, pageSize: 2, links: {}};
+		this.state = {communistInfoes: [], attributes: [], page: 1, pageSize: 2, links: {}};
 		this.updatePageSize = this.updatePageSize.bind(this);
 		this.onCreate = this.onCreate.bind(this);
 		this.onUpdate = this.onUpdate.bind(this);
@@ -27,11 +27,11 @@ class App extends React.Component {
 
 	loadFromServer(pageSize) {
 		follow(client, root, [
-				{rel: 'employees', params: {size: pageSize}}]
-		).then(employeeCollection => {
+				{rel: 'communistInfoes', params: {size: pageSize}}]
+		).then(communistInfoCollection => {
 			return client({
 				method: 'GET',
-				path: employeeCollection.entity._links.profile.href,
+				path: communistInfoCollection.entity._links.profile.href,
 				headers: {'Accept': 'application/schema+json'}
 			}).then(schema => {
 				// tag::json-schema-filter[]
@@ -50,24 +50,24 @@ class App extends React.Component {
 				});
 
 				this.schema = schema.entity;
-				this.links = employeeCollection.entity._links;
-				return employeeCollection;
+				this.links = communistInfoCollection.entity._links;
+				return communistInfoCollection;
 				// end::json-schema-filter[]
 			});
-		}).then(employeeCollection => {
-			this.page = employeeCollection.entity.page;
-			return employeeCollection.entity._embedded.employees.map(employee =>
+		}).then(communistInfoCollection => {
+			this.page = communistInfoCollection.entity.page;
+			return communistInfoCollection.entity._embedded.communistInfoes.map(communistInfo =>
 					client({
 						method: 'GET',
-						path: employee._links.self.href
+						path: communistInfo._links.self.href
 					})
 			);
-		}).then(employeePromises => {
-			return when.all(employeePromises);
-		}).done(employees => {
+		}).then(communistInfoPromises => {
+			return when.all(communistInfoPromises);
+		}).done(communistInfoes => {
 			this.setState({
 				page: this.page,
-				employees: employees,
+				communistInfoes: communistInfoes,
 				attributes: Object.keys(this.schema.properties),
 				pageSize: pageSize,
 				links: this.links
@@ -76,12 +76,12 @@ class App extends React.Component {
 	}
 
 	// tag::on-create[]
-	onCreate(newEmployee) {
-		follow(client, root, ['employees']).done(response => {
+	onCreate(newCommunistInfo) {
+		follow(client, root, ['communistInfoes']).done(response => {
 			client({
 				method: 'POST',
 				path: response.entity._links.self.href,
-				entity: newEmployee,
+				entity: newCommunistInfo,
 				headers: {'Content-Type': 'application/json'}
 			})
 		})
@@ -89,24 +89,24 @@ class App extends React.Component {
 	// end::on-create[]
 
 	// tag::on-update[]
-	onUpdate(employee, updatedEmployee) {
+	onUpdate(communistInfo, updatedCommunistInfo) {
 		client({
 			method: 'PUT',
-			path: employee.entity._links.self.href,
-			entity: updatedEmployee,
+			path: communistInfo.entity._links.self.href,
+			entity: updatedCommunistInfo,
 			headers: {
 				'Content-Type': 'application/json',
-				'If-Match': employee.headers.Etag
+				'If-Match': communistInfo.headers.Etag
 			}
 		}).done(response => {
 			/* Let the websocket handler update the state */
 		}, response => {
 			if (response.status.code === 403) {
 				alert('ACCESS DENIED: You are not authorized to update ' +
-					employee.entity._links.self.href);
+					communistInfo.entity._links.self.href);
 			}
 			if (response.status.code === 412) {
-				alert('DENIED: Unable to update ' + employee.entity._links.self.href +
+				alert('DENIED: Unable to update ' + communistInfo.entity._links.self.href +
 					'. Your copy is stale.');
 			}
 		});
@@ -114,13 +114,13 @@ class App extends React.Component {
 	// end::on-update[]
 
 	// tag::on-delete[]
-	onDelete(employee) {
-		client({method: 'DELETE', path: employee.entity._links.self.href}
+	onDelete(communistInfo) {
+		client({method: 'DELETE', path: communistInfo.entity._links.self.href}
 		).done(response => {/* let the websocket handle updating the UI */},
 		response => {
 			if (response.status.code === 403) {
 				alert('ACCESS DENIED: You are not authorized to delete ' +
-					employee.entity._links.self.href);
+					communistInfo.entity._links.self.href);
 			}
 		});
 	}
@@ -130,22 +130,22 @@ class App extends React.Component {
 		client({
 			method: 'GET',
 			path: navUri
-		}).then(employeeCollection => {
-			this.links = employeeCollection.entity._links;
-			this.page = employeeCollection.entity.page;
+		}).then(communistInfoCollection => {
+			this.links = communistInfoCollection.entity._links;
+			this.page = communistInfoCollection.entity.page;
 
-			return employeeCollection.entity._embedded.employees.map(employee =>
+			return communistInfoCollection.entity._embedded.communistInfoes.map(communistInfo =>
 					client({
 						method: 'GET',
-						path: employee._links.self.href
+						path: communistInfo._links.self.href
 					})
 			);
-		}).then(employeePromises => {
-			return when.all(employeePromises);
-		}).done(employees => {
+		}).then(communistInfoPromises => {
+			return when.all(communistInfoPromises);
+		}).done(communistInfoes => {
 			this.setState({
 				page: this.page,
-				employees: employees,
+				communistInfoes: communistInfoes,
 				attributes: Object.keys(this.schema.properties),
 				pageSize: this.state.pageSize,
 				links: this.links
@@ -162,7 +162,7 @@ class App extends React.Component {
 	// tag::websocket-handlers[]
 	refreshAndGoToLastPage(message) {
 		follow(client, root, [{
-			rel: 'employees',
+			rel: 'communistInfoes',
 			params: {size: this.state.pageSize}
 		}]).done(response => {
 			if (response.entity._links.last !== undefined) {
@@ -175,27 +175,27 @@ class App extends React.Component {
 
 	refreshCurrentPage(message) {
 		follow(client, root, [{
-			rel: 'employees',
+			rel: 'communistInfoes',
 			params: {
 				size: this.state.pageSize,
 				page: this.state.page.number
 			}
-		}]).then(employeeCollection => {
-			this.links = employeeCollection.entity._links;
-			this.page = employeeCollection.entity.page;
+		}]).then(communistInfoCollection => {
+			this.links = communistInfoCollection.entity._links;
+			this.page = communistInfoCollection.entity.page;
 
-			return employeeCollection.entity._embedded.employees.map(employee => {
+			return communistInfoCollection.entity._embedded.communistInfoes.map(communistInfo => {
 				return client({
 					method: 'GET',
-					path: employee._links.self.href
+					path: communistInfo._links.self.href
 				})
 			});
-		}).then(employeePromises => {
-			return when.all(employeePromises);
-		}).then(employees => {
+		}).then(communistInfoPromises => {
+			return when.all(communistInfoPromises);
+		}).then(communistInfoes => {
 			this.setState({
 				page: this.page,
-				employees: employees,
+				communistInfoes: communistInfoes,
 				attributes: Object.keys(this.schema.properties),
 				pageSize: this.state.pageSize,
 				links: this.links
@@ -208,9 +208,9 @@ class App extends React.Component {
 	componentDidMount() {
 		this.loadFromServer(this.state.pageSize);
 		stompClient.register([
-			{route: '/topic/newEmployee', callback: this.refreshAndGoToLastPage},
-			{route: '/topic/updateEmployee', callback: this.refreshCurrentPage},
-			{route: '/topic/deleteEmployee', callback: this.refreshCurrentPage}
+			{route: '/topic/newCommunistInfo', callback: this.refreshAndGoToLastPage},
+			{route: '/topic/updateCommunistInfo', callback: this.refreshCurrentPage},
+			{route: '/topic/communistInfo', callback: this.refreshCurrentPage}
 		]);
 	}
 	// end::register-handlers[]
@@ -219,8 +219,8 @@ class App extends React.Component {
 		return (
 			<div>
 				<CreateDialog attributes={this.state.attributes} onCreate={this.onCreate}/>
-				<EmployeeList page={this.state.page}
-							  employees={this.state.employees}
+				<CommunistInfoList page={this.state.page}
+							  communistInfoes={this.state.communistInfoes}
 							  links={this.state.links}
 							  pageSize={this.state.pageSize}
 							  attributes={this.state.attributes}
@@ -242,11 +242,11 @@ class CreateDialog extends React.Component {
 
 	handleSubmit(e) {
 		e.preventDefault();
-		var newEmployee = {};
+		var newCommunistInfo = {};
 		this.props.attributes.forEach(attribute => {
-			newEmployee[attribute] = ReactDOM.findDOMNode(this.refs[attribute]).value.trim();
+			newCommunistInfo[attribute] = ReactDOM.findDOMNode(this.refs[attribute]).value.trim();
 		});
-		this.props.onCreate(newEmployee);
+		this.props.onCreate(newCommunistInfo);
 		this.props.attributes.forEach(attribute => {
 			ReactDOM.findDOMNode(this.refs[attribute]).value = ''; // clear out the dialog's inputs
 		});
@@ -261,13 +261,13 @@ class CreateDialog extends React.Component {
 		);
 		return (
 			<div>
-				<a href="#createEmployee">Create</a>
+				<a href="#createCommunistInfo">Create</a>
 
-				<div id="createEmployee" className="modalDialog">
+				<div id="createCommunistInfo" className="modalDialog">
 					<div>
 						<a href="#" title="Close" className="close">X</a>
 
-						<h2>Create new employee</h2>
+						<h2>Create new communist information</h2>
 
 						<form>
 							{inputs}
@@ -289,24 +289,24 @@ class UpdateDialog extends React.Component {
 
 	handleSubmit(e) {
 		e.preventDefault();
-		var updatedEmployee = {};
+		var updatedCommunistInfo = {};
 		this.props.attributes.forEach(attribute => {
-			updatedEmployee[attribute] = ReactDOM.findDOMNode(this.refs[attribute]).value.trim();
+			updatedCommunistInfo[attribute] = ReactDOM.findDOMNode(this.refs[attribute]).value.trim();
 		});
-		this.props.onUpdate(this.props.employee, updatedEmployee);
+		this.props.onUpdate(this.props.communistInfo, updatedCommunistInfo);
 		window.location = "#";
 	}
 
 	render() {
 		var inputs = this.props.attributes.map(attribute =>
-				<p key={this.props.employee.entity[attribute]}>
+				<p key={this.props.communistInfo.entity[attribute]}>
 					<input type="text" placeholder={attribute}
-						   defaultValue={this.props.employee.entity[attribute]}
+						   defaultValue={this.props.communistInfo.entity[attribute]}
 						   ref={attribute} className="field" />
 				</p>
 		);
 
-		var dialogId = "updateEmployee-" + this.props.employee.entity._links.self.href;
+		var dialogId = "updateCommunistInfo-" + this.props.communistInfo.entity._links.self.href;
 
 		return (
 			<div>
@@ -316,7 +316,7 @@ class UpdateDialog extends React.Component {
 					<div>
 						<a href="#" title="Close" className="close">X</a>
 
-						<h2>Update an employee</h2>
+						<h2>Update an communist information</h2>
 
 						<form>
 							{inputs}
@@ -330,7 +330,7 @@ class UpdateDialog extends React.Component {
 
 }
 
-class EmployeeList extends React.Component {
+class CommunistInfoList extends React.Component {
 
 	constructor(props) {
 		super(props);
@@ -373,11 +373,11 @@ class EmployeeList extends React.Component {
 
 	render() {
 		var pageInfo = this.props.page.hasOwnProperty("number") ?
-			<h3>Employees - Page {this.props.page.number + 1} of {this.props.page.totalPages}</h3> : null;
+			<h3>CommunistInfoes - Page {this.props.page.number + 1} of {this.props.page.totalPages}</h3> : null;
 
-		var employees = this.props.employees.map(employee =>
-			<Employee key={employee.entity._links.self.href}
-					  employee={employee}
+		var communistInfoes = this.props.communistInfoes.map(communistInfo =>
+			<CommunistInfo key={communistInfo.entity._links.self.href}
+					  communistInfo={communistInfo}
 					  attributes={this.props.attributes}
 					  onUpdate={this.props.onUpdate}
 					  onDelete={this.props.onDelete}/>
@@ -404,14 +404,20 @@ class EmployeeList extends React.Component {
 				<table>
 					<tbody>
 						<tr>
-							<th>First Name</th>
-							<th>Last Name</th>
-							<th>Description</th>
-							<th>Manager</th>
+							<th>党员姓名</th>
+							<th>身份证号</th>
+							<th>性别</th>
+							<th>入党日期</th>
+							<th>学历</th>
+							<th>党支部</th>
+							<th>上级组织</th>
+							<th>籍贯</th>
+							<th>民族</th>
+							<th>个人身份</th>
 							<th></th>
 							<th></th>
 						</tr>
-						{employees}
+						{communistInfoes}
 					</tbody>
 				</table>
 				<div>
@@ -423,7 +429,7 @@ class EmployeeList extends React.Component {
 }
 
 // tag::employee[]
-class Employee extends React.Component {
+class CommunistInfo extends React.Component {
 
 	constructor(props) {
 		super(props);
@@ -431,18 +437,24 @@ class Employee extends React.Component {
 	}
 
 	handleDelete() {
-		this.props.onDelete(this.props.employee);
+		this.props.onDelete(this.props.communistInfo);
 	}
-
+	
 	render() {
 		return (
 			<tr>
-				<td>{this.props.employee.entity.firstName}</td>
-				<td>{this.props.employee.entity.lastName}</td>
-				<td>{this.props.employee.entity.description}</td>
-				<td>{this.props.employee.entity.manager.name}</td>
+				<td>{this.props.communistInfo.entity.name}</td>
+				<td>{this.props.communistInfo.entity.idNumber}</td>
+				<td>{this.props.communistInfo.entity.gender}</td>
+				<td>{this.props.communistInfo.entity.joinDate}</td>
+				<td>{this.props.communistInfo.entity.education}</td>
+				<td>{this.props.communistInfo.entity.partyBranch}</td>
+				<td>{this.props.communistInfo.entity.superiorOrg}</td>
+				<td>{this.props.communistInfo.entity.nativePlace}</td>
+				<td>{this.props.communistInfo.entity.nation}</td>
+				<td>{this.props.communistInfo.entity.individualStatus}</td>
 				<td>
-					<UpdateDialog employee={this.props.employee}
+					<UpdateDialog communistInfo={this.props.communistInfo}
 								  attributes={this.props.attributes}
 								  onUpdate={this.props.onUpdate}/>
 				</td>
