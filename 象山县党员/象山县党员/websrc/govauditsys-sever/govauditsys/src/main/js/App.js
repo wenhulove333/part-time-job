@@ -1,7 +1,12 @@
 'use strict';
 
 const React = require('react');
-const ReactDOM = require('react-dom')
+const ReactDOM = require('react-dom');
+const ReactTabs	= require('react-tabs');
+const Tab = ReactTabs.Tab;
+const Tabs = ReactTabs.Tabs;
+const TabList = ReactTabs.TabList;
+const TabPanel = ReactTabs.TabPanel;
 const when = require('when');
 const client = require('./client');
 
@@ -402,7 +407,7 @@ class CommunistInfoList extends React.Component {
 				{pageInfo}
 				<input ref="pageSize" defaultValue={this.props.pageSize} onInput={this.handleInput}/>
 				<table>
-					<tbody>
+					<thead>
 						<tr>
 							<th>党员姓名</th>
 							<th>身份证号</th>
@@ -417,6 +422,8 @@ class CommunistInfoList extends React.Component {
 							<th></th>
 							<th></th>
 						</tr>
+					</thead>
+					<tbody>
 						{communistInfoes}
 					</tbody>
 				</table>
@@ -467,8 +474,39 @@ class CommunistInfo extends React.Component {
 }
 // end::employee[]
 
+class Entry extends React.Component {
+	handleSelect(index, last) {
+		console.log('Selected tab: ' + index + ', Last tab: ' + last);
+	}
+
+	render() {
+		return (
+			<Tabs
+				onSelect={this.handleSelect}
+				selectedIndex={2}
+			>
+				<TabList>
+					<Tab>党员信息查询</Tab>
+					<Tab>Bar</Tab>
+					<Tab>Baz</Tab>
+				</TabList>
+	
+				<TabPanel>
+					<App />
+				</TabPanel>
+				<TabPanel>
+					<h2>Hello from Bar</h2>
+				</TabPanel>
+				<TabPanel>
+					<h2>Hello from Baz</h2>
+				</TabPanel>
+			</Tabs>
+		);
+	}
+}
+
 ReactDOM.render(
-	<App />,
+	<Entry />,
 	document.getElementById('react')
 )
 

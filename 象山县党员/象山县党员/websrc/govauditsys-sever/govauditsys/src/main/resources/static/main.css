@@ -2,6 +2,7 @@ input.field {
     width: 90%;
 }
 
+/*
 table {
     border-collapse: collapse;
 }
@@ -10,6 +11,33 @@ td, th {
     border: 1px solid #999;
     padding: 0.5rem;
     text-align: left;
+}
+*/
+
+/* Table Head */
+thead th {
+	background-color: rgb(156, 186, 95);
+	color: #fff;
+	border-bottom-width: 0;
+}
+
+/* Column Style */
+td {
+color: #000;
+}
+/* Heading and Column Style */
+tr, th {
+border-width: 1px;
+	border-style: solid;
+	border-color: rgb(156, 186, 95);
+}
+
+/* Padding and font style */
+td, th {
+	padding: 5px 10px;
+	font-size: 12px;
+	font-family: Verdana;
+	font-weight: bold;
 }
 
 /*Classes for creating dialogs*/
