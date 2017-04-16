@@ -61,9 +61,36 @@ public class SysUser {
 	protected SysUser() {}
 
 	public SysUser(String name, String password, String... roles) {
-
 		this.name = name;
 		this.setPassword(password);
 		this.roles = roles;
+	}
+	
+	private String accountName;
+	private String workPlace;
+	private String position;
+
+	public String getAccountName() {
+		return accountName;
+	}
+
+	public void setAccountName(String accountName) {
+		this.accountName = accountName;
+	}
+
+	public String getWorkPlace() {
+		return workPlace;
+	}
+
+	public void setWorkPlace(String workPlace) {
+		this.workPlace = workPlace;
+	}
+
+	public String getPosition() {
+		return position;
+	}
+
+	public void setPosition(String position) {
+		this.position = position;
 	}
 }

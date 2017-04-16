@@ -9,4 +9,6 @@ public interface SysUserRepository extends Repository<SysUser, Long> {
 	SysUser save(SysUser manager);
 
 	SysUser findByName(String name);
+	
+	SysUser findByAccountName(String accountName);
 }
