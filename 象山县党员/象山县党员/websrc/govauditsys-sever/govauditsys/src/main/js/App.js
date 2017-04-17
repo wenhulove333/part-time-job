@@ -20,7 +20,7 @@ class App extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {communistInfoes: [], attributes: [], page: 1, pageSize: 2, links: {}};
+		this.state = {communistInfoes: [], attributes: [], page: 1, pageSize: 20, links: {}};
 		this.updatePageSize = this.updatePageSize.bind(this);
 		this.onCreate = this.onCreate.bind(this);
 		this.onUpdate = this.onUpdate.bind(this);
@@ -222,8 +222,7 @@ class App extends React.Component {
 
 	render() {
 		return (
-			<div>
-				<CreateDialog attributes={this.state.attributes} onCreate={this.onCreate}/>
+			<div className="datadisplay">
 				<CommunistInfoList page={this.state.page}
 							  communistInfoes={this.state.communistInfoes}
 							  links={this.state.links}
@@ -404,8 +403,6 @@ class CommunistInfoList extends React.Component {
 
 		return (
 			<div>
-				{pageInfo}
-				<input ref="pageSize" defaultValue={this.props.pageSize} onInput={this.handleInput}/>
 				<table>
 					<thead>
 						<tr>
@@ -419,8 +416,6 @@ class CommunistInfoList extends React.Component {
 							<th>籍贯</th>
 							<th>民族</th>
 							<th>个人身份</th>
-							<th></th>
-							<th></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -460,14 +455,6 @@ class CommunistInfo extends React.Component {
 				<td>{this.props.communistInfo.entity.nativePlace}</td>
 				<td>{this.props.communistInfo.entity.nation}</td>
 				<td>{this.props.communistInfo.entity.individualStatus}</td>
-				<td>
-					<UpdateDialog communistInfo={this.props.communistInfo}
-								  attributes={this.props.attributes}
-								  onUpdate={this.props.onUpdate}/>
-				</td>
-				<td>
-					<button onClick={this.handleDelete}>Delete</button>
-				</td>
 			</tr>
 		)
 	}
@@ -483,24 +470,40 @@ class Entry extends React.Component {
 		return (
 			<Tabs
 				onSelect={this.handleSelect}
-				selectedIndex={2}
+				selectedIndex={0}
 			>
 				<TabList>
 					<Tab>党员信息查询</Tab>
-					<Tab>Bar</Tab>
-					<Tab>Baz</Tab>
+					<Tab>检查对象信息查询</Tab>
+					<Tab>案件信息查询</Tab>
+					<Tab>党员和监察对象信息比对</Tab>
+					<Tab>案件统计分析</Tab>
+					<Tab>管理员操作</Tab>
+					<Tab>系统用户管理</Tab>
 				</TabList>
 	
 				<TabPanel>
 					<App />
 				</TabPanel>
 				<TabPanel>
-					<h2>Hello from Bar</h2>
+					<h2>检查对象信息查询</h2>
 				</TabPanel>
 				<TabPanel>
-					<h2>Hello from Baz</h2>
+					<h2>案件信息查询</h2>
 				</TabPanel>
-			</Tabs>
+				<TabPanel>
+					<h2>党员和监察对象信息比对</h2>
+				</TabPanel>
+				<TabPanel>
+					<h2>案件统计分析</h2>
+				</TabPanel>					
+				<TabPanel>
+					<h2>管理员操作</h2>
+				</TabPanel>
+				<TabPanel>
+					<h2>系统用户管理</h2>
+				</TabPanel>				
+				</Tabs>
 		);
 	}
 }

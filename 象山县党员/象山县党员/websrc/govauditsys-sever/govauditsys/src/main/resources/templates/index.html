@@ -7,11 +7,18 @@
 </head>
 <body>
     <!-- tag::logout[] -->
-    <div>
-        Hello, <span th:text="${#authentication.name}">user</span>.
-        <form th:action="@{/logout}" method="post">
-            <input type="submit" value="Log Out"/>
-        </form>
+    <div class="statusheader">
+    	<div class="systemflag">
+    		<span>象山县党员和监察对象查询和对比系统</span>
+    	</div>
+    	<div class="headerlogin">
+	        <span>您好,</span> <span th:text="${#authentication.name}">user</span><span>.</span> 
+	        <span>|</span><div>
+		        <form th:action="@{/logout}" method="post">
+		            <input type="submit" value="注销"/>
+		        </form>
+	        </div>
+        </div>
     </div>
     <!-- end::logout[] -->
 

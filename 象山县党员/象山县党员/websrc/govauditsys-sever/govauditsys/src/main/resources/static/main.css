@@ -1,5 +1,61 @@
+.statusheader {
+	background: #63bad8 url(/bg.jpg) 50% 0px repeat-x;
+	height: 40px;
+	margin-bottom: 10px;
+}
+
+.statusheader div {
+  display: inline-block;
+  height: inherit;
+}
+
+.systemflag {
+	padding: 6px 11px;
+	top: 6px;
+}
+
+.systemflag span {
+	font-weight: bold;
+	color: white;
+	font-size: 30px;
+}
+
+.headerlogin {
+	position: relative;
+	float: right;
+	padding: 6px 11px;
+	top: 6px;
+}
+
+.headerlogin span {
+    font-weight: bold;
+    color: white;
+}
+
+.headerlogin input {
+	background-color: transparent;
+	font-weight: bold;
+    color: white;
+	border: none;
+	padding-left: 0px;
+}
+
+.headerlogin input:hover {
+	color: rgb(191, 191, 191);
+}
+
+span {
+	padding: 0px;
+}
+
 input.field {
     width: 90%;
+}
+
+.datadisplay {
+	display: table;
+	margin-right: auto;
+ 	margin-left: auto;
 }
 
 /*
@@ -35,7 +91,7 @@ tr, th {
 /* Padding and font style */
 td, th {
 	padding: 5px 10px;
-	font-size: 12px;
+	font-size: 18px;
 	font-family: Verdana;
 	font-weight: bold;
 }

@@ -78,7 +78,7 @@
 	
 			var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 	
-			_this.state = { communistInfoes: [], attributes: [], page: 1, pageSize: 2, links: {} };
+			_this.state = { communistInfoes: [], attributes: [], page: 1, pageSize: 20, links: {} };
 			_this.updatePageSize = _this.updatePageSize.bind(_this);
 			_this.onCreate = _this.onCreate.bind(_this);
 			_this.onUpdate = _this.onUpdate.bind(_this);
@@ -300,8 +300,7 @@
 			value: function render() {
 				return React.createElement(
 					'div',
-					null,
-					React.createElement(CreateDialog, { attributes: this.state.attributes, onCreate: this.onCreate }),
+					{ className: 'datadisplay' },
 					React.createElement(CommunistInfoList, { page: this.state.page,
 						communistInfoes: this.state.communistInfoes,
 						links: this.state.links,
@@ -590,8 +589,6 @@
 				return React.createElement(
 					'div',
 					null,
-					pageInfo,
-					React.createElement('input', { ref: 'pageSize', defaultValue: this.props.pageSize, onInput: this.handleInput }),
 					React.createElement(
 						'table',
 						null,
@@ -650,9 +647,7 @@
 									'th',
 									null,
 									'\u4E2A\u4EBA\u8EAB\u4EFD'
-								),
-								React.createElement('th', null),
-								React.createElement('th', null)
+								)
 							)
 						),
 						React.createElement(
@@ -748,22 +743,6 @@
 						'td',
 						null,
 						this.props.communistInfo.entity.individualStatus
-					),
-					React.createElement(
-						'td',
-						null,
-						React.createElement(UpdateDialog, { communistInfo: this.props.communistInfo,
-							attributes: this.props.attributes,
-							onUpdate: this.props.onUpdate })
-					),
-					React.createElement(
-						'td',
-						null,
-						React.createElement(
-							'button',
-							{ onClick: this.handleDelete },
-							'Delete'
-						)
 					)
 				);
 			}
@@ -794,7 +773,7 @@
 					Tabs,
 					{
 						onSelect: this.handleSelect,
-						selectedIndex: 2
+						selectedIndex: 0
 					},
 					React.createElement(
 						TabList,
@@ -807,12 +786,32 @@
 						React.createElement(
 							Tab,
 							null,
-							'Bar'
+							'\u68C0\u67E5\u5BF9\u8C61\u4FE1\u606F\u67E5\u8BE2'
 						),
 						React.createElement(
 							Tab,
 							null,
-							'Baz'
+							'\u6848\u4EF6\u4FE1\u606F\u67E5\u8BE2'
+						),
+						React.createElement(
+							Tab,
+							null,
+							'\u515A\u5458\u548C\u76D1\u5BDF\u5BF9\u8C61\u4FE1\u606F\u6BD4\u5BF9'
+						),
+						React.createElement(
+							Tab,
+							null,
+							'\u6848\u4EF6\u7EDF\u8BA1\u5206\u6790'
+						),
+						React.createElement(
+							Tab,
+							null,
+							'\u7BA1\u7406\u5458\u64CD\u4F5C'
+						),
+						React.createElement(
+							Tab,
+							null,
+							'\u7CFB\u7EDF\u7528\u6237\u7BA1\u7406'
 						)
 					),
 					React.createElement(
@@ -826,7 +825,7 @@
 						React.createElement(
 							'h2',
 							null,
-							'Hello from Bar'
+							'\u68C0\u67E5\u5BF9\u8C61\u4FE1\u606F\u67E5\u8BE2'
 						)
 					),
 					React.createElement(
@@ -835,7 +834,43 @@
 						React.createElement(
 							'h2',
 							null,
-							'Hello from Baz'
+							'\u6848\u4EF6\u4FE1\u606F\u67E5\u8BE2'
+						)
+					),
+					React.createElement(
+						TabPanel,
+						null,
+						React.createElement(
+							'h2',
+							null,
+							'\u515A\u5458\u548C\u76D1\u5BDF\u5BF9\u8C61\u4FE1\u606F\u6BD4\u5BF9'
+						)
+					),
+					React.createElement(
+						TabPanel,
+						null,
+						React.createElement(
+							'h2',
+							null,
+							'\u6848\u4EF6\u7EDF\u8BA1\u5206\u6790'
+						)
+					),
+					React.createElement(
+						TabPanel,
+						null,
+						React.createElement(
+							'h2',
+							null,
+							'\u7BA1\u7406\u5458\u64CD\u4F5C'
+						)
+					),
+					React.createElement(
+						TabPanel,
+						null,
+						React.createElement(
+							'h2',
+							null,
+							'\u7CFB\u7EDF\u7528\u6237\u7BA1\u7406'
 						)
 					)
 				);
