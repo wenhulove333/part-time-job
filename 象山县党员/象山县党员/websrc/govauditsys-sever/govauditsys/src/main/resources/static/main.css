@@ -23,11 +23,11 @@ thead th {
 
 /* Column Style */
 td {
-color: #000;
+	color: #000;
 }
 /* Heading and Column Style */
 tr, th {
-border-width: 1px;
+	border-width: 1px;
 	border-style: solid;
 	border-color: rgb(156, 186, 95);
 }

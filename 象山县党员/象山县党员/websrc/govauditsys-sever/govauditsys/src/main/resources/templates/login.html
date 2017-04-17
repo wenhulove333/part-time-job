@@ -46,11 +46,10 @@
                 </p>
                 <button id="loginbtn" type="button" class="positive" name="Submit">
                     <img src="key.png" alt="Announcement" />Login</button>
-                <ul id="forgottenpassword">
+                <ul id="forgottenpassword" th:if="${param.error}">
                     <li class="boldtext">|</li>
                     <li>
-                        <input type="checkbox" name="remember" id="rememberMe" /><label for="rememberMe">Remember
-                            me</label></li>
+                        <label style="color:red;">错误的用户名或密码</label></li>
                 </ul>
             </fieldset>
             </form>

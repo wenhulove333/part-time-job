@@ -15,16 +15,21 @@
  */
 package com.ss.govauditsys;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.ss.govauditsys.usermanager.model.SysUser;
+import com.ss.govauditsys.usermanager.model.SysUserManagement;
+import com.ss.govauditsys.usermanager.model.SysUserRepository;
 
 /**
  * @author Zhang Wenhu
  */
 // tag::code[]
 @Controller
-public class HomeController {
-
+public class HomeController {	
 	@RequestMapping(value = "/")
 	public String index() {
 		return "index";
