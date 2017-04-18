@@ -50,7 +50,7 @@ public class SysUser {
 		return password;
 	}
 
-	private @JsonIgnore String password;
+	private String password;
 
 	private String[] roles;
 

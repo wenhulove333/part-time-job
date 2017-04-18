@@ -64,6 +64,7 @@
 	var CommunistInfoDisplay = __webpack_require__(188);
 	var InspectPersonInfoDisplay = __webpack_require__(238);
 	var LawcaseInfoDisplay = __webpack_require__(239);
+	var SysUserDisplay = __webpack_require__(240);
 	
 	var Entry = function (_React$Component) {
 		_inherits(Entry, _React$Component);
@@ -172,11 +173,7 @@
 					React.createElement(
 						TabPanel,
 						null,
-						React.createElement(
-							'h2',
-							null,
-							'\u7CFB\u7EDF\u7528\u6237\u7BA1\u7406'
-						)
+						React.createElement(SysUserDisplay, null)
 					)
 				);
 			}
@@ -28874,6 +28871,537 @@
 	}(React.Component);
 	
 	module.exports = LawcaseInfoDisplay;
+
+/***/ },
+/* 240 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var React = __webpack_require__(1);
+	var ReactDOM = __webpack_require__(32);
+	var when = __webpack_require__(189);
+	var client = __webpack_require__(209);
+	
+	var follow = __webpack_require__(237); // function to hop multiple links by "rel"
+	
+	var root = '/api';
+	var children = 'sysUsers';
+	
+	var SysUserDisplay = function (_React$Component) {
+		_inherits(SysUserDisplay, _React$Component);
+	
+		function SysUserDisplay(props) {
+			_classCallCheck(this, SysUserDisplay);
+	
+			var _this = _possibleConstructorReturn(this, (SysUserDisplay.__proto__ || Object.getPrototypeOf(SysUserDisplay)).call(this, props));
+	
+			_this.state = { sysUsers: [], attributes: [], page: 1, pageSize: 12, links: {} };
+			_this.onNavigate = _this.onNavigate.bind(_this);
+			_this.onSearch = _this.onSearch.bind(_this);
+			_this.onCreate = _this.onCreate.bind(_this);
+			return _this;
+		}
+	
+		_createClass(SysUserDisplay, [{
+			key: 'loadFromServer',
+			value: function loadFromServer(pageSize) {
+				var _this2 = this;
+	
+				root = "/api";
+				children = "sysUsers";
+				follow(client, root, [{ rel: children, params: { size: pageSize } }]).then(function (sysUserCollection) {
+					_this2.page = sysUserCollection.entity.page;
+					_this2.links = sysUserCollection.entity._links;
+					return sysUserCollection.entity._embedded.sysUsers.map(function (sysUser) {
+						return client({
+							method: 'GET',
+							path: sysUser._links.self.href
+						});
+					});
+				}).then(function (sysUserPromises) {
+					return when.all(sysUserPromises);
+				}).done(function (sysUsers) {
+					_this2.setState({
+						page: _this2.page,
+						sysUsers: sysUsers,
+						pageSize: pageSize,
+						links: _this2.links
+					});
+				});
+			}
+		}, {
+			key: 'getsysUsersByName',
+			value: function getsysUsersByName(accountName, pageSize) {
+				var _this3 = this;
+	
+				if (accountName === "") {
+					root = "/api";
+					children = "sysUsers";
+				} else {
+					root = "/api/sysUsers/search";
+					children = "findByAccountName";
+				}
+				follow(client, root, [{ rel: children, params: { accountName: accountName, size: pageSize } }]).then(function (sysUserCollection) {
+					_this3.page = sysUserCollection.entity.page;
+					_this3.links = sysUserCollection.entity._links;
+					return sysUserCollection.entity._embedded.sysUsers.map(function (sysUser) {
+						return client({
+							method: 'GET',
+							path: sysUser._links.self.href
+						});
+					});
+				}).then(function (sysUserPromises) {
+					return when.all(sysUserPromises);
+				}).done(function (sysUsers) {
+					_this3.setState({
+						page: _this3.page,
+						sysUsers: sysUsers,
+						pageSize: pageSize,
+						links: _this3.links
+					});
+				});
+			}
+		}, {
+			key: 'onCreate',
+			value: function onCreate(newSysUser) {
+				root = "/api";
+				children = "sysUsers";
+				follow(client, root, ['sysUsers']).done(function (response) {
+					client({
+						method: 'POST',
+						path: response.entity._links.self.href,
+						entity: newSysUser,
+						headers: { 'Content-Type': 'application/json' }
+					});
+				});
+			}
+		}, {
+			key: 'onNavigate',
+			value: function onNavigate(navUri) {
+				var _this4 = this;
+	
+				client({
+					method: 'GET',
+					path: navUri
+				}).then(function (sysUserCollection) {
+					_this4.links = sysUserCollection.entity._links;
+					_this4.page = sysUserCollection.entity.page;
+	
+					return sysUserCollection.entity._embedded.sysUsers.map(function (sysUser) {
+						return client({
+							method: 'GET',
+							path: sysUser._links.self.href
+						});
+					});
+				}).then(function (sysUserPromises) {
+					return when.all(sysUserPromises);
+				}).done(function (sysUsers) {
+					_this4.setState({
+						page: _this4.page,
+						sysUsers: sysUsers,
+						pageSize: _this4.state.pageSize,
+						links: _this4.links
+					});
+				});
+			}
+		}, {
+			key: 'onSearch',
+			value: function onSearch(e) {
+				this.getsysUsersByName(document.getElementById("name").value, this.state.pageSize);
+			}
+	
+			// tag::websocket-handlers[]
+	
+		}, {
+			key: 'refreshAndGoToLastPage',
+			value: function refreshAndGoToLastPage(message) {
+				var _this5 = this;
+	
+				follow(client, root, [{
+					rel: children,
+					params: { size: this.state.pageSize }
+				}]).done(function (response) {
+					if (response.entity._links.last !== undefined) {
+						_this5.onNavigate(response.entity._links.last.href);
+					} else {
+						_this5.onNavigate(response.entity._links.self.href);
+					}
+				});
+			}
+	
+			// tag::register-handlers[]
+	
+		}, {
+			key: 'componentDidMount',
+			value: function componentDidMount() {
+				this.loadFromServer(this.state.pageSize);
+				//this.getsysUsersByName('张三', this.state.pageSize);
+			}
+			// end::register-handlers[]
+	
+		}, {
+			key: 'render',
+			value: function render() {
+				return React.createElement(
+					'div',
+					{ className: 'searchBarPlusDataDisplay' },
+					React.createElement(
+						'div',
+						null,
+						React.createElement(
+							'div',
+							{ className: 'webdesigntuts-workshop' },
+							React.createElement('input', { type: 'search', id: 'name', placeholder: '\u8BF7\u8F93\u5165\u4F60\u6240\u8981\u67E5\u8BE2\u7684\u4EBA\u540D' }),
+							React.createElement(
+								'button',
+								{ onClick: this.onSearch },
+								'\u641C\u7D22'
+							)
+						),
+						React.createElement(CreateDialog, { attributes: this.state.attributes, onCreate: this.onCreate })
+					),
+					React.createElement(
+						'div',
+						{ className: 'datadisplay' },
+						React.createElement(SysUserList, { page: this.state.page,
+							sysUsers: this.state.sysUsers,
+							links: this.state.links,
+							pageSize: this.state.pageSize,
+							onNavigate: this.onNavigate })
+					)
+				);
+			}
+		}]);
+	
+		return SysUserDisplay;
+	}(React.Component);
+	
+	var SysUserList = function (_React$Component2) {
+		_inherits(SysUserList, _React$Component2);
+	
+		function SysUserList(props) {
+			_classCallCheck(this, SysUserList);
+	
+			var _this6 = _possibleConstructorReturn(this, (SysUserList.__proto__ || Object.getPrototypeOf(SysUserList)).call(this, props));
+	
+			_this6.handleNavFirst = _this6.handleNavFirst.bind(_this6);
+			_this6.handleNavPrev = _this6.handleNavPrev.bind(_this6);
+			_this6.handleNavNext = _this6.handleNavNext.bind(_this6);
+			_this6.handleNavLast = _this6.handleNavLast.bind(_this6);
+			_this6.handleInput = _this6.handleInput.bind(_this6);
+			return _this6;
+		}
+	
+		_createClass(SysUserList, [{
+			key: 'handleInput',
+			value: function handleInput(e) {
+				e.preventDefault();
+				var pageSize = ReactDOM.findDOMNode(this.refs.pageSize).value;
+				if (/^[0-9]+$/.test(pageSize)) {
+					this.props.updatePageSize(pageSize);
+				} else {
+					ReactDOM.findDOMNode(this.refs.pageSize).value = pageSize.substring(0, pageSize.length - 1);
+				}
+			}
+		}, {
+			key: 'handleNavFirst',
+			value: function handleNavFirst(e) {
+				e.preventDefault();
+				this.props.onNavigate(this.props.links.first.href);
+			}
+		}, {
+			key: 'handleNavPrev',
+			value: function handleNavPrev(e) {
+				e.preventDefault();
+				this.props.onNavigate(this.props.links.prev.href);
+			}
+		}, {
+			key: 'handleNavNext',
+			value: function handleNavNext(e) {
+				e.preventDefault();
+				this.props.onNavigate(this.props.links.next.href);
+			}
+		}, {
+			key: 'handleNavLast',
+			value: function handleNavLast(e) {
+				e.preventDefault();
+				this.props.onNavigate(this.props.links.last.href);
+			}
+		}, {
+			key: 'render',
+			value: function render() {
+				var _this7 = this;
+	
+				var pageInfo = this.props.page.hasOwnProperty("number") ? React.createElement(
+					'h3',
+					null,
+					'SysUsers - Page ',
+					this.props.page.number + 1,
+					' of ',
+					this.props.page.totalPages
+				) : null;
+	
+				var sysUsers = this.props.sysUsers.map(function (sysUser) {
+					return React.createElement(SysUser, { key: sysUser.entity._links.self.href,
+						sysUser: sysUser,
+						attributes: _this7.props.attributes,
+						onUpdate: _this7.props.onUpdate,
+						onDelete: _this7.props.onDelete });
+				});
+	
+				var navLinks = [];
+				if ("first" in this.props.links) {
+					navLinks.push(React.createElement(
+						'button',
+						{ key: 'first', onClick: this.handleNavFirst },
+						'<<'
+					));
+				}
+				if ("prev" in this.props.links) {
+					navLinks.push(React.createElement(
+						'button',
+						{ key: 'prev', onClick: this.handleNavPrev },
+						'<'
+					));
+				}
+				if ("next" in this.props.links) {
+					navLinks.push(React.createElement(
+						'button',
+						{ key: 'next', onClick: this.handleNavNext },
+						'>'
+					));
+				}
+				if ("last" in this.props.links) {
+					navLinks.push(React.createElement(
+						'button',
+						{ key: 'last', onClick: this.handleNavLast },
+						'>>'
+					));
+				}
+	
+				return React.createElement(
+					'div',
+					null,
+					React.createElement(
+						'table',
+						null,
+						React.createElement(
+							'thead',
+							null,
+							React.createElement(
+								'tr',
+								null,
+								React.createElement(
+									'th',
+									null,
+									'\u8D26\u6237\u540D'
+								),
+								React.createElement(
+									'th',
+									null,
+									'\u7528\u6237\u540D'
+								),
+								React.createElement(
+									'th',
+									null,
+									'\u7528\u6237\u6240\u5728\u5730'
+								),
+								React.createElement(
+									'th',
+									null,
+									'\u7528\u6237\u804C\u52A1'
+								),
+								React.createElement(
+									'th',
+									null,
+									'\u89D2\u8272'
+								)
+							)
+						),
+						React.createElement(
+							'tbody',
+							null,
+							sysUsers
+						)
+					),
+					React.createElement(
+						'div',
+						null,
+						navLinks
+					)
+				);
+			}
+		}]);
+	
+		return SysUserList;
+	}(React.Component);
+	
+	var SysUser = function (_React$Component3) {
+		_inherits(SysUser, _React$Component3);
+	
+		function SysUser(props) {
+			_classCallCheck(this, SysUser);
+	
+			var _this8 = _possibleConstructorReturn(this, (SysUser.__proto__ || Object.getPrototypeOf(SysUser)).call(this, props));
+	
+			_this8.handleDelete = _this8.handleDelete.bind(_this8);
+			return _this8;
+		}
+	
+		_createClass(SysUser, [{
+			key: 'handleDelete',
+			value: function handleDelete() {
+				this.props.onDelete(this.props.sysUser);
+			}
+		}, {
+			key: 'render',
+			value: function render() {
+				return React.createElement(
+					'tr',
+					null,
+					React.createElement(
+						'td',
+						null,
+						this.props.sysUser.entity.accountName
+					),
+					React.createElement(
+						'td',
+						null,
+						this.props.sysUser.entity.name
+					),
+					React.createElement(
+						'td',
+						null,
+						this.props.sysUser.entity.workPlace
+					),
+					React.createElement(
+						'td',
+						null,
+						this.props.sysUser.entity.position
+					),
+					React.createElement(
+						'td',
+						null,
+						this.props.sysUser.entity.roles
+					)
+				);
+			}
+		}]);
+	
+		return SysUser;
+	}(React.Component);
+	
+	var CreateDialog = function (_React$Component4) {
+		_inherits(CreateDialog, _React$Component4);
+	
+		function CreateDialog(props) {
+			_classCallCheck(this, CreateDialog);
+	
+			var _this9 = _possibleConstructorReturn(this, (CreateDialog.__proto__ || Object.getPrototypeOf(CreateDialog)).call(this, props));
+	
+			_this9.handleSubmit = _this9.handleSubmit.bind(_this9);
+			return _this9;
+		}
+	
+		_createClass(CreateDialog, [{
+			key: 'handleSubmit',
+			value: function handleSubmit(e) {
+				e.preventDefault();
+				var sysUser = {};
+				sysUser['accountName'] = ReactDOM.findDOMNode(this.refs['accountName']).value.trim();
+				sysUser['name'] = ReactDOM.findDOMNode(this.refs['name']).value.trim();
+				sysUser['password'] = ReactDOM.findDOMNode(this.refs['password']).value.trim();
+				sysUser['workPlace'] = ReactDOM.findDOMNode(this.refs['workPlace']).value.trim();
+				sysUser['position'] = ReactDOM.findDOMNode(this.refs['position']).value.trim();
+				sysUser['roles'] = [ReactDOM.findDOMNode(this.refs['position']).value.trim()];
+				this.props.onCreate(sysUser);
+				window.location = "#";
+			}
+		}, {
+			key: 'render',
+			value: function render() {
+				return React.createElement(
+					'div',
+					{ className: 'createSysUserDialog' },
+					React.createElement(
+						'a',
+						{ href: '#createEmployee' },
+						'\u521B\u5EFA\u7CFB\u7EDF\u7528\u6237'
+					),
+					React.createElement(
+						'div',
+						{ id: 'createEmployee', className: 'modalDialog' },
+						React.createElement(
+							'div',
+							null,
+							React.createElement(
+								'a',
+								{ href: '#', title: 'Close', className: 'close' },
+								'X'
+							),
+							React.createElement(
+								'h2',
+								null,
+								'\u521B\u5EFA\u7CFB\u7EDF\u7528\u6237'
+							),
+							React.createElement(
+								'form',
+								null,
+								React.createElement(
+									'p',
+									null,
+									React.createElement('input', { type: 'text', placeholder: '\u8BF7\u8F93\u5165\u8D26\u6237\u540D', ref: 'accountName', className: 'field' })
+								),
+								React.createElement(
+									'p',
+									null,
+									React.createElement('input', { type: 'text', placeholder: '\u8BF7\u8F93\u5165\u7528\u6237\u540D', ref: 'name', className: 'field' })
+								),
+								React.createElement(
+									'p',
+									null,
+									React.createElement('input', { type: 'text', placeholder: '\u8BF7\u8F93\u5165\u5BC6\u7801', ref: 'password', className: 'field' })
+								),
+								React.createElement(
+									'p',
+									null,
+									React.createElement('input', { type: 'text', placeholder: '\u8BF7\u8F93\u5165\u7528\u6237\u6240\u5728\u5730', ref: 'workPlace', className: 'field' })
+								),
+								React.createElement(
+									'p',
+									null,
+									React.createElement('input', { type: 'text', placeholder: '\u8BF7\u8F93\u5165\u7528\u6237\u804C\u52A1', ref: 'position', className: 'field' })
+								),
+								React.createElement(
+									'p',
+									null,
+									React.createElement('input', { type: 'text', placeholder: '\u8BF7\u8F93\u5165\u7528\u6237\u89D2\u8272', ref: 'roles', className: 'field' })
+								),
+								React.createElement(
+									'button',
+									{ onClick: this.handleSubmit },
+									'\u521B\u5EFA\u7528\u6237'
+								)
+							)
+						)
+					)
+				);
+			}
+		}]);
+	
+		return CreateDialog;
+	}(React.Component);
+	
+	module.exports = SysUserDisplay;
 
 /***/ }
 /******/ ]);

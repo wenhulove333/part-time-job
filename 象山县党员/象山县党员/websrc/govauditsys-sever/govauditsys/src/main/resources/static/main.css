@@ -129,6 +129,11 @@ td, th {
     background: -o-linear-gradient(#fff, #999);
 }
 
+.createSysUserDialog {
+	position: absolute;
+	right: 20px;
+}
+
 .close {
     background: #606061;
     color: #FFFFFF;

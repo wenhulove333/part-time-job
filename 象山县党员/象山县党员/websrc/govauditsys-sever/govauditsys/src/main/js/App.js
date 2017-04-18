@@ -10,6 +10,7 @@ const TabPanel = ReactTabs.TabPanel;
 const CommunistInfoDisplay = require('./communist-info-display');
 const InspectPersonInfoDisplay = require('./inspect-person-info-display');
 const LawcaseInfoDisplay = require('./lawcase-info-display');
+const SysUserDisplay = require('./system-user-mgmt');
 
 class Entry extends React.Component {
 	handleSelect(index, last) {
@@ -51,7 +52,7 @@ class Entry extends React.Component {
 					<h2>管理员操作</h2>
 				</TabPanel>
 				<TabPanel>
-					<h2>系统用户管理</h2>
+					<SysUserDisplay />
 				</TabPanel>				
 				</Tabs>
 		);
