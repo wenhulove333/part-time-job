@@ -11,6 +11,7 @@ import lombok.Data;
 public class LawcaseInfo {
 	private @Id @GeneratedValue Long id;
 	private String respondentName;
+	private String birthDate;
 	private String joinDate;
 	private String workPlaceAndPosition;
 	private String caseFilingDate;
@@ -22,6 +23,12 @@ public class LawcaseInfo {
 	}
 	public void setRespondentName(String respondentName) {
 		this.respondentName = respondentName;
+	}
+	public String getBirthDate() {
+		return birthDate;
+	}
+	public void setBirthDate(String birthDate) {
+		this.birthDate = birthDate;
 	}
 	public String getJoinDate() {
 		return joinDate;

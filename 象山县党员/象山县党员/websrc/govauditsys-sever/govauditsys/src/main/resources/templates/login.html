@@ -80,7 +80,7 @@
                 var k = 0;
                 var ajaxhtml = "";
                 $(".logininput").each(function(i, obj) {
-                    if ($(obj).val().trim() == "") {
+                    if ($.trim($(obj).val()) == "") {
                         k++;
                         $(this).css("border-color", "red");
                         $(this).focus();
