@@ -16,4 +16,6 @@ public interface LawcaseInfoRepository  extends PagingAndSortingRepository<Lawca
 	void delete(LawcaseInfo lawcaseInfo);
 	
 	Page<LawcaseInfo> findByRespondentName(@Param("respondentName") String respondentName, Pageable pageable);
+	
+	Page<LawcaseInfo> findByRespondentNameContaining(@Param("respondentName") String respondentName, Pageable pageable);
 }

@@ -46,8 +46,14 @@ class CommunistInfoDisplay extends React.Component {
 	}
 	
 	getCommunistInfoesByName(name, pageSize) {
-		root = "/api/communistInfoes/search";
-		children = "findByName";
+		if (name === "") {
+			root = "/api";
+			children = "communistInfoes";
+		} else {
+			root = "/api/communistInfoes/search";
+			children = "findByNameContaining";
+		}
+		
 		follow(client, root, [
 				{rel: children, params: {name: name, size: pageSize}}]
 		).then(communistInfoCollection => {

@@ -18,5 +18,6 @@ public interface InspectPersonInfoRespository extends PagingAndSortingRepository
 	void delete(InspectPersonInfo inspectPersonInfo);
 	
 	Page<InspectPersonInfo> findByName(@Param("name") String name, Pageable pageable);
-
+	
+	Page<InspectPersonInfo> findByNameContaining(@Param("name") String name, Pageable pageable);
 }

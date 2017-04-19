@@ -7,19 +7,7 @@
 </head>
 <body>
     <!-- tag::logout[] -->
-    <div class="statusheader">
-    	<div class="systemflag">
-    		<span>xxx系统</span>
-    	</div>
-    	<div class="headerlogin">
-	        <span>您好,</span> <span th:text="${#authentication.name}">user</span><span>.</span> 
-	        <span>|</span><div>
-		        <form th:action="@{/logout}" method="post">
-		            <input type="submit" value="注销"/>
-		        </form>
-	        </div>
-        </div>
-    </div>
+    <div id="header"></div>
     <!-- end::logout[] -->
 
     <div id="react"></div>

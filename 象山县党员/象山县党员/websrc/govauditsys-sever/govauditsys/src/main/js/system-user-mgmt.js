@@ -18,6 +18,7 @@ class SysUserDisplay extends React.Component {
 		this.onNavigate = this.onNavigate.bind(this);
 		this.onSearch = this.onSearch.bind(this);
 		this.onCreate = this.onCreate.bind(this);
+		this.onDelete = this.onDelete.bind(this);
 	}
 
 	loadFromServer(pageSize) {
@@ -46,16 +47,16 @@ class SysUserDisplay extends React.Component {
 		});
 	}
 	
-	getsysUsersByName(accountName, pageSize) {
-		if (accountName === "") {
+	getsysUsersByName(name, pageSize) {
+		if (name === "") {
 			root = "/api";
 			children = "sysUsers";
 		} else {
 			root = "/api/sysUsers/search";
-			children = "findByAccountName";
+			children = "findByNameContaining";
 		}
 		follow(client, root, [
-				{rel: children, params: {accountName: accountName, size: pageSize}}]
+				{rel: children, params: {name: name, size: pageSize}}]
 		).then(sysUserCollection => {
 			this.page = sysUserCollection.entity.page;
 			this.links = sysUserCollection.entity._links;
@@ -86,7 +87,26 @@ class SysUserDisplay extends React.Component {
 				path: response.entity._links.self.href,
 				entity: newSysUser,
 				headers: {'Content-Type': 'application/json'}
+			}).done(reponse => {
+				if (response.status.code === 403) {
+					alert("您没有创建用户的权限。");
+				} else {
+					this.loadFromServer(this.state.pageSize);
+				}
 			})
+		})
+	}
+	
+	onDelete(newSysUser) {
+		client({
+			method: 'DELETE',
+			path: newSysUser.entity._links.self.href
+		}).done(response => {
+			if (response.status.code === 403) {
+				alert('您没有删除该用户的权限。');
+			} else {
+				this.loadFromServer(this.state.pageSize);
+			}
 		})
 	}
 
@@ -146,7 +166,7 @@ class SysUserDisplay extends React.Component {
 			<div className="searchBarPlusDataDisplay">
 				<div>
 					<div className="webdesigntuts-workshop">
-					    <input type="search" id="name" placeholder="请输入你所要查询的人名"></input>
+					    <input type="search" id="name" placeholder="请输入你所要查询的用户名"></input>
 						<button onClick={this.onSearch}>搜索</button>
 					</div>
 					<CreateDialog attributes={this.state.attributes} onCreate={this.onCreate}/>
@@ -156,7 +176,8 @@ class SysUserDisplay extends React.Component {
 								  sysUsers={this.state.sysUsers}
 								  links={this.state.links}
 								  pageSize={this.state.pageSize}
-								  onNavigate={this.onNavigate}/>
+								  onNavigate={this.onNavigate}
+								  onDelete={this.onDelete}/>
 				</div>
 			</div>
 		)
@@ -240,6 +261,7 @@ class SysUserList extends React.Component {
 							<th>用户所在地</th>
 							<th>用户职务</th>
 							<th>角色</th>
+							<th> </th>
 						</tr>
 					</thead>
 					<tbody>
@@ -259,6 +281,32 @@ class SysUser extends React.Component {
 	constructor(props) {
 		super(props);
 		this.handleDelete = this.handleDelete.bind(this);
+		this.state = {accountName: '未知生物'};
+	}
+	
+	getAccountName() {
+		client({
+			method: 'GET',
+			path: '/userdetails'
+		}).then(response => {
+			return response;
+		}).done(result => {
+			client({
+				method: 'GET',
+				path: '/api/sysUsers/search/findByAccountName',
+				params: {accountName: result.entity.username}
+			}).then(response => {
+				return response;
+			}).done(result => {
+				this.setState({
+					accountName: result.entity.accountName,
+				});
+			});
+		});
+	}
+	
+	componentDidMount() {
+		this.getAccountName();
 	}
 
 	handleDelete() {
@@ -266,15 +314,30 @@ class SysUser extends React.Component {
 	}
 	
 	render() {
-		return (
-			<tr>
-				<td>{this.props.sysUser.entity.accountName}</td>
-				<td>{this.props.sysUser.entity.name}</td>
-				<td>{this.props.sysUser.entity.workPlace}</td>
-				<td>{this.props.sysUser.entity.position}</td>
-				<td>{this.props.sysUser.entity.roles}</td>
-			</tr>
-		)
+		if (this.state.accountName === this.props.sysUser.entity.accountName) {
+			return (
+				<tr>
+					<td>{this.props.sysUser.entity.accountName}</td>
+					<td>{this.props.sysUser.entity.name}</td>
+					<td>{this.props.sysUser.entity.workPlace}</td>
+					<td>{this.props.sysUser.entity.position}</td>
+					<td>{this.props.sysUser.entity.roles}</td>
+				</tr>
+			)
+		} else {
+			return (
+				<tr>
+					<td>{this.props.sysUser.entity.accountName}</td>
+					<td>{this.props.sysUser.entity.name}</td>
+					<td>{this.props.sysUser.entity.workPlace}</td>
+					<td>{this.props.sysUser.entity.position}</td>
+					<td>{this.props.sysUser.entity.roles}</td>
+					<td>
+						<button onClick={this.handleDelete}>删除用户</button>
+					</td>
+				</tr>
+			)
+		}
 	}
 }
 
@@ -293,7 +356,7 @@ class CreateDialog extends React.Component {
 		sysUser['password'] = ReactDOM.findDOMNode(this.refs['password']).value.trim();
 		sysUser['workPlace'] = ReactDOM.findDOMNode(this.refs['workPlace']).value.trim();
 		sysUser['position'] = ReactDOM.findDOMNode(this.refs['position']).value.trim();
-		sysUser['roles'] = [ReactDOM.findDOMNode(this.refs['position']).value.trim()];
+		sysUser['roles'] = [ReactDOM.findDOMNode(this.refs['roles']).value.trim()];
 		this.props.onCreate(sysUser);
 		window.location = "#";
 	}
@@ -312,10 +375,13 @@ class CreateDialog extends React.Component {
 						<form>
 							<p><input type="text" placeholder="请输入账户名" ref="accountName" className="field" /></p>
 							<p><input type="text" placeholder="请输入用户名" ref="name" className="field" /></p>
-							<p><input type="text" placeholder="请输入密码" ref="password" className="field" /></p>
+							<p><input type="password" placeholder="请输入密码" ref="password" className="field" /></p>
 							<p><input type="text" placeholder="请输入用户所在地" ref="workPlace" className="field" /></p>
 							<p><input type="text" placeholder="请输入用户职务" ref="position" className="field" /></p>
-							<p><input type="text" placeholder="请输入用户角色" ref="roles" className="field" /></p>
+							<p><select ref="roles">
+							  <option value ="普通用户">普通用户</option>
+							  <option value ="管理员">管理员</option>
+							</select></p>
 							<button onClick={this.handleSubmit}>创建用户</button>
 						</form>
 					</div>

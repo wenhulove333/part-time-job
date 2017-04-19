@@ -17,8 +17,11 @@ package com.ss.govauditsys;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ss.govauditsys.usermanager.model.SysUser;
 import com.ss.govauditsys.usermanager.model.SysUserManagement;
@@ -39,6 +42,11 @@ public class HomeController {
 	public String login() {
 		return "login";
 	}
-
+	
+	@RequestMapping(value = "/upload/excelforsearch")
+	@ResponseBody
+	public String[] uploadExcel() {
+		return new String[]{"张三"};
+	}
 }
 // end::code[]

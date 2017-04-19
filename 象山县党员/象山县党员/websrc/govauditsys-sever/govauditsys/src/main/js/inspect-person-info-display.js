@@ -46,8 +46,14 @@ class InspectPersonInfoDisplay extends React.Component {
 	}
 	
 	getInspectPersonInfoesByName(name, pageSize) {
-		root = "/api/inspectPersonInfoes/search";
-		children = "findByName";
+		if (name === "") {
+			root = "/api";
+			children = "inspectPersonInfoes";
+		} else {
+			root = "/api/inspectPersonInfoes/search";
+			children = "findByNameContaining";
+		}
+		
 		follow(client, root, [
 				{rel: children, params: {name: name, size: pageSize}}]
 		).then(inspectPersonInfoCollection => {

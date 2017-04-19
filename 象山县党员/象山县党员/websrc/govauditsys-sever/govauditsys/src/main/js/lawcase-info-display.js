@@ -46,8 +46,13 @@ class LawcaseInfoDisplay extends React.Component {
 	}
 	
 	getlawcaseInfoesByName(respondentName, pageSize) {
-		root = "/api/lawcaseInfoes/search";
-		children = "findByRespondentName";
+		if (respondentName === "") {
+			root = "/api";
+			children = "lawcaseInfoes";
+		} else {
+			root = "/api/lawcaseInfoes/search";
+			children = "findByRespondentNameContaining";
+		}
 		follow(client, root, [
 				{rel: children, params: {respondentName: respondentName, size: pageSize}}]
 		).then(lawcaseInfoCollection => {

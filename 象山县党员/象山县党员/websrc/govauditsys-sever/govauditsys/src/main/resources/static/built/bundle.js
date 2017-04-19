@@ -57,22 +57,27 @@
 	var React = __webpack_require__(1);
 	var ReactDOM = __webpack_require__(32);
 	var ReactTabs = __webpack_require__(178);
+	var client = __webpack_require__(188);
 	var Tab = ReactTabs.Tab;
 	var Tabs = ReactTabs.Tabs;
 	var TabList = ReactTabs.TabList;
 	var TabPanel = ReactTabs.TabPanel;
-	var CommunistInfoDisplay = __webpack_require__(188);
+	var CommunistInfoDisplay = __webpack_require__(236);
 	var InspectPersonInfoDisplay = __webpack_require__(238);
 	var LawcaseInfoDisplay = __webpack_require__(239);
 	var SysUserDisplay = __webpack_require__(240);
+	var AdminOps = __webpack_require__(241);
 	
 	var Entry = function (_React$Component) {
 		_inherits(Entry, _React$Component);
 	
-		function Entry() {
+		function Entry(props) {
 			_classCallCheck(this, Entry);
 	
-			return _possibleConstructorReturn(this, (Entry.__proto__ || Object.getPrototypeOf(Entry)).apply(this, arguments));
+			var _this = _possibleConstructorReturn(this, (Entry.__proto__ || Object.getPrototypeOf(Entry)).call(this, props));
+	
+			_this.state = { role: '普通用户' };
+			return _this;
 		}
 	
 		_createClass(Entry, [{
@@ -81,101 +86,170 @@
 				console.log('Selected tab: ' + index + ', Last tab: ' + last);
 			}
 		}, {
+			key: 'getUserName',
+			value: function getUserName() {
+				var _this2 = this;
+	
+				client({
+					method: 'GET',
+					path: '/userdetails'
+				}).then(function (response) {
+					return response;
+				}).done(function (result) {
+					client({
+						method: 'GET',
+						path: '/api/sysUsers/search/findByAccountName',
+						params: { accountName: result.entity.username }
+					}).then(function (response) {
+						return response;
+					}).done(function (result) {
+						_this2.setState({
+							role: result.entity.roles[0]
+						});
+					});
+				});
+			}
+		}, {
+			key: 'componentDidMount',
+			value: function componentDidMount() {
+				this.getUserName();
+			}
+		}, {
 			key: 'render',
 			value: function render() {
-				return React.createElement(
-					Tabs,
-					{
-						onSelect: this.handleSelect,
-						selectedIndex: 0
-					},
-					React.createElement(
-						TabList,
-						null,
+				if ("管理员" === this.state.role) {
+					return React.createElement(
+						Tabs,
+						{
+							onSelect: this.handleSelect,
+							selectedIndex: 0
+						},
 						React.createElement(
-							Tab,
+							TabList,
 							null,
-							'\u515A\u5458\u4FE1\u606F\u67E5\u8BE2'
+							React.createElement(
+								Tab,
+								null,
+								'\u515A\u5458\u4FE1\u606F\u67E5\u8BE2'
+							),
+							React.createElement(
+								Tab,
+								null,
+								'\u68C0\u67E5\u5BF9\u8C61\u4FE1\u606F\u67E5\u8BE2'
+							),
+							React.createElement(
+								Tab,
+								null,
+								'\u6848\u4EF6\u4FE1\u606F\u67E5\u8BE2'
+							),
+							React.createElement(
+								Tab,
+								null,
+								'\u515A\u5458\u548C\u76D1\u5BDF\u5BF9\u8C61\u4FE1\u606F\u6BD4\u5BF9'
+							),
+							React.createElement(
+								Tab,
+								null,
+								'\u6848\u4EF6\u7EDF\u8BA1\u5206\u6790'
+							),
+							React.createElement(
+								Tab,
+								null,
+								'\u7BA1\u7406\u5458\u64CD\u4F5C'
+							),
+							React.createElement(
+								Tab,
+								null,
+								'\u7CFB\u7EDF\u7528\u6237\u7BA1\u7406'
+							)
 						),
 						React.createElement(
-							Tab,
+							TabPanel,
 							null,
-							'\u68C0\u67E5\u5BF9\u8C61\u4FE1\u606F\u67E5\u8BE2'
+							React.createElement(CommunistInfoDisplay, null)
 						),
 						React.createElement(
-							Tab,
+							TabPanel,
 							null,
-							'\u6848\u4EF6\u4FE1\u606F\u67E5\u8BE2'
+							React.createElement(InspectPersonInfoDisplay, null)
 						),
 						React.createElement(
-							Tab,
+							TabPanel,
 							null,
-							'\u515A\u5458\u548C\u76D1\u5BDF\u5BF9\u8C61\u4FE1\u606F\u6BD4\u5BF9'
+							React.createElement(LawcaseInfoDisplay, null)
 						),
 						React.createElement(
-							Tab,
+							TabPanel,
 							null,
-							'\u6848\u4EF6\u7EDF\u8BA1\u5206\u6790'
+							React.createElement(
+								'h2',
+								null,
+								'\u515A\u5458\u548C\u76D1\u5BDF\u5BF9\u8C61\u4FE1\u606F\u6BD4\u5BF9'
+							)
 						),
 						React.createElement(
-							Tab,
+							TabPanel,
 							null,
-							'\u7BA1\u7406\u5458\u64CD\u4F5C'
+							React.createElement(
+								'h2',
+								null,
+								'\u6848\u4EF6\u7EDF\u8BA1\u5206\u6790'
+							)
 						),
 						React.createElement(
-							Tab,
+							TabPanel,
 							null,
-							'\u7CFB\u7EDF\u7528\u6237\u7BA1\u7406'
+							React.createElement(AdminOps, null)
+						),
+						React.createElement(
+							TabPanel,
+							null,
+							React.createElement(SysUserDisplay, null)
 						)
-					),
-					React.createElement(
-						TabPanel,
-						null,
-						React.createElement(CommunistInfoDisplay, null)
-					),
-					React.createElement(
-						TabPanel,
-						null,
-						React.createElement(InspectPersonInfoDisplay, null)
-					),
-					React.createElement(
-						TabPanel,
-						null,
-						React.createElement(LawcaseInfoDisplay, null)
-					),
-					React.createElement(
-						TabPanel,
-						null,
+					);
+				} else {
+					return React.createElement(
+						Tabs,
+						{
+							onSelect: this.handleSelect,
+							selectedIndex: 0
+						},
 						React.createElement(
-							'h2',
+							TabList,
 							null,
-							'\u515A\u5458\u548C\u76D1\u5BDF\u5BF9\u8C61\u4FE1\u606F\u6BD4\u5BF9'
-						)
-					),
-					React.createElement(
-						TabPanel,
-						null,
+							React.createElement(
+								Tab,
+								null,
+								'\u515A\u5458\u4FE1\u606F\u67E5\u8BE2'
+							),
+							React.createElement(
+								Tab,
+								null,
+								'\u68C0\u67E5\u5BF9\u8C61\u4FE1\u606F\u67E5\u8BE2'
+							),
+							React.createElement(
+								Tab,
+								null,
+								'\u6848\u4EF6\u4FE1\u606F\u67E5\u8BE2'
+							)
+						),
 						React.createElement(
-							'h2',
+							TabPanel,
 							null,
-							'\u6848\u4EF6\u7EDF\u8BA1\u5206\u6790'
-						)
-					),
-					React.createElement(
-						TabPanel,
-						null,
+							React.createElement(CommunistInfoDisplay, null)
+						),
 						React.createElement(
-							'h2',
+							TabPanel,
 							null,
-							'\u7BA1\u7406\u5458\u64CD\u4F5C'
+							React.createElement(InspectPersonInfoDisplay, null)
+						),
+						React.createElement(
+							TabPanel,
+							null,
+							React.createElement(LawcaseInfoDisplay, null)
 						)
-					),
-					React.createElement(
-						TabPanel,
-						null,
-						React.createElement(SysUserDisplay, null)
-					)
-				);
+					);
+				}
 			}
 		}]);
 	
@@ -183,6 +257,123 @@
 	}(React.Component);
 	
 	ReactDOM.render(React.createElement(Entry, null), document.getElementById('react'));
+	
+	var Header = function (_React$Component2) {
+		_inherits(Header, _React$Component2);
+	
+		function Header(props) {
+			_classCallCheck(this, Header);
+	
+			var _this3 = _possibleConstructorReturn(this, (Header.__proto__ || Object.getPrototypeOf(Header)).call(this, props));
+	
+			_this3.state = { userName: '未知生物', from: '未知星球', position: '神秘人物' };
+			return _this3;
+		}
+	
+		_createClass(Header, [{
+			key: 'getUserName',
+			value: function getUserName() {
+				var _this4 = this;
+	
+				client({
+					method: 'GET',
+					path: '/userdetails'
+				}).then(function (response) {
+					return response;
+				}).done(function (result) {
+					client({
+						method: 'GET',
+						path: '/api/sysUsers/search/findByAccountName',
+						params: { accountName: result.entity.username }
+					}).then(function (response) {
+						return response;
+					}).done(function (result) {
+						_this4.setState({
+							userName: result.entity.name,
+							from: result.entity.workPlace,
+							position: result.entity.position
+						});
+					});
+				});
+			}
+		}, {
+			key: 'componentDidMount',
+			value: function componentDidMount() {
+				this.getUserName();
+			}
+		}, {
+			key: 'render',
+			value: function render() {
+				return React.createElement(
+					'div',
+					{ className: 'statusheader' },
+					React.createElement(
+						'div',
+						{ className: 'systemflag' },
+						React.createElement(
+							'span',
+							null,
+							'xxx\u7CFB\u7EDF'
+						)
+					),
+					React.createElement(
+						'div',
+						{ className: 'headerlogin' },
+						React.createElement(
+							'span',
+							null,
+							'\u60A8\u597D,\u6765\u81EA'
+						),
+						React.createElement(
+							'span',
+							null,
+							this.state.from
+						),
+						React.createElement(
+							'span',
+							null,
+							'\u7684'
+						),
+						React.createElement(
+							'span',
+							null,
+							this.state.position
+						),
+						React.createElement(
+							'span',
+							null,
+							this.state.userName
+						),
+						React.createElement(
+							'span',
+							null,
+							'.'
+						),
+						'        ',
+						React.createElement('span', null),
+						React.createElement(
+							'span',
+							null,
+							'|'
+						),
+						React.createElement(
+							'div',
+							null,
+							React.createElement(
+								'form',
+								{ action: '/logout', method: 'post' },
+								React.createElement('input', { type: 'submit', value: '\u6CE8\u9500' })
+							)
+						)
+					)
+				);
+			}
+		}]);
+	
+		return Header;
+	}(React.Component);
+	
+	ReactDOM.render(React.createElement(Header, null), document.getElementById('header'));
 
 /***/ },
 /* 1 */
@@ -22542,457 +22733,440 @@
 
 	'use strict';
 	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	var rest = __webpack_require__(189);
+	var defaultRequest = __webpack_require__(217);
+	var mime = __webpack_require__(219);
+	var uriTemplateInterceptor = __webpack_require__(233);
+	var errorCode = __webpack_require__(234);
+	var baseRegistry = __webpack_require__(221);
 	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	var registry = baseRegistry.child();
 	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	registry.register('text/uri-list', __webpack_require__(235));
+	registry.register('application/hal+json', __webpack_require__(222));
 	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var React = __webpack_require__(1);
-	var ReactDOM = __webpack_require__(32);
-	var when = __webpack_require__(189);
-	var client = __webpack_require__(209);
-	
-	var follow = __webpack_require__(237); // function to hop multiple links by "rel"
-	
-	var root = '/api';
-	var children = 'communistInfoes';
-	
-	var CommunistInfoDisplay = function (_React$Component) {
-		_inherits(CommunistInfoDisplay, _React$Component);
-	
-		function CommunistInfoDisplay(props) {
-			_classCallCheck(this, CommunistInfoDisplay);
-	
-			var _this = _possibleConstructorReturn(this, (CommunistInfoDisplay.__proto__ || Object.getPrototypeOf(CommunistInfoDisplay)).call(this, props));
-	
-			_this.state = { communistInfoes: [], attributes: [], page: 1, pageSize: 12, links: {} };
-			_this.onNavigate = _this.onNavigate.bind(_this);
-			_this.onSearch = _this.onSearch.bind(_this);
-			return _this;
-		}
-	
-		_createClass(CommunistInfoDisplay, [{
-			key: 'loadFromServer',
-			value: function loadFromServer(pageSize) {
-				var _this2 = this;
-	
-				root = "/api";
-				children = "communistInfoes";
-				follow(client, root, [{ rel: children, params: { size: pageSize } }]).then(function (communistInfoCollection) {
-					_this2.page = communistInfoCollection.entity.page;
-					_this2.links = communistInfoCollection.entity._links;
-					return communistInfoCollection.entity._embedded.communistInfoes.map(function (communistInfo) {
-						return client({
-							method: 'GET',
-							path: communistInfo._links.self.href
-						});
-					});
-				}).then(function (communistInfoPromises) {
-					return when.all(communistInfoPromises);
-				}).done(function (communistInfoes) {
-					_this2.setState({
-						page: _this2.page,
-						communistInfoes: communistInfoes,
-						pageSize: pageSize,
-						links: _this2.links
-					});
-				});
-			}
-		}, {
-			key: 'getCommunistInfoesByName',
-			value: function getCommunistInfoesByName(name, pageSize) {
-				var _this3 = this;
-	
-				root = "/api/communistInfoes/search";
-				children = "findByName";
-				follow(client, root, [{ rel: children, params: { name: name, size: pageSize } }]).then(function (communistInfoCollection) {
-					_this3.page = communistInfoCollection.entity.page;
-					_this3.links = communistInfoCollection.entity._links;
-					return communistInfoCollection.entity._embedded.communistInfoes.map(function (communistInfo) {
-						return client({
-							method: 'GET',
-							path: communistInfo._links.self.href
-						});
-					});
-				}).then(function (communistInfoPromises) {
-					return when.all(communistInfoPromises);
-				}).done(function (communistInfoes) {
-					_this3.setState({
-						page: _this3.page,
-						communistInfoes: communistInfoes,
-						pageSize: pageSize,
-						links: _this3.links
-					});
-				});
-			}
-		}, {
-			key: 'onNavigate',
-			value: function onNavigate(navUri) {
-				var _this4 = this;
-	
-				client({
-					method: 'GET',
-					path: navUri
-				}).then(function (communistInfoCollection) {
-					_this4.links = communistInfoCollection.entity._links;
-					_this4.page = communistInfoCollection.entity.page;
-	
-					return communistInfoCollection.entity._embedded.communistInfoes.map(function (communistInfo) {
-						return client({
-							method: 'GET',
-							path: communistInfo._links.self.href
-						});
-					});
-				}).then(function (communistInfoPromises) {
-					return when.all(communistInfoPromises);
-				}).done(function (communistInfoes) {
-					_this4.setState({
-						page: _this4.page,
-						communistInfoes: communistInfoes,
-						pageSize: _this4.state.pageSize,
-						links: _this4.links
-					});
-				});
-			}
-		}, {
-			key: 'onSearch',
-			value: function onSearch(e) {
-				this.getCommunistInfoesByName(document.getElementById("name").value, this.state.pageSize);
-			}
-	
-			// tag::websocket-handlers[]
-	
-		}, {
-			key: 'refreshAndGoToLastPage',
-			value: function refreshAndGoToLastPage(message) {
-				var _this5 = this;
-	
-				follow(client, root, [{
-					rel: children,
-					params: { size: this.state.pageSize }
-				}]).done(function (response) {
-					if (response.entity._links.last !== undefined) {
-						_this5.onNavigate(response.entity._links.last.href);
-					} else {
-						_this5.onNavigate(response.entity._links.self.href);
-					}
-				});
-			}
-	
-			// tag::register-handlers[]
-	
-		}, {
-			key: 'componentDidMount',
-			value: function componentDidMount() {
-				this.loadFromServer(this.state.pageSize);
-				//this.getCommunistInfoesByName('张三', this.state.pageSize);
-			}
-			// end::register-handlers[]
-	
-		}, {
-			key: 'render',
-			value: function render() {
-				return React.createElement(
-					'div',
-					{ className: 'searchBarPlusDataDisplay' },
-					React.createElement(
-						'div',
-						{ className: 'webdesigntuts-workshop' },
-						React.createElement('input', { type: 'search', id: 'name', placeholder: '\u8BF7\u8F93\u5165\u4F60\u6240\u8981\u67E5\u8BE2\u7684\u4EBA\u540D' }),
-						React.createElement(
-							'button',
-							{ onClick: this.onSearch },
-							'\u641C\u7D22'
-						)
-					),
-					React.createElement(
-						'div',
-						{ className: 'datadisplay' },
-						React.createElement(CommunistInfoList, { page: this.state.page,
-							communistInfoes: this.state.communistInfoes,
-							links: this.state.links,
-							pageSize: this.state.pageSize,
-							onNavigate: this.onNavigate })
-					)
-				);
-			}
-		}]);
-	
-		return CommunistInfoDisplay;
-	}(React.Component);
-	
-	var CommunistInfoList = function (_React$Component2) {
-		_inherits(CommunistInfoList, _React$Component2);
-	
-		function CommunistInfoList(props) {
-			_classCallCheck(this, CommunistInfoList);
-	
-			var _this6 = _possibleConstructorReturn(this, (CommunistInfoList.__proto__ || Object.getPrototypeOf(CommunistInfoList)).call(this, props));
-	
-			_this6.handleNavFirst = _this6.handleNavFirst.bind(_this6);
-			_this6.handleNavPrev = _this6.handleNavPrev.bind(_this6);
-			_this6.handleNavNext = _this6.handleNavNext.bind(_this6);
-			_this6.handleNavLast = _this6.handleNavLast.bind(_this6);
-			_this6.handleInput = _this6.handleInput.bind(_this6);
-			return _this6;
-		}
-	
-		_createClass(CommunistInfoList, [{
-			key: 'handleInput',
-			value: function handleInput(e) {
-				e.preventDefault();
-				var pageSize = ReactDOM.findDOMNode(this.refs.pageSize).value;
-				if (/^[0-9]+$/.test(pageSize)) {
-					this.props.updatePageSize(pageSize);
-				} else {
-					ReactDOM.findDOMNode(this.refs.pageSize).value = pageSize.substring(0, pageSize.length - 1);
-				}
-			}
-		}, {
-			key: 'handleNavFirst',
-			value: function handleNavFirst(e) {
-				e.preventDefault();
-				this.props.onNavigate(this.props.links.first.href);
-			}
-		}, {
-			key: 'handleNavPrev',
-			value: function handleNavPrev(e) {
-				e.preventDefault();
-				this.props.onNavigate(this.props.links.prev.href);
-			}
-		}, {
-			key: 'handleNavNext',
-			value: function handleNavNext(e) {
-				e.preventDefault();
-				this.props.onNavigate(this.props.links.next.href);
-			}
-		}, {
-			key: 'handleNavLast',
-			value: function handleNavLast(e) {
-				e.preventDefault();
-				this.props.onNavigate(this.props.links.last.href);
-			}
-		}, {
-			key: 'render',
-			value: function render() {
-				var _this7 = this;
-	
-				var pageInfo = this.props.page.hasOwnProperty("number") ? React.createElement(
-					'h3',
-					null,
-					'CommunistInfoes - Page ',
-					this.props.page.number + 1,
-					' of ',
-					this.props.page.totalPages
-				) : null;
-	
-				var communistInfoes = this.props.communistInfoes.map(function (communistInfo) {
-					return React.createElement(CommunistInfo, { key: communistInfo.entity._links.self.href,
-						communistInfo: communistInfo,
-						attributes: _this7.props.attributes,
-						onUpdate: _this7.props.onUpdate,
-						onDelete: _this7.props.onDelete });
-				});
-	
-				var navLinks = [];
-				if ("first" in this.props.links) {
-					navLinks.push(React.createElement(
-						'button',
-						{ key: 'first', onClick: this.handleNavFirst },
-						'<<'
-					));
-				}
-				if ("prev" in this.props.links) {
-					navLinks.push(React.createElement(
-						'button',
-						{ key: 'prev', onClick: this.handleNavPrev },
-						'<'
-					));
-				}
-				if ("next" in this.props.links) {
-					navLinks.push(React.createElement(
-						'button',
-						{ key: 'next', onClick: this.handleNavNext },
-						'>'
-					));
-				}
-				if ("last" in this.props.links) {
-					navLinks.push(React.createElement(
-						'button',
-						{ key: 'last', onClick: this.handleNavLast },
-						'>>'
-					));
-				}
-	
-				return React.createElement(
-					'div',
-					null,
-					React.createElement(
-						'table',
-						null,
-						React.createElement(
-							'thead',
-							null,
-							React.createElement(
-								'tr',
-								null,
-								React.createElement(
-									'th',
-									null,
-									'\u515A\u5458\u59D3\u540D'
-								),
-								React.createElement(
-									'th',
-									null,
-									'\u8EAB\u4EFD\u8BC1\u53F7'
-								),
-								React.createElement(
-									'th',
-									null,
-									'\u6027\u522B'
-								),
-								React.createElement(
-									'th',
-									null,
-									'\u5165\u515A\u65E5\u671F'
-								),
-								React.createElement(
-									'th',
-									null,
-									'\u5B66\u5386'
-								),
-								React.createElement(
-									'th',
-									null,
-									'\u515A\u652F\u90E8'
-								),
-								React.createElement(
-									'th',
-									null,
-									'\u4E0A\u7EA7\u7EC4\u7EC7'
-								),
-								React.createElement(
-									'th',
-									null,
-									'\u7C4D\u8D2F'
-								),
-								React.createElement(
-									'th',
-									null,
-									'\u6C11\u65CF'
-								),
-								React.createElement(
-									'th',
-									null,
-									'\u4E2A\u4EBA\u8EAB\u4EFD'
-								)
-							)
-						),
-						React.createElement(
-							'tbody',
-							null,
-							communistInfoes
-						)
-					),
-					React.createElement(
-						'div',
-						null,
-						navLinks
-					)
-				);
-			}
-		}]);
-	
-		return CommunistInfoList;
-	}(React.Component);
-	
-	var CommunistInfo = function (_React$Component3) {
-		_inherits(CommunistInfo, _React$Component3);
-	
-		function CommunistInfo(props) {
-			_classCallCheck(this, CommunistInfo);
-	
-			var _this8 = _possibleConstructorReturn(this, (CommunistInfo.__proto__ || Object.getPrototypeOf(CommunistInfo)).call(this, props));
-	
-			_this8.handleDelete = _this8.handleDelete.bind(_this8);
-			return _this8;
-		}
-	
-		_createClass(CommunistInfo, [{
-			key: 'handleDelete',
-			value: function handleDelete() {
-				this.props.onDelete(this.props.communistInfo);
-			}
-		}, {
-			key: 'render',
-			value: function render() {
-				return React.createElement(
-					'tr',
-					null,
-					React.createElement(
-						'td',
-						null,
-						this.props.communistInfo.entity.name
-					),
-					React.createElement(
-						'td',
-						null,
-						this.props.communistInfo.entity.idNumber
-					),
-					React.createElement(
-						'td',
-						null,
-						this.props.communistInfo.entity.gender
-					),
-					React.createElement(
-						'td',
-						null,
-						this.props.communistInfo.entity.joinDate
-					),
-					React.createElement(
-						'td',
-						null,
-						this.props.communistInfo.entity.education
-					),
-					React.createElement(
-						'td',
-						null,
-						this.props.communistInfo.entity.partyBranch
-					),
-					React.createElement(
-						'td',
-						null,
-						this.props.communistInfo.entity.superiorOrg
-					),
-					React.createElement(
-						'td',
-						null,
-						this.props.communistInfo.entity.nativePlace
-					),
-					React.createElement(
-						'td',
-						null,
-						this.props.communistInfo.entity.nation
-					),
-					React.createElement(
-						'td',
-						null,
-						this.props.communistInfo.entity.individualStatus
-					)
-				);
-			}
-		}]);
-	
-		return CommunistInfo;
-	}(React.Component);
-	
-	module.exports = CommunistInfoDisplay;
+	module.exports = rest.wrap(mime, { registry: registry }).wrap(uriTemplateInterceptor).wrap(errorCode).wrap(defaultRequest, { headers: { 'Accept': 'application/hal+json' } });
 
 /***/ },
 /* 189 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/*
+	 * Copyright 2014 the original author or authors
+	 * @license MIT, see LICENSE.txt for details
+	 *
+	 * @author Scott Andrews
+	 */
+	
+	(function (define) {
+		'use strict';
+	
+		!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require) {
+	
+			var rest = __webpack_require__(190),
+			    browser = __webpack_require__(193);
+	
+			rest.setPlatformDefaultClient(browser);
+	
+			return rest;
+	
+		}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	
+	}(
+		__webpack_require__(192)
+		// Boilerplate for AMD and Node
+	));
+
+
+/***/ },
+/* 190 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/*
+	 * Copyright 2014 the original author or authors
+	 * @license MIT, see LICENSE.txt for details
+	 *
+	 * @author Scott Andrews
+	 */
+	
+	(function (define) {
+		'use strict';
+	
+		var undef;
+	
+		!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require) {
+	
+			/**
+			 * Plain JS Object containing properties that represent an HTTP request.
+			 *
+			 * Depending on the capabilities of the underlying client, a request
+			 * may be cancelable. If a request may be canceled, the client will add
+			 * a canceled flag and cancel function to the request object. Canceling
+			 * the request will put the response into an error state.
+			 *
+			 * @field {string} [method='GET'] HTTP method, commonly GET, POST, PUT, DELETE or HEAD
+			 * @field {string|UrlBuilder} [path=''] path template with optional path variables
+			 * @field {Object} [params] parameters for the path template and query string
+			 * @field {Object} [headers] custom HTTP headers to send, in addition to the clients default headers
+			 * @field [entity] the HTTP entity, common for POST or PUT requests
+			 * @field {boolean} [canceled] true if the request has been canceled, set by the client
+			 * @field {Function} [cancel] cancels the request if invoked, provided by the client
+			 * @field {Client} [originator] the client that first handled this request, provided by the interceptor
+			 *
+			 * @class Request
+			 */
+	
+			/**
+			 * Plain JS Object containing properties that represent an HTTP response
+			 *
+			 * @field {Object} [request] the request object as received by the root client
+			 * @field {Object} [raw] the underlying request object, like XmlHttpRequest in a browser
+			 * @field {number} [status.code] status code of the response (i.e. 200, 404)
+			 * @field {string} [status.text] status phrase of the response
+			 * @field {Object] [headers] response headers hash of normalized name, value pairs
+			 * @field [entity] the response body
+			 *
+			 * @class Response
+			 */
+	
+			/**
+			 * HTTP client particularly suited for RESTful operations.
+			 *
+			 * @field {function} wrap wraps this client with a new interceptor returning the wrapped client
+			 *
+			 * @param {Request} the HTTP request
+			 * @returns {ResponsePromise<Response>} a promise the resolves to the HTTP response
+			 *
+			 * @class Client
+			 */
+	
+			 /**
+			  * Extended when.js Promises/A+ promise with HTTP specific helpers
+			  *q
+			  * @method entity promise for the HTTP entity
+			  * @method status promise for the HTTP status code
+			  * @method headers promise for the HTTP response headers
+			  * @method header promise for a specific HTTP response header
+			  *
+			  * @class ResponsePromise
+			  * @extends Promise
+			  */
+	
+			var client, target, platformDefault;
+	
+			client = __webpack_require__(191);
+	
+			/**
+			 * Make a request with the default client
+			 * @param {Request} the HTTP request
+			 * @returns {Promise<Response>} a promise the resolves to the HTTP response
+			 */
+			function defaultClient() {
+				return target.apply(undef, arguments);
+			}
+	
+			/**
+			 * Change the default client
+			 * @param {Client} client the new default client
+			 */
+			defaultClient.setDefaultClient = function setDefaultClient(client) {
+				target = client;
+			};
+	
+			/**
+			 * Obtain a direct reference to the current default client
+			 * @returns {Client} the default client
+			 */
+			defaultClient.getDefaultClient = function getDefaultClient() {
+				return target;
+			};
+	
+			/**
+			 * Reset the default client to the platform default
+			 */
+			defaultClient.resetDefaultClient = function resetDefaultClient() {
+				target = platformDefault;
+			};
+	
+			/**
+			 * @private
+			 */
+			defaultClient.setPlatformDefaultClient = function setPlatformDefaultClient(client) {
+				if (platformDefault) {
+					throw new Error('Unable to redefine platformDefaultClient');
+				}
+				target = platformDefault = client;
+			};
+	
+			return client(defaultClient);
+	
+		}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	
+	}(
+		__webpack_require__(192)
+		// Boilerplate for AMD and Node
+	));
+
+
+/***/ },
+/* 191 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/*
+	 * Copyright 2014 the original author or authors
+	 * @license MIT, see LICENSE.txt for details
+	 *
+	 * @author Scott Andrews
+	 */
+	
+	(function (define) {
+		'use strict';
+	
+		!(__WEBPACK_AMD_DEFINE_RESULT__ = function (/* require */) {
+	
+			/**
+			 * Add common helper methods to a client impl
+			 *
+			 * @param {function} impl the client implementation
+			 * @param {Client} [target] target of this client, used when wrapping other clients
+			 * @returns {Client} the client impl with additional methods
+			 */
+			return function client(impl, target) {
+	
+				if (target) {
+	
+					/**
+					 * @returns {Client} the target client
+					 */
+					impl.skip = function skip() {
+						return target;
+					};
+	
+				}
+	
+				/**
+				 * Allow a client to easily be wrapped by an interceptor
+				 *
+				 * @param {Interceptor} interceptor the interceptor to wrap this client with
+				 * @param [config] configuration for the interceptor
+				 * @returns {Client} the newly wrapped client
+				 */
+				impl.wrap = function wrap(interceptor, config) {
+					return interceptor(impl, config);
+				};
+	
+				/**
+				 * @deprecated
+				 */
+				impl.chain = function chain() {
+					if (typeof console !== 'undefined') {
+						console.log('rest.js: client.chain() is deprecated, use client.wrap() instead');
+					}
+	
+					return impl.wrap.apply(this, arguments);
+				};
+	
+				return impl;
+	
+			};
+	
+		}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	
+	}(
+		__webpack_require__(192)
+		// Boilerplate for AMD and Node
+	));
+
+
+/***/ },
+/* 192 */
+/***/ function(module, exports) {
+
+	module.exports = function() { throw new Error("define cannot be used indirect"); };
+
+
+/***/ },
+/* 193 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;/*
+	 * Copyright 2012-2014 the original author or authors
+	 * @license MIT, see LICENSE.txt for details
+	 *
+	 * @author Scott Andrews
+	 */
+	
+	(function (define, global) {
+		'use strict';
+	
+		!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require) {
+	
+			var when, UrlBuilder, normalizeHeaderName, responsePromise, client, headerSplitRE;
+	
+			when = __webpack_require__(194);
+			UrlBuilder = __webpack_require__(213);
+			normalizeHeaderName = __webpack_require__(215);
+			responsePromise = __webpack_require__(216);
+			client = __webpack_require__(191);
+	
+			// according to the spec, the line break is '\r\n', but doesn't hold true in practice
+			headerSplitRE = /[\r|\n]+/;
+	
+			function parseHeaders(raw) {
+				// Note: Set-Cookie will be removed by the browser
+				var headers = {};
+	
+				if (!raw) { return headers; }
+	
+				raw.trim().split(headerSplitRE).forEach(function (header) {
+					var boundary, name, value;
+					boundary = header.indexOf(':');
+					name = normalizeHeaderName(header.substring(0, boundary).trim());
+					value = header.substring(boundary + 1).trim();
+					if (headers[name]) {
+						if (Array.isArray(headers[name])) {
+							// add to an existing array
+							headers[name].push(value);
+						}
+						else {
+							// convert single value to array
+							headers[name] = [headers[name], value];
+						}
+					}
+					else {
+						// new, single value
+						headers[name] = value;
+					}
+				});
+	
+				return headers;
+			}
+	
+			function safeMixin(target, source) {
+				Object.keys(source || {}).forEach(function (prop) {
+					// make sure the property already exists as
+					// IE 6 will blow up if we add a new prop
+					if (source.hasOwnProperty(prop) && prop in target) {
+						try {
+							target[prop] = source[prop];
+						}
+						catch (e) {
+							// ignore, expected for some properties at some points in the request lifecycle
+						}
+					}
+				});
+	
+				return target;
+			}
+	
+			return client(function xhr(request) {
+				return responsePromise.promise(function (resolve, reject) {
+					/*jshint maxcomplexity:20 */
+	
+					var client, method, url, headers, entity, headerName, response, XMLHttpRequest;
+	
+					request = typeof request === 'string' ? { path: request } : request || {};
+					response = { request: request };
+	
+					if (request.canceled) {
+						response.error = 'precanceled';
+						reject(response);
+						return;
+					}
+	
+					entity = request.entity;
+					request.method = request.method || (entity ? 'POST' : 'GET');
+					method = request.method;
+					url = response.url = new UrlBuilder(request.path || '', request.params).build();
+	
+					XMLHttpRequest = request.engine || global.XMLHttpRequest;
+					if (!XMLHttpRequest) {
+						reject({ request: request, url: url, error: 'xhr-not-available' });
+						return;
+					}
+	
+					try {
+						client = response.raw = new XMLHttpRequest();
+	
+						// mixin extra request properties before and after opening the request as some properties require being set at different phases of the request
+						safeMixin(client, request.mixin);
+						client.open(method, url, true);
+						safeMixin(client, request.mixin);
+	
+						headers = request.headers;
+						for (headerName in headers) {
+							/*jshint forin:false */
+							if (headerName === 'Content-Type' && headers[headerName] === 'multipart/form-data') {
+								// XMLHttpRequest generates its own Content-Type header with the
+								// appropriate multipart boundary when sending multipart/form-data.
+								continue;
+							}
+	
+							client.setRequestHeader(headerName, headers[headerName]);
+						}
+	
+						request.canceled = false;
+						request.cancel = function cancel() {
+							request.canceled = true;
+							client.abort();
+							reject(response);
+						};
+	
+						client.onreadystatechange = function (/* e */) {
+							if (request.canceled) { return; }
+							if (client.readyState === (XMLHttpRequest.DONE || 4)) {
+								response.status = {
+									code: client.status,
+									text: client.statusText
+								};
+								response.headers = parseHeaders(client.getAllResponseHeaders());
+								response.entity = client.responseText;
+	
+								if (response.status.code > 0) {
+									// check status code as readystatechange fires before error event
+									resolve(response);
+								}
+								else {
+									// give the error callback a chance to fire before resolving
+									// requests for file:// URLs do not have a status code
+									setTimeout(function () {
+										resolve(response);
+									}, 0);
+								}
+							}
+						};
+	
+						try {
+							client.onerror = function (/* e */) {
+								response.error = 'loaderror';
+								reject(response);
+							};
+						}
+						catch (e) {
+							// IE 6 will not support error handling
+						}
+	
+						client.send(entity);
+					}
+					catch (e) {
+						response.error = 'loaderror';
+						reject(response);
+					}
+	
+				});
+			});
+	
+		}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	
+	}(
+		__webpack_require__(192),
+		typeof window !== 'undefined' ? window : void 0
+		// Boilerplate for AMD and Node
+	));
+
+
+/***/ },
+/* 194 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -23006,24 +23180,24 @@
 	(function(define) { 'use strict';
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require) {
 	
-		var timed = __webpack_require__(190);
-		var array = __webpack_require__(195);
-		var flow = __webpack_require__(198);
-		var fold = __webpack_require__(199);
-		var inspect = __webpack_require__(200);
-		var generate = __webpack_require__(201);
-		var progress = __webpack_require__(202);
-		var withThis = __webpack_require__(203);
-		var unhandledRejection = __webpack_require__(204);
-		var TimeoutError = __webpack_require__(194);
+		var timed = __webpack_require__(195);
+		var array = __webpack_require__(199);
+		var flow = __webpack_require__(202);
+		var fold = __webpack_require__(203);
+		var inspect = __webpack_require__(204);
+		var generate = __webpack_require__(205);
+		var progress = __webpack_require__(206);
+		var withThis = __webpack_require__(207);
+		var unhandledRejection = __webpack_require__(208);
+		var TimeoutError = __webpack_require__(198);
 	
 		var Promise = [array, flow, fold, generate, progress,
 			inspect, withThis, timed, unhandledRejection]
 			.reduce(function(Promise, feature) {
 				return feature(Promise);
-			}, __webpack_require__(206));
+			}, __webpack_require__(210));
 	
-		var apply = __webpack_require__(197)(Promise);
+		var apply = __webpack_require__(201)(Promise);
 	
 		// Public API
 	
@@ -23222,11 +23396,11 @@
 	
 		return when;
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	})(__webpack_require__(193));
+	})(__webpack_require__(192));
 
 
 /***/ },
-/* 190 */
+/* 195 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -23236,8 +23410,8 @@
 	(function(define) { 'use strict';
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require) {
 	
-		var env = __webpack_require__(191);
-		var TimeoutError = __webpack_require__(194);
+		var env = __webpack_require__(196);
+		var TimeoutError = __webpack_require__(198);
 	
 		function setTimeout(f, ms, x, y) {
 			return env.setTimer(function() {
@@ -23306,11 +23480,11 @@
 		};
 	
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	}(__webpack_require__(193)));
+	}(__webpack_require__(192)));
 
 
 /***/ },
-/* 191 */
+/* 196 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process) {/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -23344,7 +23518,7 @@
 	
 		} else if (!capturedSetTimeout) { // vert.x
 			var vertxRequire = require;
-			var vertx = __webpack_require__(192);
+			var vertx = __webpack_require__(197);
 			setTimer = function (f, ms) { return vertx.setTimer(ms, f); };
 			clearTimer = vertx.cancelTimer;
 			asap = vertx.runOnLoop || vertx.runOnContext;
@@ -23385,25 +23559,18 @@
 			};
 		}
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	}(__webpack_require__(193)));
+	}(__webpack_require__(192)));
 	
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 192 */
+/* 197 */
 /***/ function(module, exports) {
 
 	/* (ignored) */
 
 /***/ },
-/* 193 */
-/***/ function(module, exports) {
-
-	module.exports = function() { throw new Error("define cannot be used indirect"); };
-
-
-/***/ },
-/* 194 */
+/* 198 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -23432,10 +23599,10 @@
 	
 		return TimeoutError;
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	}(__webpack_require__(193)));
+	}(__webpack_require__(192)));
 
 /***/ },
-/* 195 */
+/* 199 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -23445,8 +23612,8 @@
 	(function(define) { 'use strict';
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require) {
 	
-		var state = __webpack_require__(196);
-		var applier = __webpack_require__(197);
+		var state = __webpack_require__(200);
+		var applier = __webpack_require__(201);
 	
 		return function array(Promise) {
 	
@@ -23736,11 +23903,11 @@
 		};
 	
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	}(__webpack_require__(193)));
+	}(__webpack_require__(192)));
 
 
 /***/ },
-/* 196 */
+/* 200 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -23777,11 +23944,11 @@
 		}
 	
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	}(__webpack_require__(193)));
+	}(__webpack_require__(192)));
 
 
 /***/ },
-/* 197 */
+/* 201 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -23836,13 +24003,13 @@
 		}
 	
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	}(__webpack_require__(193)));
+	}(__webpack_require__(192)));
 	
 	
 
 
 /***/ },
-/* 198 */
+/* 202 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -24004,11 +24171,11 @@
 		}
 	
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	}(__webpack_require__(193)));
+	}(__webpack_require__(192)));
 
 
 /***/ },
-/* 199 */
+/* 203 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -24037,11 +24204,11 @@
 		};
 	
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	}(__webpack_require__(193)));
+	}(__webpack_require__(192)));
 
 
 /***/ },
-/* 200 */
+/* 204 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -24051,7 +24218,7 @@
 	(function(define) { 'use strict';
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require) {
 	
-		var inspect = __webpack_require__(196).inspect;
+		var inspect = __webpack_require__(200).inspect;
 	
 		return function inspection(Promise) {
 	
@@ -24063,11 +24230,11 @@
 		};
 	
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	}(__webpack_require__(193)));
+	}(__webpack_require__(192)));
 
 
 /***/ },
-/* 201 */
+/* 205 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -24134,11 +24301,11 @@
 		};
 	
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	}(__webpack_require__(193)));
+	}(__webpack_require__(192)));
 
 
 /***/ },
-/* 202 */
+/* 206 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -24164,11 +24331,11 @@
 		};
 	
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	}(__webpack_require__(193)));
+	}(__webpack_require__(192)));
 
 
 /***/ },
-/* 203 */
+/* 207 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -24207,12 +24374,12 @@
 		};
 	
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	}(__webpack_require__(193)));
+	}(__webpack_require__(192)));
 	
 
 
 /***/ },
-/* 204 */
+/* 208 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -24222,8 +24389,8 @@
 	(function(define) { 'use strict';
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function(require) {
 	
-		var setTimer = __webpack_require__(191).setTimer;
-		var format = __webpack_require__(205);
+		var setTimer = __webpack_require__(196).setTimer;
+		var format = __webpack_require__(209);
 	
 		return function unhandledRejection(Promise) {
 	
@@ -24300,11 +24467,11 @@
 		function noop() {}
 	
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	}(__webpack_require__(193)));
+	}(__webpack_require__(192)));
 
 
 /***/ },
-/* 205 */
+/* 209 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -24362,11 +24529,11 @@
 		}
 	
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	}(__webpack_require__(193)));
+	}(__webpack_require__(192)));
 
 
 /***/ },
-/* 206 */
+/* 210 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -24376,20 +24543,20 @@
 	(function(define) { 'use strict';
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require) {
 	
-		var makePromise = __webpack_require__(207);
-		var Scheduler = __webpack_require__(208);
-		var async = __webpack_require__(191).asap;
+		var makePromise = __webpack_require__(211);
+		var Scheduler = __webpack_require__(212);
+		var async = __webpack_require__(196).asap;
 	
 		return makePromise({
 			scheduler: new Scheduler(async)
 		});
 	
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	})(__webpack_require__(193));
+	})(__webpack_require__(192));
 
 
 /***/ },
-/* 207 */
+/* 211 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process) {/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -25346,12 +25513,12 @@
 			return Promise;
 		};
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	}(__webpack_require__(193)));
+	}(__webpack_require__(192)));
 	
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 208 */
+/* 212 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-2014 original author or authors */
@@ -25433,442 +25600,11 @@
 		return Scheduler;
 	
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	}(__webpack_require__(193)));
-
-
-/***/ },
-/* 209 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	var rest = __webpack_require__(210);
-	var defaultRequest = __webpack_require__(218);
-	var mime = __webpack_require__(220);
-	var uriTemplateInterceptor = __webpack_require__(234);
-	var errorCode = __webpack_require__(235);
-	var baseRegistry = __webpack_require__(222);
-	
-	var registry = baseRegistry.child();
-	
-	registry.register('text/uri-list', __webpack_require__(236));
-	registry.register('application/hal+json', __webpack_require__(223));
-	
-	module.exports = rest.wrap(mime, { registry: registry }).wrap(uriTemplateInterceptor).wrap(errorCode).wrap(defaultRequest, { headers: { 'Accept': 'application/hal+json' } });
-
-/***/ },
-/* 210 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/*
-	 * Copyright 2014 the original author or authors
-	 * @license MIT, see LICENSE.txt for details
-	 *
-	 * @author Scott Andrews
-	 */
-	
-	(function (define) {
-		'use strict';
-	
-		!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require) {
-	
-			var rest = __webpack_require__(211),
-			    browser = __webpack_require__(213);
-	
-			rest.setPlatformDefaultClient(browser);
-	
-			return rest;
-	
-		}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	
-	}(
-		__webpack_require__(193)
-		// Boilerplate for AMD and Node
-	));
-
-
-/***/ },
-/* 211 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/*
-	 * Copyright 2014 the original author or authors
-	 * @license MIT, see LICENSE.txt for details
-	 *
-	 * @author Scott Andrews
-	 */
-	
-	(function (define) {
-		'use strict';
-	
-		var undef;
-	
-		!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require) {
-	
-			/**
-			 * Plain JS Object containing properties that represent an HTTP request.
-			 *
-			 * Depending on the capabilities of the underlying client, a request
-			 * may be cancelable. If a request may be canceled, the client will add
-			 * a canceled flag and cancel function to the request object. Canceling
-			 * the request will put the response into an error state.
-			 *
-			 * @field {string} [method='GET'] HTTP method, commonly GET, POST, PUT, DELETE or HEAD
-			 * @field {string|UrlBuilder} [path=''] path template with optional path variables
-			 * @field {Object} [params] parameters for the path template and query string
-			 * @field {Object} [headers] custom HTTP headers to send, in addition to the clients default headers
-			 * @field [entity] the HTTP entity, common for POST or PUT requests
-			 * @field {boolean} [canceled] true if the request has been canceled, set by the client
-			 * @field {Function} [cancel] cancels the request if invoked, provided by the client
-			 * @field {Client} [originator] the client that first handled this request, provided by the interceptor
-			 *
-			 * @class Request
-			 */
-	
-			/**
-			 * Plain JS Object containing properties that represent an HTTP response
-			 *
-			 * @field {Object} [request] the request object as received by the root client
-			 * @field {Object} [raw] the underlying request object, like XmlHttpRequest in a browser
-			 * @field {number} [status.code] status code of the response (i.e. 200, 404)
-			 * @field {string} [status.text] status phrase of the response
-			 * @field {Object] [headers] response headers hash of normalized name, value pairs
-			 * @field [entity] the response body
-			 *
-			 * @class Response
-			 */
-	
-			/**
-			 * HTTP client particularly suited for RESTful operations.
-			 *
-			 * @field {function} wrap wraps this client with a new interceptor returning the wrapped client
-			 *
-			 * @param {Request} the HTTP request
-			 * @returns {ResponsePromise<Response>} a promise the resolves to the HTTP response
-			 *
-			 * @class Client
-			 */
-	
-			 /**
-			  * Extended when.js Promises/A+ promise with HTTP specific helpers
-			  *q
-			  * @method entity promise for the HTTP entity
-			  * @method status promise for the HTTP status code
-			  * @method headers promise for the HTTP response headers
-			  * @method header promise for a specific HTTP response header
-			  *
-			  * @class ResponsePromise
-			  * @extends Promise
-			  */
-	
-			var client, target, platformDefault;
-	
-			client = __webpack_require__(212);
-	
-			/**
-			 * Make a request with the default client
-			 * @param {Request} the HTTP request
-			 * @returns {Promise<Response>} a promise the resolves to the HTTP response
-			 */
-			function defaultClient() {
-				return target.apply(undef, arguments);
-			}
-	
-			/**
-			 * Change the default client
-			 * @param {Client} client the new default client
-			 */
-			defaultClient.setDefaultClient = function setDefaultClient(client) {
-				target = client;
-			};
-	
-			/**
-			 * Obtain a direct reference to the current default client
-			 * @returns {Client} the default client
-			 */
-			defaultClient.getDefaultClient = function getDefaultClient() {
-				return target;
-			};
-	
-			/**
-			 * Reset the default client to the platform default
-			 */
-			defaultClient.resetDefaultClient = function resetDefaultClient() {
-				target = platformDefault;
-			};
-	
-			/**
-			 * @private
-			 */
-			defaultClient.setPlatformDefaultClient = function setPlatformDefaultClient(client) {
-				if (platformDefault) {
-					throw new Error('Unable to redefine platformDefaultClient');
-				}
-				target = platformDefault = client;
-			};
-	
-			return client(defaultClient);
-	
-		}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	
-	}(
-		__webpack_require__(193)
-		// Boilerplate for AMD and Node
-	));
-
-
-/***/ },
-/* 212 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/*
-	 * Copyright 2014 the original author or authors
-	 * @license MIT, see LICENSE.txt for details
-	 *
-	 * @author Scott Andrews
-	 */
-	
-	(function (define) {
-		'use strict';
-	
-		!(__WEBPACK_AMD_DEFINE_RESULT__ = function (/* require */) {
-	
-			/**
-			 * Add common helper methods to a client impl
-			 *
-			 * @param {function} impl the client implementation
-			 * @param {Client} [target] target of this client, used when wrapping other clients
-			 * @returns {Client} the client impl with additional methods
-			 */
-			return function client(impl, target) {
-	
-				if (target) {
-	
-					/**
-					 * @returns {Client} the target client
-					 */
-					impl.skip = function skip() {
-						return target;
-					};
-	
-				}
-	
-				/**
-				 * Allow a client to easily be wrapped by an interceptor
-				 *
-				 * @param {Interceptor} interceptor the interceptor to wrap this client with
-				 * @param [config] configuration for the interceptor
-				 * @returns {Client} the newly wrapped client
-				 */
-				impl.wrap = function wrap(interceptor, config) {
-					return interceptor(impl, config);
-				};
-	
-				/**
-				 * @deprecated
-				 */
-				impl.chain = function chain() {
-					if (typeof console !== 'undefined') {
-						console.log('rest.js: client.chain() is deprecated, use client.wrap() instead');
-					}
-	
-					return impl.wrap.apply(this, arguments);
-				};
-	
-				return impl;
-	
-			};
-	
-		}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	
-	}(
-		__webpack_require__(193)
-		// Boilerplate for AMD and Node
-	));
+	}(__webpack_require__(192)));
 
 
 /***/ },
 /* 213 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_RESULT__;/*
-	 * Copyright 2012-2014 the original author or authors
-	 * @license MIT, see LICENSE.txt for details
-	 *
-	 * @author Scott Andrews
-	 */
-	
-	(function (define, global) {
-		'use strict';
-	
-		!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require) {
-	
-			var when, UrlBuilder, normalizeHeaderName, responsePromise, client, headerSplitRE;
-	
-			when = __webpack_require__(189);
-			UrlBuilder = __webpack_require__(214);
-			normalizeHeaderName = __webpack_require__(216);
-			responsePromise = __webpack_require__(217);
-			client = __webpack_require__(212);
-	
-			// according to the spec, the line break is '\r\n', but doesn't hold true in practice
-			headerSplitRE = /[\r|\n]+/;
-	
-			function parseHeaders(raw) {
-				// Note: Set-Cookie will be removed by the browser
-				var headers = {};
-	
-				if (!raw) { return headers; }
-	
-				raw.trim().split(headerSplitRE).forEach(function (header) {
-					var boundary, name, value;
-					boundary = header.indexOf(':');
-					name = normalizeHeaderName(header.substring(0, boundary).trim());
-					value = header.substring(boundary + 1).trim();
-					if (headers[name]) {
-						if (Array.isArray(headers[name])) {
-							// add to an existing array
-							headers[name].push(value);
-						}
-						else {
-							// convert single value to array
-							headers[name] = [headers[name], value];
-						}
-					}
-					else {
-						// new, single value
-						headers[name] = value;
-					}
-				});
-	
-				return headers;
-			}
-	
-			function safeMixin(target, source) {
-				Object.keys(source || {}).forEach(function (prop) {
-					// make sure the property already exists as
-					// IE 6 will blow up if we add a new prop
-					if (source.hasOwnProperty(prop) && prop in target) {
-						try {
-							target[prop] = source[prop];
-						}
-						catch (e) {
-							// ignore, expected for some properties at some points in the request lifecycle
-						}
-					}
-				});
-	
-				return target;
-			}
-	
-			return client(function xhr(request) {
-				return responsePromise.promise(function (resolve, reject) {
-					/*jshint maxcomplexity:20 */
-	
-					var client, method, url, headers, entity, headerName, response, XMLHttpRequest;
-	
-					request = typeof request === 'string' ? { path: request } : request || {};
-					response = { request: request };
-	
-					if (request.canceled) {
-						response.error = 'precanceled';
-						reject(response);
-						return;
-					}
-	
-					entity = request.entity;
-					request.method = request.method || (entity ? 'POST' : 'GET');
-					method = request.method;
-					url = response.url = new UrlBuilder(request.path || '', request.params).build();
-	
-					XMLHttpRequest = request.engine || global.XMLHttpRequest;
-					if (!XMLHttpRequest) {
-						reject({ request: request, url: url, error: 'xhr-not-available' });
-						return;
-					}
-	
-					try {
-						client = response.raw = new XMLHttpRequest();
-	
-						// mixin extra request properties before and after opening the request as some properties require being set at different phases of the request
-						safeMixin(client, request.mixin);
-						client.open(method, url, true);
-						safeMixin(client, request.mixin);
-	
-						headers = request.headers;
-						for (headerName in headers) {
-							/*jshint forin:false */
-							if (headerName === 'Content-Type' && headers[headerName] === 'multipart/form-data') {
-								// XMLHttpRequest generates its own Content-Type header with the
-								// appropriate multipart boundary when sending multipart/form-data.
-								continue;
-							}
-	
-							client.setRequestHeader(headerName, headers[headerName]);
-						}
-	
-						request.canceled = false;
-						request.cancel = function cancel() {
-							request.canceled = true;
-							client.abort();
-							reject(response);
-						};
-	
-						client.onreadystatechange = function (/* e */) {
-							if (request.canceled) { return; }
-							if (client.readyState === (XMLHttpRequest.DONE || 4)) {
-								response.status = {
-									code: client.status,
-									text: client.statusText
-								};
-								response.headers = parseHeaders(client.getAllResponseHeaders());
-								response.entity = client.responseText;
-	
-								if (response.status.code > 0) {
-									// check status code as readystatechange fires before error event
-									resolve(response);
-								}
-								else {
-									// give the error callback a chance to fire before resolving
-									// requests for file:// URLs do not have a status code
-									setTimeout(function () {
-										resolve(response);
-									}, 0);
-								}
-							}
-						};
-	
-						try {
-							client.onerror = function (/* e */) {
-								response.error = 'loaderror';
-								reject(response);
-							};
-						}
-						catch (e) {
-							// IE 6 will not support error handling
-						}
-	
-						client.send(entity);
-					}
-					catch (e) {
-						response.error = 'loaderror';
-						reject(response);
-					}
-	
-				});
-			});
-	
-		}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	
-	}(
-		__webpack_require__(193),
-		typeof window !== 'undefined' ? window : void 0
-		// Boilerplate for AMD and Node
-	));
-
-
-/***/ },
-/* 214 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -25887,7 +25623,7 @@
 	
 			var mixin, origin, urlRE, absoluteUrlRE, fullyQualifiedUrlRE;
 	
-			mixin = __webpack_require__(215);
+			mixin = __webpack_require__(214);
 	
 			urlRE = /([a-z][a-z0-9\+\-\.]*:)\/\/([^@]+@)?(([^:\/]+)(:([0-9]+))?)?(\/[^?#]*)?(\?[^#]*)?(#\S*)?/i;
 			absoluteUrlRE = /^([a-z][a-z0-9\-\+\.]*:\/\/|\/)/i;
@@ -26096,14 +25832,14 @@
 		}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	
 	}(
-		__webpack_require__(193),
+		__webpack_require__(192),
 		typeof window !== 'undefined' ? window.location : void 0
 		// Boilerplate for AMD and Node
 	));
 
 
 /***/ },
-/* 215 */
+/* 214 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -26151,13 +25887,13 @@
 		}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	
 	}(
-		__webpack_require__(193)
+		__webpack_require__(192)
 		// Boilerplate for AMD and Node
 	));
 
 
 /***/ },
-/* 216 */
+/* 215 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -26195,13 +25931,13 @@
 		}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	
 	}(
-		__webpack_require__(193)
+		__webpack_require__(192)
 		// Boilerplate for AMD and Node
 	));
 
 
 /***/ },
-/* 217 */
+/* 216 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -26216,8 +25952,8 @@
 	
 		!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require) {
 	
-			var when = __webpack_require__(189),
-				normalizeHeaderName = __webpack_require__(216);
+			var when = __webpack_require__(194),
+				normalizeHeaderName = __webpack_require__(215);
 	
 			function property(promise, name) {
 				return promise.then(
@@ -26341,13 +26077,13 @@
 		}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	
 	}(
-		__webpack_require__(193)
+		__webpack_require__(192)
 		// Boilerplate for AMD and Node
 	));
 
 
 /***/ },
-/* 218 */
+/* 217 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -26364,8 +26100,8 @@
 	
 			var interceptor, mixinUtil, defaulter;
 	
-			interceptor = __webpack_require__(219);
-			mixinUtil = __webpack_require__(215);
+			interceptor = __webpack_require__(218);
+			mixinUtil = __webpack_require__(214);
 	
 			defaulter = (function () {
 	
@@ -26426,13 +26162,13 @@
 		}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	
 	}(
-		__webpack_require__(193)
+		__webpack_require__(192)
 		// Boilerplate for AMD and Node
 	));
 
 
 /***/ },
-/* 219 */
+/* 218 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -26449,11 +26185,11 @@
 	
 			var defaultClient, mixin, responsePromise, client, when;
 	
-			defaultClient = __webpack_require__(211);
-			mixin = __webpack_require__(215);
-			responsePromise = __webpack_require__(217);
-			client = __webpack_require__(212);
-			when = __webpack_require__(189);
+			defaultClient = __webpack_require__(190);
+			mixin = __webpack_require__(214);
+			responsePromise = __webpack_require__(216);
+			client = __webpack_require__(191);
+			when = __webpack_require__(194);
 	
 			/**
 			 * Interceptors have the ability to intercept the request and/org response
@@ -26597,13 +26333,13 @@
 		}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	
 	}(
-		__webpack_require__(193)
+		__webpack_require__(192)
 		// Boilerplate for AMD and Node
 	));
 
 
 /***/ },
-/* 220 */
+/* 219 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -26620,10 +26356,10 @@
 	
 			var interceptor, mime, registry, noopConverter, when;
 	
-			interceptor = __webpack_require__(219);
-			mime = __webpack_require__(221);
-			registry = __webpack_require__(222);
-			when = __webpack_require__(189);
+			interceptor = __webpack_require__(218);
+			mime = __webpack_require__(220);
+			registry = __webpack_require__(221);
+			when = __webpack_require__(194);
 	
 			noopConverter = {
 				read: function (obj) { return obj; },
@@ -26713,13 +26449,13 @@
 		}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	
 	}(
-		__webpack_require__(193)
+		__webpack_require__(192)
 		// Boilerplate for AMD and Node
 	));
 
 
 /***/ },
-/* 221 */
+/* 220 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -26772,13 +26508,13 @@
 		}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	
 	}(
-		__webpack_require__(193)
+		__webpack_require__(192)
 		// Boilerplate for AMD and Node
 	));
 
 
 /***/ },
-/* 222 */
+/* 221 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -26795,8 +26531,8 @@
 	
 			var mime, when, registry;
 	
-			mime = __webpack_require__(221);
-			when = __webpack_require__(189);
+			mime = __webpack_require__(220);
+			when = __webpack_require__(194);
 	
 			function Registry(mimes) {
 	
@@ -26880,11 +26616,11 @@
 			registry = new Registry({});
 	
 			// include provided serializers
-			registry.register('application/hal', __webpack_require__(223));
-			registry.register('application/json', __webpack_require__(230));
-			registry.register('application/x-www-form-urlencoded', __webpack_require__(231));
-			registry.register('multipart/form-data', __webpack_require__(232));
-			registry.register('text/plain', __webpack_require__(233));
+			registry.register('application/hal', __webpack_require__(222));
+			registry.register('application/json', __webpack_require__(229));
+			registry.register('application/x-www-form-urlencoded', __webpack_require__(230));
+			registry.register('multipart/form-data', __webpack_require__(231));
+			registry.register('text/plain', __webpack_require__(232));
 	
 			registry.register('+json', registry.delegate('application/json'));
 	
@@ -26893,13 +26629,13 @@
 		}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	
 	}(
-		__webpack_require__(193)
+		__webpack_require__(192)
 		// Boilerplate for AMD and Node
 	));
 
 
 /***/ },
-/* 223 */
+/* 222 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -26916,12 +26652,12 @@
 	
 			var pathPrefix, template, find, lazyPromise, responsePromise, when;
 	
-			pathPrefix = __webpack_require__(224);
-			template = __webpack_require__(225);
-			find = __webpack_require__(228);
-			lazyPromise = __webpack_require__(229);
-			responsePromise = __webpack_require__(217);
-			when = __webpack_require__(189);
+			pathPrefix = __webpack_require__(223);
+			template = __webpack_require__(224);
+			find = __webpack_require__(227);
+			lazyPromise = __webpack_require__(228);
+			responsePromise = __webpack_require__(216);
+			when = __webpack_require__(194);
 	
 			function defineProperty(obj, name, value) {
 				Object.defineProperty(obj, name, {
@@ -27038,13 +26774,13 @@
 		}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	
 	}(
-		__webpack_require__(193)
+		__webpack_require__(192)
 		// Boilerplate for AMD and Node
 	));
 
 
 /***/ },
-/* 224 */
+/* 223 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -27061,8 +26797,8 @@
 	
 			var interceptor, UrlBuilder;
 	
-			interceptor = __webpack_require__(219);
-			UrlBuilder = __webpack_require__(214);
+			interceptor = __webpack_require__(218);
+			UrlBuilder = __webpack_require__(213);
 	
 			function startsWith(str, prefix) {
 				return str.indexOf(prefix) === 0;
@@ -27103,13 +26839,13 @@
 		}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	
 	}(
-		__webpack_require__(193)
+		__webpack_require__(192)
 		// Boilerplate for AMD and Node
 	));
 
 
 /***/ },
-/* 225 */
+/* 224 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -27126,9 +26862,9 @@
 	
 			var interceptor, uriTemplate, mixin;
 	
-			interceptor = __webpack_require__(219);
-			uriTemplate = __webpack_require__(226);
-			mixin = __webpack_require__(215);
+			interceptor = __webpack_require__(218);
+			uriTemplate = __webpack_require__(225);
+			mixin = __webpack_require__(214);
 	
 			/**
 			 * Applies request params to the path as a URI Template
@@ -27165,13 +26901,13 @@
 		}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	
 	}(
-		__webpack_require__(193)
+		__webpack_require__(192)
 		// Boilerplate for AMD and Node
 	));
 
 
 /***/ },
-/* 226 */
+/* 225 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -27190,7 +26926,7 @@
 	
 			var uriEncoder, operations, prefixRE;
 	
-			uriEncoder = __webpack_require__(227);
+			uriEncoder = __webpack_require__(226);
 	
 			prefixRE = /^([^:]*):([0-9]+)$/;
 			operations = {
@@ -27343,13 +27079,13 @@
 		}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	
 	}(
-		__webpack_require__(193)
+		__webpack_require__(192)
 		// Boilerplate for AMD and Node
 	));
 
 
 /***/ },
-/* 227 */
+/* 226 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -27529,13 +27265,13 @@
 		}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	
 	}(
-		__webpack_require__(193)
+		__webpack_require__(192)
 		// Boilerplate for AMD and Node
 	));
 
 
 /***/ },
-/* 228 */
+/* 227 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -27576,13 +27312,13 @@
 		}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	
 	}(
-		__webpack_require__(193)
+		__webpack_require__(192)
 		// Boilerplate for AMD and Node
 	));
 
 
 /***/ },
-/* 229 */
+/* 228 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -27599,7 +27335,7 @@
 	
 			var when;
 	
-			when = __webpack_require__(189);
+			when = __webpack_require__(194);
 	
 			/**
 			 * Create a promise whose work is started only when a handler is registered.
@@ -27637,13 +27373,13 @@
 		}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	
 	}(
-		__webpack_require__(193)
+		__webpack_require__(192)
 		// Boilerplate for AMD and Node
 	));
 
 
 /***/ },
-/* 230 */
+/* 229 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -27690,13 +27426,13 @@
 		}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	
 	}(
-		__webpack_require__(193)
+		__webpack_require__(192)
 		// Boilerplate for AMD and Node
 	));
 
 
 /***/ },
-/* 231 */
+/* 230 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -27786,13 +27522,13 @@
 		}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	
 	}(
-		__webpack_require__(193)
+		__webpack_require__(192)
 		// Boilerplate for AMD and Node
 	));
 
 
 /***/ },
-/* 232 */
+/* 231 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -27865,13 +27601,13 @@
 		}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	
 	}(
-		__webpack_require__(193)
+		__webpack_require__(192)
 		// Boilerplate for AMD and Node
 	));
 
 
 /***/ },
-/* 233 */
+/* 232 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -27900,13 +27636,13 @@
 		}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	
 	}(
-		__webpack_require__(193)
+		__webpack_require__(192)
 		// Boilerplate for AMD and Node
 	));
 
 
 /***/ },
-/* 234 */
+/* 233 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -27914,7 +27650,7 @@
 	!(__WEBPACK_AMD_DEFINE_RESULT__ = function (require) {
 		'use strict';
 	
-		var interceptor = __webpack_require__(219);
+		var interceptor = __webpack_require__(218);
 	
 		return interceptor({
 			request: function request(_request /*, config, meta */) {
@@ -27930,7 +27666,7 @@
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 235 */
+/* 234 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -27947,8 +27683,8 @@
 	
 			var interceptor, when;
 	
-			interceptor = __webpack_require__(219);
-			when = __webpack_require__(189);
+			interceptor = __webpack_require__(218);
+			when = __webpack_require__(194);
 	
 			/**
 			 * Rejects the response promise based on the status code.
@@ -27977,13 +27713,13 @@
 		}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	
 	}(
-		__webpack_require__(193)
+		__webpack_require__(192)
 		// Boilerplate for AMD and Node
 	));
 
 
 /***/ },
-/* 236 */
+/* 235 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -28010,6 +27746,467 @@
 			}
 		};
 	}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+
+/***/ },
+/* 236 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var React = __webpack_require__(1);
+	var ReactDOM = __webpack_require__(32);
+	var when = __webpack_require__(194);
+	var client = __webpack_require__(188);
+	
+	var follow = __webpack_require__(237); // function to hop multiple links by "rel"
+	
+	var root = '/api';
+	var children = 'communistInfoes';
+	
+	var CommunistInfoDisplay = function (_React$Component) {
+		_inherits(CommunistInfoDisplay, _React$Component);
+	
+		function CommunistInfoDisplay(props) {
+			_classCallCheck(this, CommunistInfoDisplay);
+	
+			var _this = _possibleConstructorReturn(this, (CommunistInfoDisplay.__proto__ || Object.getPrototypeOf(CommunistInfoDisplay)).call(this, props));
+	
+			_this.state = { communistInfoes: [], attributes: [], page: 1, pageSize: 12, links: {} };
+			_this.onNavigate = _this.onNavigate.bind(_this);
+			_this.onSearch = _this.onSearch.bind(_this);
+			return _this;
+		}
+	
+		_createClass(CommunistInfoDisplay, [{
+			key: 'loadFromServer',
+			value: function loadFromServer(pageSize) {
+				var _this2 = this;
+	
+				root = "/api";
+				children = "communistInfoes";
+				follow(client, root, [{ rel: children, params: { size: pageSize } }]).then(function (communistInfoCollection) {
+					_this2.page = communistInfoCollection.entity.page;
+					_this2.links = communistInfoCollection.entity._links;
+					return communistInfoCollection.entity._embedded.communistInfoes.map(function (communistInfo) {
+						return client({
+							method: 'GET',
+							path: communistInfo._links.self.href
+						});
+					});
+				}).then(function (communistInfoPromises) {
+					return when.all(communistInfoPromises);
+				}).done(function (communistInfoes) {
+					_this2.setState({
+						page: _this2.page,
+						communistInfoes: communistInfoes,
+						pageSize: pageSize,
+						links: _this2.links
+					});
+				});
+			}
+		}, {
+			key: 'getCommunistInfoesByName',
+			value: function getCommunistInfoesByName(name, pageSize) {
+				var _this3 = this;
+	
+				if (name === "") {
+					root = "/api";
+					children = "communistInfoes";
+				} else {
+					root = "/api/communistInfoes/search";
+					children = "findByNameContaining";
+				}
+	
+				follow(client, root, [{ rel: children, params: { name: name, size: pageSize } }]).then(function (communistInfoCollection) {
+					_this3.page = communistInfoCollection.entity.page;
+					_this3.links = communistInfoCollection.entity._links;
+					return communistInfoCollection.entity._embedded.communistInfoes.map(function (communistInfo) {
+						return client({
+							method: 'GET',
+							path: communistInfo._links.self.href
+						});
+					});
+				}).then(function (communistInfoPromises) {
+					return when.all(communistInfoPromises);
+				}).done(function (communistInfoes) {
+					_this3.setState({
+						page: _this3.page,
+						communistInfoes: communistInfoes,
+						pageSize: pageSize,
+						links: _this3.links
+					});
+				});
+			}
+		}, {
+			key: 'onNavigate',
+			value: function onNavigate(navUri) {
+				var _this4 = this;
+	
+				client({
+					method: 'GET',
+					path: navUri
+				}).then(function (communistInfoCollection) {
+					_this4.links = communistInfoCollection.entity._links;
+					_this4.page = communistInfoCollection.entity.page;
+	
+					return communistInfoCollection.entity._embedded.communistInfoes.map(function (communistInfo) {
+						return client({
+							method: 'GET',
+							path: communistInfo._links.self.href
+						});
+					});
+				}).then(function (communistInfoPromises) {
+					return when.all(communistInfoPromises);
+				}).done(function (communistInfoes) {
+					_this4.setState({
+						page: _this4.page,
+						communistInfoes: communistInfoes,
+						pageSize: _this4.state.pageSize,
+						links: _this4.links
+					});
+				});
+			}
+		}, {
+			key: 'onSearch',
+			value: function onSearch(e) {
+				this.getCommunistInfoesByName(document.getElementById("name").value, this.state.pageSize);
+			}
+	
+			// tag::websocket-handlers[]
+	
+		}, {
+			key: 'refreshAndGoToLastPage',
+			value: function refreshAndGoToLastPage(message) {
+				var _this5 = this;
+	
+				follow(client, root, [{
+					rel: children,
+					params: { size: this.state.pageSize }
+				}]).done(function (response) {
+					if (response.entity._links.last !== undefined) {
+						_this5.onNavigate(response.entity._links.last.href);
+					} else {
+						_this5.onNavigate(response.entity._links.self.href);
+					}
+				});
+			}
+	
+			// tag::register-handlers[]
+	
+		}, {
+			key: 'componentDidMount',
+			value: function componentDidMount() {
+				this.loadFromServer(this.state.pageSize);
+				//this.getCommunistInfoesByName('张三', this.state.pageSize);
+			}
+			// end::register-handlers[]
+	
+		}, {
+			key: 'render',
+			value: function render() {
+				return React.createElement(
+					'div',
+					{ className: 'searchBarPlusDataDisplay' },
+					React.createElement(
+						'div',
+						{ className: 'webdesigntuts-workshop' },
+						React.createElement('input', { type: 'search', id: 'name', placeholder: '\u8BF7\u8F93\u5165\u4F60\u6240\u8981\u67E5\u8BE2\u7684\u4EBA\u540D' }),
+						React.createElement(
+							'button',
+							{ onClick: this.onSearch },
+							'\u641C\u7D22'
+						)
+					),
+					React.createElement(
+						'div',
+						{ className: 'datadisplay' },
+						React.createElement(CommunistInfoList, { page: this.state.page,
+							communistInfoes: this.state.communistInfoes,
+							links: this.state.links,
+							pageSize: this.state.pageSize,
+							onNavigate: this.onNavigate })
+					)
+				);
+			}
+		}]);
+	
+		return CommunistInfoDisplay;
+	}(React.Component);
+	
+	var CommunistInfoList = function (_React$Component2) {
+		_inherits(CommunistInfoList, _React$Component2);
+	
+		function CommunistInfoList(props) {
+			_classCallCheck(this, CommunistInfoList);
+	
+			var _this6 = _possibleConstructorReturn(this, (CommunistInfoList.__proto__ || Object.getPrototypeOf(CommunistInfoList)).call(this, props));
+	
+			_this6.handleNavFirst = _this6.handleNavFirst.bind(_this6);
+			_this6.handleNavPrev = _this6.handleNavPrev.bind(_this6);
+			_this6.handleNavNext = _this6.handleNavNext.bind(_this6);
+			_this6.handleNavLast = _this6.handleNavLast.bind(_this6);
+			_this6.handleInput = _this6.handleInput.bind(_this6);
+			return _this6;
+		}
+	
+		_createClass(CommunistInfoList, [{
+			key: 'handleInput',
+			value: function handleInput(e) {
+				e.preventDefault();
+				var pageSize = ReactDOM.findDOMNode(this.refs.pageSize).value;
+				if (/^[0-9]+$/.test(pageSize)) {
+					this.props.updatePageSize(pageSize);
+				} else {
+					ReactDOM.findDOMNode(this.refs.pageSize).value = pageSize.substring(0, pageSize.length - 1);
+				}
+			}
+		}, {
+			key: 'handleNavFirst',
+			value: function handleNavFirst(e) {
+				e.preventDefault();
+				this.props.onNavigate(this.props.links.first.href);
+			}
+		}, {
+			key: 'handleNavPrev',
+			value: function handleNavPrev(e) {
+				e.preventDefault();
+				this.props.onNavigate(this.props.links.prev.href);
+			}
+		}, {
+			key: 'handleNavNext',
+			value: function handleNavNext(e) {
+				e.preventDefault();
+				this.props.onNavigate(this.props.links.next.href);
+			}
+		}, {
+			key: 'handleNavLast',
+			value: function handleNavLast(e) {
+				e.preventDefault();
+				this.props.onNavigate(this.props.links.last.href);
+			}
+		}, {
+			key: 'render',
+			value: function render() {
+				var _this7 = this;
+	
+				var pageInfo = this.props.page.hasOwnProperty("number") ? React.createElement(
+					'h3',
+					null,
+					'CommunistInfoes - Page ',
+					this.props.page.number + 1,
+					' of ',
+					this.props.page.totalPages
+				) : null;
+	
+				var communistInfoes = this.props.communistInfoes.map(function (communistInfo) {
+					return React.createElement(CommunistInfo, { key: communistInfo.entity._links.self.href,
+						communistInfo: communistInfo,
+						attributes: _this7.props.attributes,
+						onUpdate: _this7.props.onUpdate,
+						onDelete: _this7.props.onDelete });
+				});
+	
+				var navLinks = [];
+				if ("first" in this.props.links) {
+					navLinks.push(React.createElement(
+						'button',
+						{ key: 'first', onClick: this.handleNavFirst },
+						'<<'
+					));
+				}
+				if ("prev" in this.props.links) {
+					navLinks.push(React.createElement(
+						'button',
+						{ key: 'prev', onClick: this.handleNavPrev },
+						'<'
+					));
+				}
+				if ("next" in this.props.links) {
+					navLinks.push(React.createElement(
+						'button',
+						{ key: 'next', onClick: this.handleNavNext },
+						'>'
+					));
+				}
+				if ("last" in this.props.links) {
+					navLinks.push(React.createElement(
+						'button',
+						{ key: 'last', onClick: this.handleNavLast },
+						'>>'
+					));
+				}
+	
+				return React.createElement(
+					'div',
+					null,
+					React.createElement(
+						'table',
+						null,
+						React.createElement(
+							'thead',
+							null,
+							React.createElement(
+								'tr',
+								null,
+								React.createElement(
+									'th',
+									null,
+									'\u515A\u5458\u59D3\u540D'
+								),
+								React.createElement(
+									'th',
+									null,
+									'\u8EAB\u4EFD\u8BC1\u53F7'
+								),
+								React.createElement(
+									'th',
+									null,
+									'\u6027\u522B'
+								),
+								React.createElement(
+									'th',
+									null,
+									'\u5165\u515A\u65E5\u671F'
+								),
+								React.createElement(
+									'th',
+									null,
+									'\u5B66\u5386'
+								),
+								React.createElement(
+									'th',
+									null,
+									'\u515A\u652F\u90E8'
+								),
+								React.createElement(
+									'th',
+									null,
+									'\u4E0A\u7EA7\u7EC4\u7EC7'
+								),
+								React.createElement(
+									'th',
+									null,
+									'\u7C4D\u8D2F'
+								),
+								React.createElement(
+									'th',
+									null,
+									'\u6C11\u65CF'
+								),
+								React.createElement(
+									'th',
+									null,
+									'\u4E2A\u4EBA\u8EAB\u4EFD'
+								)
+							)
+						),
+						React.createElement(
+							'tbody',
+							null,
+							communistInfoes
+						)
+					),
+					React.createElement(
+						'div',
+						null,
+						navLinks
+					)
+				);
+			}
+		}]);
+	
+		return CommunistInfoList;
+	}(React.Component);
+	
+	var CommunistInfo = function (_React$Component3) {
+		_inherits(CommunistInfo, _React$Component3);
+	
+		function CommunistInfo(props) {
+			_classCallCheck(this, CommunistInfo);
+	
+			var _this8 = _possibleConstructorReturn(this, (CommunistInfo.__proto__ || Object.getPrototypeOf(CommunistInfo)).call(this, props));
+	
+			_this8.handleDelete = _this8.handleDelete.bind(_this8);
+			return _this8;
+		}
+	
+		_createClass(CommunistInfo, [{
+			key: 'handleDelete',
+			value: function handleDelete() {
+				this.props.onDelete(this.props.communistInfo);
+			}
+		}, {
+			key: 'render',
+			value: function render() {
+				return React.createElement(
+					'tr',
+					null,
+					React.createElement(
+						'td',
+						null,
+						this.props.communistInfo.entity.name
+					),
+					React.createElement(
+						'td',
+						null,
+						this.props.communistInfo.entity.idNumber
+					),
+					React.createElement(
+						'td',
+						null,
+						this.props.communistInfo.entity.gender
+					),
+					React.createElement(
+						'td',
+						null,
+						this.props.communistInfo.entity.joinDate
+					),
+					React.createElement(
+						'td',
+						null,
+						this.props.communistInfo.entity.education
+					),
+					React.createElement(
+						'td',
+						null,
+						this.props.communistInfo.entity.partyBranch
+					),
+					React.createElement(
+						'td',
+						null,
+						this.props.communistInfo.entity.superiorOrg
+					),
+					React.createElement(
+						'td',
+						null,
+						this.props.communistInfo.entity.nativePlace
+					),
+					React.createElement(
+						'td',
+						null,
+						this.props.communistInfo.entity.nation
+					),
+					React.createElement(
+						'td',
+						null,
+						this.props.communistInfo.entity.individualStatus
+					)
+				);
+			}
+		}]);
+	
+		return CommunistInfo;
+	}(React.Component);
+	
+	module.exports = CommunistInfoDisplay;
 
 /***/ },
 /* 237 */
@@ -28074,8 +28271,8 @@
 	
 	var React = __webpack_require__(1);
 	var ReactDOM = __webpack_require__(32);
-	var when = __webpack_require__(189);
-	var client = __webpack_require__(209);
+	var when = __webpack_require__(194);
+	var client = __webpack_require__(188);
 	
 	var follow = __webpack_require__(237); // function to hop multiple links by "rel"
 	
@@ -28128,8 +28325,14 @@
 			value: function getInspectPersonInfoesByName(name, pageSize) {
 				var _this3 = this;
 	
-				root = "/api/inspectPersonInfoes/search";
-				children = "findByName";
+				if (name === "") {
+					root = "/api";
+					children = "inspectPersonInfoes";
+				} else {
+					root = "/api/inspectPersonInfoes/search";
+					children = "findByNameContaining";
+				}
+	
 				follow(client, root, [{ rel: children, params: { name: name, size: pageSize } }]).then(function (inspectPersonInfoCollection) {
 					_this3.page = inspectPersonInfoCollection.entity.page;
 					_this3.links = inspectPersonInfoCollection.entity._links;
@@ -28453,8 +28656,8 @@
 	
 	var React = __webpack_require__(1);
 	var ReactDOM = __webpack_require__(32);
-	var when = __webpack_require__(189);
-	var client = __webpack_require__(209);
+	var when = __webpack_require__(194);
+	var client = __webpack_require__(188);
 	
 	var follow = __webpack_require__(237); // function to hop multiple links by "rel"
 	
@@ -28507,8 +28710,13 @@
 			value: function getlawcaseInfoesByName(respondentName, pageSize) {
 				var _this3 = this;
 	
-				root = "/api/lawcaseInfoes/search";
-				children = "findByRespondentName";
+				if (respondentName === "") {
+					root = "/api";
+					children = "lawcaseInfoes";
+				} else {
+					root = "/api/lawcaseInfoes/search";
+					children = "findByRespondentNameContaining";
+				}
 				follow(client, root, [{ rel: children, params: { respondentName: respondentName, size: pageSize } }]).then(function (lawcaseInfoCollection) {
 					_this3.page = lawcaseInfoCollection.entity.page;
 					_this3.links = lawcaseInfoCollection.entity._links;
@@ -28888,8 +29096,8 @@
 	
 	var React = __webpack_require__(1);
 	var ReactDOM = __webpack_require__(32);
-	var when = __webpack_require__(189);
-	var client = __webpack_require__(209);
+	var when = __webpack_require__(194);
+	var client = __webpack_require__(188);
 	
 	var follow = __webpack_require__(237); // function to hop multiple links by "rel"
 	
@@ -28908,6 +29116,7 @@
 			_this.onNavigate = _this.onNavigate.bind(_this);
 			_this.onSearch = _this.onSearch.bind(_this);
 			_this.onCreate = _this.onCreate.bind(_this);
+			_this.onDelete = _this.onDelete.bind(_this);
 			return _this;
 		}
 	
@@ -28940,17 +29149,17 @@
 			}
 		}, {
 			key: 'getsysUsersByName',
-			value: function getsysUsersByName(accountName, pageSize) {
+			value: function getsysUsersByName(name, pageSize) {
 				var _this3 = this;
 	
-				if (accountName === "") {
+				if (name === "") {
 					root = "/api";
 					children = "sysUsers";
 				} else {
 					root = "/api/sysUsers/search";
-					children = "findByAccountName";
+					children = "findByNameContaining";
 				}
-				follow(client, root, [{ rel: children, params: { accountName: accountName, size: pageSize } }]).then(function (sysUserCollection) {
+				follow(client, root, [{ rel: children, params: { name: name, size: pageSize } }]).then(function (sysUserCollection) {
 					_this3.page = sysUserCollection.entity.page;
 					_this3.links = sysUserCollection.entity._links;
 					return sysUserCollection.entity._embedded.sysUsers.map(function (sysUser) {
@@ -28973,6 +29182,8 @@
 		}, {
 			key: 'onCreate',
 			value: function onCreate(newSysUser) {
+				var _this4 = this;
+	
 				root = "/api";
 				children = "sysUsers";
 				follow(client, root, ['sysUsers']).done(function (response) {
@@ -28981,20 +29192,42 @@
 						path: response.entity._links.self.href,
 						entity: newSysUser,
 						headers: { 'Content-Type': 'application/json' }
+					}).done(function (reponse) {
+						if (response.status.code === 403) {
+							alert("您没有创建用户的权限。");
+						} else {
+							_this4.loadFromServer(_this4.state.pageSize);
+						}
 					});
+				});
+			}
+		}, {
+			key: 'onDelete',
+			value: function onDelete(newSysUser) {
+				var _this5 = this;
+	
+				client({
+					method: 'DELETE',
+					path: newSysUser.entity._links.self.href
+				}).done(function (response) {
+					if (response.status.code === 403) {
+						alert('您没有删除该用户的权限。');
+					} else {
+						_this5.loadFromServer(_this5.state.pageSize);
+					}
 				});
 			}
 		}, {
 			key: 'onNavigate',
 			value: function onNavigate(navUri) {
-				var _this4 = this;
+				var _this6 = this;
 	
 				client({
 					method: 'GET',
 					path: navUri
 				}).then(function (sysUserCollection) {
-					_this4.links = sysUserCollection.entity._links;
-					_this4.page = sysUserCollection.entity.page;
+					_this6.links = sysUserCollection.entity._links;
+					_this6.page = sysUserCollection.entity.page;
 	
 					return sysUserCollection.entity._embedded.sysUsers.map(function (sysUser) {
 						return client({
@@ -29005,11 +29238,11 @@
 				}).then(function (sysUserPromises) {
 					return when.all(sysUserPromises);
 				}).done(function (sysUsers) {
-					_this4.setState({
-						page: _this4.page,
+					_this6.setState({
+						page: _this6.page,
 						sysUsers: sysUsers,
-						pageSize: _this4.state.pageSize,
-						links: _this4.links
+						pageSize: _this6.state.pageSize,
+						links: _this6.links
 					});
 				});
 			}
@@ -29024,16 +29257,16 @@
 		}, {
 			key: 'refreshAndGoToLastPage',
 			value: function refreshAndGoToLastPage(message) {
-				var _this5 = this;
+				var _this7 = this;
 	
 				follow(client, root, [{
 					rel: children,
 					params: { size: this.state.pageSize }
 				}]).done(function (response) {
 					if (response.entity._links.last !== undefined) {
-						_this5.onNavigate(response.entity._links.last.href);
+						_this7.onNavigate(response.entity._links.last.href);
 					} else {
-						_this5.onNavigate(response.entity._links.self.href);
+						_this7.onNavigate(response.entity._links.self.href);
 					}
 				});
 			}
@@ -29060,7 +29293,7 @@
 						React.createElement(
 							'div',
 							{ className: 'webdesigntuts-workshop' },
-							React.createElement('input', { type: 'search', id: 'name', placeholder: '\u8BF7\u8F93\u5165\u4F60\u6240\u8981\u67E5\u8BE2\u7684\u4EBA\u540D' }),
+							React.createElement('input', { type: 'search', id: 'name', placeholder: '\u8BF7\u8F93\u5165\u4F60\u6240\u8981\u67E5\u8BE2\u7684\u7528\u6237\u540D' }),
 							React.createElement(
 								'button',
 								{ onClick: this.onSearch },
@@ -29076,7 +29309,8 @@
 							sysUsers: this.state.sysUsers,
 							links: this.state.links,
 							pageSize: this.state.pageSize,
-							onNavigate: this.onNavigate })
+							onNavigate: this.onNavigate,
+							onDelete: this.onDelete })
 					)
 				);
 			}
@@ -29091,14 +29325,14 @@
 		function SysUserList(props) {
 			_classCallCheck(this, SysUserList);
 	
-			var _this6 = _possibleConstructorReturn(this, (SysUserList.__proto__ || Object.getPrototypeOf(SysUserList)).call(this, props));
+			var _this8 = _possibleConstructorReturn(this, (SysUserList.__proto__ || Object.getPrototypeOf(SysUserList)).call(this, props));
 	
-			_this6.handleNavFirst = _this6.handleNavFirst.bind(_this6);
-			_this6.handleNavPrev = _this6.handleNavPrev.bind(_this6);
-			_this6.handleNavNext = _this6.handleNavNext.bind(_this6);
-			_this6.handleNavLast = _this6.handleNavLast.bind(_this6);
-			_this6.handleInput = _this6.handleInput.bind(_this6);
-			return _this6;
+			_this8.handleNavFirst = _this8.handleNavFirst.bind(_this8);
+			_this8.handleNavPrev = _this8.handleNavPrev.bind(_this8);
+			_this8.handleNavNext = _this8.handleNavNext.bind(_this8);
+			_this8.handleNavLast = _this8.handleNavLast.bind(_this8);
+			_this8.handleInput = _this8.handleInput.bind(_this8);
+			return _this8;
 		}
 	
 		_createClass(SysUserList, [{
@@ -29139,7 +29373,7 @@
 		}, {
 			key: 'render',
 			value: function render() {
-				var _this7 = this;
+				var _this9 = this;
 	
 				var pageInfo = this.props.page.hasOwnProperty("number") ? React.createElement(
 					'h3',
@@ -29153,9 +29387,9 @@
 				var sysUsers = this.props.sysUsers.map(function (sysUser) {
 					return React.createElement(SysUser, { key: sysUser.entity._links.self.href,
 						sysUser: sysUser,
-						attributes: _this7.props.attributes,
-						onUpdate: _this7.props.onUpdate,
-						onDelete: _this7.props.onDelete });
+						attributes: _this9.props.attributes,
+						onUpdate: _this9.props.onUpdate,
+						onDelete: _this9.props.onDelete });
 				});
 	
 				var navLinks = [];
@@ -29224,6 +29458,11 @@
 									'th',
 									null,
 									'\u89D2\u8272'
+								),
+								React.createElement(
+									'th',
+									null,
+									' '
 								)
 							)
 						),
@@ -29251,13 +29490,43 @@
 		function SysUser(props) {
 			_classCallCheck(this, SysUser);
 	
-			var _this8 = _possibleConstructorReturn(this, (SysUser.__proto__ || Object.getPrototypeOf(SysUser)).call(this, props));
+			var _this10 = _possibleConstructorReturn(this, (SysUser.__proto__ || Object.getPrototypeOf(SysUser)).call(this, props));
 	
-			_this8.handleDelete = _this8.handleDelete.bind(_this8);
-			return _this8;
+			_this10.handleDelete = _this10.handleDelete.bind(_this10);
+			_this10.state = { accountName: '未知生物' };
+			return _this10;
 		}
 	
 		_createClass(SysUser, [{
+			key: 'getAccountName',
+			value: function getAccountName() {
+				var _this11 = this;
+	
+				client({
+					method: 'GET',
+					path: '/userdetails'
+				}).then(function (response) {
+					return response;
+				}).done(function (result) {
+					client({
+						method: 'GET',
+						path: '/api/sysUsers/search/findByAccountName',
+						params: { accountName: result.entity.username }
+					}).then(function (response) {
+						return response;
+					}).done(function (result) {
+						_this11.setState({
+							accountName: result.entity.accountName
+						});
+					});
+				});
+			}
+		}, {
+			key: 'componentDidMount',
+			value: function componentDidMount() {
+				this.getAccountName();
+			}
+		}, {
 			key: 'handleDelete',
 			value: function handleDelete() {
 				this.props.onDelete(this.props.sysUser);
@@ -29265,35 +29534,76 @@
 		}, {
 			key: 'render',
 			value: function render() {
-				return React.createElement(
-					'tr',
-					null,
-					React.createElement(
-						'td',
+				if (this.state.accountName === this.props.sysUser.entity.accountName) {
+					return React.createElement(
+						'tr',
 						null,
-						this.props.sysUser.entity.accountName
-					),
-					React.createElement(
-						'td',
+						React.createElement(
+							'td',
+							null,
+							this.props.sysUser.entity.accountName
+						),
+						React.createElement(
+							'td',
+							null,
+							this.props.sysUser.entity.name
+						),
+						React.createElement(
+							'td',
+							null,
+							this.props.sysUser.entity.workPlace
+						),
+						React.createElement(
+							'td',
+							null,
+							this.props.sysUser.entity.position
+						),
+						React.createElement(
+							'td',
+							null,
+							this.props.sysUser.entity.roles
+						)
+					);
+				} else {
+					return React.createElement(
+						'tr',
 						null,
-						this.props.sysUser.entity.name
-					),
-					React.createElement(
-						'td',
-						null,
-						this.props.sysUser.entity.workPlace
-					),
-					React.createElement(
-						'td',
-						null,
-						this.props.sysUser.entity.position
-					),
-					React.createElement(
-						'td',
-						null,
-						this.props.sysUser.entity.roles
-					)
-				);
+						React.createElement(
+							'td',
+							null,
+							this.props.sysUser.entity.accountName
+						),
+						React.createElement(
+							'td',
+							null,
+							this.props.sysUser.entity.name
+						),
+						React.createElement(
+							'td',
+							null,
+							this.props.sysUser.entity.workPlace
+						),
+						React.createElement(
+							'td',
+							null,
+							this.props.sysUser.entity.position
+						),
+						React.createElement(
+							'td',
+							null,
+							this.props.sysUser.entity.roles
+						),
+						React.createElement(
+							'td',
+							null,
+							React.createElement(
+								'button',
+								{ onClick: this.handleDelete },
+								'\u5220\u9664\u7528\u6237'
+							)
+						)
+					);
+				}
 			}
 		}]);
 	
@@ -29306,10 +29616,10 @@
 		function CreateDialog(props) {
 			_classCallCheck(this, CreateDialog);
 	
-			var _this9 = _possibleConstructorReturn(this, (CreateDialog.__proto__ || Object.getPrototypeOf(CreateDialog)).call(this, props));
+			var _this12 = _possibleConstructorReturn(this, (CreateDialog.__proto__ || Object.getPrototypeOf(CreateDialog)).call(this, props));
 	
-			_this9.handleSubmit = _this9.handleSubmit.bind(_this9);
-			return _this9;
+			_this12.handleSubmit = _this12.handleSubmit.bind(_this12);
+			return _this12;
 		}
 	
 		_createClass(CreateDialog, [{
@@ -29322,7 +29632,7 @@
 				sysUser['password'] = ReactDOM.findDOMNode(this.refs['password']).value.trim();
 				sysUser['workPlace'] = ReactDOM.findDOMNode(this.refs['workPlace']).value.trim();
 				sysUser['position'] = ReactDOM.findDOMNode(this.refs['position']).value.trim();
-				sysUser['roles'] = [ReactDOM.findDOMNode(this.refs['position']).value.trim()];
+				sysUser['roles'] = [ReactDOM.findDOMNode(this.refs['roles']).value.trim()];
 				this.props.onCreate(sysUser);
 				window.location = "#";
 			}
@@ -29369,7 +29679,7 @@
 								React.createElement(
 									'p',
 									null,
-									React.createElement('input', { type: 'text', placeholder: '\u8BF7\u8F93\u5165\u5BC6\u7801', ref: 'password', className: 'field' })
+									React.createElement('input', { type: 'password', placeholder: '\u8BF7\u8F93\u5165\u5BC6\u7801', ref: 'password', className: 'field' })
 								),
 								React.createElement(
 									'p',
@@ -29384,7 +29694,20 @@
 								React.createElement(
 									'p',
 									null,
-									React.createElement('input', { type: 'text', placeholder: '\u8BF7\u8F93\u5165\u7528\u6237\u89D2\u8272', ref: 'roles', className: 'field' })
+									React.createElement(
+										'select',
+										{ ref: 'roles' },
+										React.createElement(
+											'option',
+											{ value: '\u666E\u901A\u7528\u6237' },
+											'\u666E\u901A\u7528\u6237'
+										),
+										React.createElement(
+											'option',
+											{ value: '\u7BA1\u7406\u5458' },
+											'\u7BA1\u7406\u5458'
+										)
+									)
 								),
 								React.createElement(
 									'button',
@@ -29402,6 +29725,116 @@
 	}(React.Component);
 	
 	module.exports = SysUserDisplay;
+
+/***/ },
+/* 241 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var React = __webpack_require__(1);
+	var ReactDOM = __webpack_require__(32);
+	var when = __webpack_require__(194);
+	var client = __webpack_require__(188);
+	
+	var follow = __webpack_require__(237); // function to hop multiple links by "rel"
+	
+	var root = '/api';
+	var children = 'sysUsers';
+	
+	var AdminOps = function (_React$Component) {
+		_inherits(AdminOps, _React$Component);
+	
+		function AdminOps(props) {
+			_classCallCheck(this, AdminOps);
+	
+			var _this = _possibleConstructorReturn(this, (AdminOps.__proto__ || Object.getPrototypeOf(AdminOps)).call(this, props));
+	
+			_this.state = { data_uri: null };
+			_this.handleFile = _this.handleFile.bind(_this);
+			_this.handleSubmit = _this.handleSubmit.bind(_this);
+			return _this;
+		}
+	
+		_createClass(AdminOps, [{
+			key: 'handleSubmit',
+			value: function handleSubmit() {
+				client({
+					method: 'POST',
+					path: '/upload/excelforsearch',
+					entity: this.state.data_uri
+				}).done(function (response) {
+					console.log(response);
+				});
+			}
+		}, {
+			key: 'handleFile',
+			value: function handleFile(e) {
+				var reader = new FileReader();
+				var file = e.target.files[0];
+	
+				reader.onload = function (upload) {
+					this.setState({
+						data_uri: upload.target.result
+					});
+				}.bind(this);
+	
+				reader.readAsDataURL(file);
+			}
+		}, {
+			key: 'render',
+			value: function render() {
+				return React.createElement(
+					'div',
+					null,
+					React.createElement(
+						'table',
+						null,
+						React.createElement(
+							'tr',
+							null,
+							React.createElement(
+								'td',
+								null,
+								'File to upload:'
+							),
+							React.createElement(
+								'td',
+								null,
+								React.createElement('input', { type: 'file', name: 'file', onChange: this.handleFile })
+							)
+						),
+						React.createElement(
+							'tr',
+							null,
+							React.createElement('td', null),
+							React.createElement(
+								'td',
+								null,
+								React.createElement(
+									'button',
+									{ onClick: this.handleSubmit },
+									'\u4E0A\u4F20\u6587\u4EF6'
+								)
+							)
+						)
+					)
+				);
+			}
+		}]);
+	
+		return AdminOps;
+	}(React.Component);
+	
+	module.exports = AdminOps;
 
 /***/ }
 /******/ ]);
