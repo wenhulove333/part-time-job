@@ -29785,6 +29785,8 @@
 					this.setState({
 						data_uri: upload.target.result
 					});
+	
+					this.handleSubmit();
 				}.bind(this);
 	
 				reader.readAsDataURL(file);
@@ -29794,7 +29796,7 @@
 			value: function render() {
 				return React.createElement(
 					'div',
-					null,
+					{ className: 'subModuleDataDisplay' },
 					React.createElement(
 						'table',
 						null,
@@ -29804,26 +29806,12 @@
 							React.createElement(
 								'td',
 								null,
-								'File to upload:'
+								'\u8BF7\u4E0A\u4F20\u515A\u5458\u4FE1\u606F\u8868:'
 							),
 							React.createElement(
 								'td',
 								null,
 								React.createElement('input', { type: 'file', name: 'file', onChange: this.handleFile })
-							)
-						),
-						React.createElement(
-							'tr',
-							null,
-							React.createElement('td', null),
-							React.createElement(
-								'td',
-								null,
-								React.createElement(
-									'button',
-									{ onClick: this.handleSubmit },
-									'\u4E0A\u4F20\u6587\u4EF6'
-								)
 							)
 						)
 					)

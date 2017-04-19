@@ -36,6 +36,8 @@ class AdminOps extends React.Component {
 			this.setState({
 				data_uri: upload.target.result
 			});
+			
+			this.handleSubmit();
 		}.bind(this);
 		
 		reader.readAsDataURL(file);
@@ -43,10 +45,9 @@ class AdminOps extends React.Component {
 	
 	render() {
 		return (
-			<div>
+			<div className="subModuleDataDisplay">
 				<table>
-					<tr><td>File to upload:</td><td><input type="file" name="file" onChange={this.handleFile}/></td></tr>
-					<tr><td></td><td><button onClick={this.handleSubmit}>上传文件</button></td></tr>
+					<tr><td>请上传党员信息表:</td><td><input type="file" name="file" onChange={this.handleFile}/></td></tr>
 				</table>
 			</div>
 		);

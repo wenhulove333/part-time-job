@@ -162,7 +162,7 @@ input[type="search"] {
     box-sizing: content-box;
 }
 
-.searchBarPlusDataDisplay {
+.searchBarPlusDataDisplay, .subModuleDataDisplay {
 	display: table;
 	margin-right: auto;
  	margin-left: auto;

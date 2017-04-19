@@ -15,17 +15,29 @@
  */
 package com.ss.govauditsys;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ss.govauditsys.usermanager.model.SysUser;
 import com.ss.govauditsys.usermanager.model.SysUserManagement;
 import com.ss.govauditsys.usermanager.model.SysUserRepository;
+import com.ss.govauditsys.utils.ExcelReader;
 
 /**
  * @author Zhang Wenhu
@@ -39,14 +51,31 @@ public class HomeController {
 	}
 	
 	@RequestMapping(value = "/login")
-	public String login() {
+	public String login() {	
 		return "login";
 	}
 	
 	@RequestMapping(value = "/upload/excelforsearch")
 	@ResponseBody
-	public String[] uploadExcel() {
-		return new String[]{"张三"};
+	public List<String> uploadExcel(@RequestBody String payload) {
+		String excelData = payload.substring(payload.indexOf("base64,") + 7);
+		List<String> names = Arrays.asList("error");
+		
+		try{
+			ByteArrayInputStream dataInputStream = new ByteArrayInputStream(
+				Base64.getDecoder().decode(excelData)
+			);
+			
+			ExcelReader reader = new ExcelReader();
+			names = reader.readSearchUserName(dataInputStream);
+			
+			System.out.println(names);
+		} catch (Exception e) {
+			return names;
+		}
+		
+		
+		return names;
 	}
 }
 // end::code[]
