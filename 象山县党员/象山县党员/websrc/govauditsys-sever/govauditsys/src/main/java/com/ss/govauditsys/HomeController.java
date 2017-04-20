@@ -27,13 +27,25 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.ss.govauditsys.sysdata.model.CommunistInfo;
+import com.ss.govauditsys.sysdata.model.CommunistInfoRespository;
+import com.ss.govauditsys.sysdata.model.QCommunistInfo;
 import com.ss.govauditsys.usermanager.model.SysUser;
 import com.ss.govauditsys.usermanager.model.SysUserManagement;
 import com.ss.govauditsys.usermanager.model.SysUserRepository;
@@ -44,7 +56,10 @@ import com.ss.govauditsys.utils.ExcelReader;
  */
 // tag::code[]
 @Controller
-public class HomeController {	
+public class HomeController {
+	@Autowired
+	CommunistInfoRespository communistInfoRespository;
+	
 	@RequestMapping(value = "/")
 	public String index() {
 		return "index";
@@ -76,6 +91,17 @@ public class HomeController {
 		
 		
 		return names;
+	}
+	
+	@RequestMapping(value = "/communistinfo/multicondsearch", method = RequestMethod.POST)
+	public HttpEntity<PagedResources<CommunistInfo>> multicondsearchCommunistinfo(
+			Pageable pageable, PagedResourcesAssembler assembler, @RequestBody String payload
+			) {
+		QCommunistInfo communistInfo = QCommunistInfo.communistInfo;
+		
+		Page<CommunistInfo> communistInfoes = communistInfoRespository.findAll(null, pageable);
+		
+		return new ResponseEntity<>(assembler.toResource(communistInfoes), HttpStatus.OK);
 	}
 }
 // end::code[]
