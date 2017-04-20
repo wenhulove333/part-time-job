@@ -42,8 +42,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.ss.govauditsys.sysdata.model.CommunistInfo;
 import com.ss.govauditsys.sysdata.model.CommunistInfoRespository;
+import com.ss.govauditsys.sysdata.model.QCommunistInfo;
 import com.ss.govauditsys.usermanager.model.SysUser;
 import com.ss.govauditsys.usermanager.model.SysUserManagement;
 import com.ss.govauditsys.usermanager.model.SysUserRepository;
@@ -95,8 +97,7 @@ public class HomeController {
 	public HttpEntity<PagedResources<CommunistInfo>> multicondsearchCommunistinfo(
 			Pageable pageable, PagedResourcesAssembler assembler, @RequestBody String payload
 			) {
-		//QCommunistInfo communistInfo = QCommunistInfo.communistInfo;
-		
+		QCommunistInfo communistInfo = QCommunistInfo.communistInfo;
 		
 		Page<CommunistInfo> communistInfoes = communistInfoRespository.findAll(null, pageable);
 		
