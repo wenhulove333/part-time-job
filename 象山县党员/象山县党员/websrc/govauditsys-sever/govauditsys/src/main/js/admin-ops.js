@@ -7,7 +7,7 @@ const client = require('./client');
 
 const follow = require('./follow'); // function to hop multiple links by "rel"123
 
-const MultiCondSearchCommunistInfoDisplay = require('./multi-cond-search-communist-info-display');
+const MultiNamesSearchCommunistInfoDisplay = require('./multi-names-search-communist-info-display');
 
 var root = '/api';
 var children = 'sysUsers';
@@ -51,8 +51,10 @@ class AdminOps extends React.Component {
 				<table>
 					<tr><td>请上传党员信息表:</td><td><input type="file" name="file" onChange={this.handleFile}/></td></tr>
 				</table>
-				<MultiCondSearchCommunistInfoDisplay names={this.state.names} />
-			</div>
+				<MultiNamesSearchCommunistInfoDisplay names={this.state.names} />
+				<MultiNamesSearchCommunistInfoDisplay names={this.state.names} />
+				<MultiNamesSearchCommunistInfoDisplay names={this.state.names} />
+				</div>
 		);
 	}
 }

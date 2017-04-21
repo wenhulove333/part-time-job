@@ -76,7 +76,7 @@ class Entry extends React.Component {
 						<LawcaseInfoDisplay />
 					</TabPanel>
 					<TabPanel>
-						<h2>党员和监察对象信息比对</h2>
+						<AdminOps />
 					</TabPanel>
 					<TabPanel>
 						<h2>案件统计分析</h2>

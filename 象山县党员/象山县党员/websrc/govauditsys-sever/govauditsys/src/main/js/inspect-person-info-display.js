@@ -184,19 +184,19 @@ class InspectPersonInfoList extends React.Component {
 			<InspectPersonInfo key={inspectPersonInfo.entity._links.self.href}
 					  inspectPersonInfo={inspectPersonInfo}/>
 		);
-
+		
 		var navLinks = [];
 		if ("first" in this.props.links) {
-			navLinks.push(<button key="first" onClick={this.handleNavFirst}>&lt;&lt;</button>);
+			navLinks.push(<button key="first" onClick={this.handleNavFirst}>首页</button>);
 		}
 		if ("prev" in this.props.links) {
-			navLinks.push(<button key="prev" onClick={this.handleNavPrev}>&lt;</button>);
+			navLinks.push(<button key="prev" onClick={this.handleNavPrev}>前一页</button>);
 		}
 		if ("next" in this.props.links) {
-			navLinks.push(<button key="next" onClick={this.handleNavNext}>&gt;</button>);
+			navLinks.push(<button key="next" onClick={this.handleNavNext}>后一页</button>);
 		}
 		if ("last" in this.props.links) {
-			navLinks.push(<button key="last" onClick={this.handleNavLast}>&gt;&gt;</button>);
+			navLinks.push(<button key="last" onClick={this.handleNavLast}>尾页</button>);
 		}
 
 		return (

@@ -13,27 +13,40 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.ss.govauditsys.sysdata.model.CommunistInfo;
 import com.ss.govauditsys.sysdata.model.CommunistInfoRespository;
 import com.ss.govauditsys.sysdata.model.QCommunistInfo;
 
 @RestController
-public class CommunistInfoMultiCondSearchController {
+public class CommunistInfoMultiNamesSearchController {
 	@Autowired
 	CommunistInfoRespository communistInfoRespository;
 	
 	
 	@RequestMapping(
-			value = "/communistinfo/multicondsearch",
+			value = "/communistinfo/multinamesearch",
 			method = RequestMethod.POST,
 			produces = {"application/json", "application/hal+json", "application/*+json;charset=UTF-8"})
-	public PagedResources<CommunistInfo> multicondsearchCommunistinfo(
-			Pageable pageable, PagedResourcesAssembler assembler) {
+	public PagedResources<CommunistInfo> multinamessearchCommunistinfo(
+			Pageable pageable, PagedResourcesAssembler assembler, @RequestBody List<String> payload) {
 		QCommunistInfo communistInfo = QCommunistInfo.communistInfo;
+		BooleanExpression expression = null;
+		
+		if (payload.size() > 0) {
+			expression = communistInfo.name.contains(payload.get(0));
+			payload.remove(0);
+
+			for (String name : payload) {
+				expression = expression.or(communistInfo.name.contains(name));
+			}
+		} else {
+			expression = communistInfo.name.contains("!@#$%^&*()_+=-~`\"':;<>?/,.");
+		}
 		
 		Page<CommunistInfo> communistInfoes = communistInfoRespository.findAll(
-			communistInfo.name.contains("张三")
-			.or(communistInfo.name.contains("lisi")), pageable
+			expression, pageable
 		);
 		
 		return assembler.toResource(communistInfoes);

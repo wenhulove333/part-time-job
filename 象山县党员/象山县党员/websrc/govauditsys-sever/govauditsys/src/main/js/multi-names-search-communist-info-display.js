@@ -10,23 +10,30 @@ const follow = require('./follow'); // function to hop multiple links by "rel"
 var root = '/api';
 var children = 'communistInfoes';
 
-class MultiCondSearchCommunistInfoDisplay extends React.Component {
+class MultiNamesSearchCommunistInfoDisplay extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {communistInfoes: [], attributes: [], page: 1, pageSize: 6, links: {}};
+		this.state = {communistInfoes: [], page: 1, pageSize: 6, links: {}, namestmp: []};
 		this.onNavigate = this.onNavigate.bind(this);
 	}
 
-	loadFromServer(pageSize) {
+	loadFromServer(names, pageSize) {
 		client({
 			method: 'POST',
-			path: '/communistinfo/multicondsearch',
+			path: '/communistinfo/multinamesearch',
 			params: {size: pageSize},
-			entity: this.props.names,
+			entity: names,
 			headers: {'Content-Type': 'application/json'}
 		}).done(response => {
-			console.log(response);
+			if ("_embedded" in response.entity) {
+				this.setState({
+					page: response.entity.page,
+					communistInfoes: response.entity._embedded.communistInfoes,
+					pageSize: pageSize,
+					links: response.entity._links
+				});
+			}
 		});
 	}
 
@@ -37,19 +44,20 @@ class MultiCondSearchCommunistInfoDisplay extends React.Component {
 			entity: this.props.names,
 			headers: {'Content-Type': 'application/json'}
 		}).done(response => {
-			console.log(response);
+			if ("_embedded" in response.entity) {
+				this.setState({
+					page: response.entity.page,
+					communistInfoes: response.entity._embedded.communistInfoes,
+					pageSize: this.state.pageSize,
+					links: response.entity._links
+				});
+			}
 		});
 	}
 	
-	componentDidMount() {
-		if (this.props.names.length != 0) {
-			this.loadFromServer(this.state.pageSize);
-		}
-	}
-	
-	componentDidUpdate() {
-		if (this.props.names.length != 0) {
-			this.loadFromServer(this.state.pageSize);
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.names.length != 0) {
+			this.loadFromServer(nextProps.names, this.state.pageSize);
 		}
 	}
 
@@ -100,22 +108,21 @@ class CommunistInfoList extends React.Component {
 
 	render() {
 		var communistInfoes = this.props.communistInfoes.map(communistInfo =>
-			<CommunistInfo key={communistInfo.entity._links.self.href}
-					  communistInfo={communistInfo}/>
+			<CommunistInfo communistInfo={communistInfo}/>
 		);
 
 		var navLinks = [];
 		if ("first" in this.props.links) {
-			navLinks.push(<button key="first" onClick={this.handleNavFirst}>&lt;&lt;</button>);
+			navLinks.push(<button key="first" onClick={this.handleNavFirst}>首页</button>);
 		}
 		if ("prev" in this.props.links) {
-			navLinks.push(<button key="prev" onClick={this.handleNavPrev}>&lt;</button>);
+			navLinks.push(<button key="prev" onClick={this.handleNavPrev}>前一页</button>);
 		}
 		if ("next" in this.props.links) {
-			navLinks.push(<button key="next" onClick={this.handleNavNext}>&gt;</button>);
+			navLinks.push(<button key="next" onClick={this.handleNavNext}>后一页</button>);
 		}
 		if ("last" in this.props.links) {
-			navLinks.push(<button key="last" onClick={this.handleNavLast}>&gt;&gt;</button>);
+			navLinks.push(<button key="last" onClick={this.handleNavLast}>尾页</button>);
 		}
 
 		return (
@@ -156,20 +163,20 @@ class CommunistInfo extends React.Component {
 	render() {
 		return (
 			<tr>
-				<td>{this.props.communistInfo.entity.name}</td>
-				<td>{this.props.communistInfo.entity.idNumber}</td>
-				<td>{this.props.communistInfo.entity.gender}</td>
-				<td>{this.props.communistInfo.entity.joinDate}</td>
-				<td>{this.props.communistInfo.entity.education}</td>
-				<td>{this.props.communistInfo.entity.partyBranch}</td>
-				<td>{this.props.communistInfo.entity.superiorOrg}</td>
-				<td>{this.props.communistInfo.entity.nativePlace}</td>
-				<td>{this.props.communistInfo.entity.nation}</td>
-				<td>{this.props.communistInfo.entity.individualStatus}</td>
+				<td>{this.props.communistInfo.name}</td>
+				<td>{this.props.communistInfo.idNumber}</td>
+				<td>{this.props.communistInfo.gender}</td>
+				<td>{this.props.communistInfo.joinDate}</td>
+				<td>{this.props.communistInfo.education}</td>
+				<td>{this.props.communistInfo.partyBranch}</td>
+				<td>{this.props.communistInfo.superiorOrg}</td>
+				<td>{this.props.communistInfo.nativePlace}</td>
+				<td>{this.props.communistInfo.nation}</td>
+				<td>{this.props.communistInfo.individualStatus}</td>
 			</tr>
 		)
 	}
 }
 
-module.exports = MultiCondSearchCommunistInfoDisplay;
+module.exports = MultiNamesSearchCommunistInfoDisplay;
 
