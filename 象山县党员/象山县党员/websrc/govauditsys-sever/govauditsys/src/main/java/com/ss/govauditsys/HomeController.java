@@ -57,9 +57,6 @@ import com.ss.govauditsys.utils.ExcelReader;
 // tag::code[]
 @Controller
 public class HomeController {
-	@Autowired
-	CommunistInfoRespository communistInfoRespository;
-	
 	@RequestMapping(value = "/")
 	public String index() {
 		return "index";
@@ -91,17 +88,6 @@ public class HomeController {
 		
 		
 		return names;
-	}
-	
-	@RequestMapping(value = "/communistinfo/multicondsearch", method = RequestMethod.POST)
-	public HttpEntity<PagedResources<CommunistInfo>> multicondsearchCommunistinfo(
-			Pageable pageable, PagedResourcesAssembler assembler, @RequestBody String payload
-			) {
-		QCommunistInfo communistInfo = QCommunistInfo.communistInfo;
-		
-		Page<CommunistInfo> communistInfoes = communistInfoRespository.findAll(null, pageable);
-		
-		return new ResponseEntity<>(assembler.toResource(communistInfoes), HttpStatus.OK);
 	}
 }
 // end::code[]
