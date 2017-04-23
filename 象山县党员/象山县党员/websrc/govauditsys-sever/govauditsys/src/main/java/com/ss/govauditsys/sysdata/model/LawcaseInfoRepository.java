@@ -2,10 +2,11 @@ package com.ss.govauditsys.sysdata.model;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 
-public interface LawcaseInfoRepository  extends PagingAndSortingRepository<LawcaseInfo, Long>  {
+public interface LawcaseInfoRepository  extends PagingAndSortingRepository<LawcaseInfo, Long>, QueryDslPredicateExecutor<LawcaseInfo>  {
 	@Override
 	LawcaseInfo save(LawcaseInfo lawcaseInfo);
 

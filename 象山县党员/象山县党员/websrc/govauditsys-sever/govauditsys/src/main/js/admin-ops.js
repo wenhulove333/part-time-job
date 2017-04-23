@@ -7,30 +7,28 @@ const client = require('./client');
 
 const follow = require('./follow'); // function to hop multiple links by "rel"123
 
-const MultiNamesSearchCommunistInfoDisplay = require('./multi-names-search-communist-info-display');
-
-var root = '/api';
-var children = 'sysUsers';
-
 class AdminOps extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {data_uri: null, names: []};
-		this.handleFile = this.handleFile.bind(this);
+		this.handleCommunistInfoFile = this.handleCommunistInfoFile.bind(this);
+		this.handleInspectPersonInfoFile = this.handleInspectPersonInfoFile.bind(this);
+		this.handleLawcaseInfoFile = this.handleLawcaseInfoFile.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
 	}
 	
-	handleSubmit() {
+	handleSubmit(action) {
 		client({
 			method: 'POST',
-			path: '/upload/excelforsearch',
+			path: '/upload/excel',
+			params: {action: action},
 			entity: this.state.data_uri
 		}).done(response =>{
 			this.setState({data_uri: this.state.data_uri, names: response.entity});
 		});
 	}
 	
-	handleFile(e) {
+	handleCommunistInfoFile(e) {
 		var reader = new FileReader();
 		var file = e.target.files[0];
 		
@@ -39,7 +37,37 @@ class AdminOps extends React.Component {
 				data_uri: upload.target.result
 			});
 			
-			this.handleSubmit();
+			this.handleSubmit('uploadcommunistinfo');
+		}.bind(this);
+		
+		reader.readAsDataURL(file);
+	}
+	
+	handleInspectPersonInfoFile(e) {
+		var reader = new FileReader();
+		var file = e.target.files[0];
+		
+		reader.onload = function(upload) {
+			this.setState({
+				data_uri: upload.target.result
+			});
+			
+			this.handleSubmit('uploadinspectpersoninfoinfo');
+		}.bind(this);
+		
+		reader.readAsDataURL(file);
+	}
+	
+	handleLawcaseInfoFile(e) {
+		var reader = new FileReader();
+		var file = e.target.files[0];
+		
+		reader.onload = function(upload) {
+			this.setState({
+				data_uri: upload.target.result
+			});
+			
+			this.handleSubmit('uploadlawcaseinfo');
 		}.bind(this);
 		
 		reader.readAsDataURL(file);
@@ -49,11 +77,11 @@ class AdminOps extends React.Component {
 		return (
 			<div className="subModuleDataDisplay">
 				<table>
-					<tr><td>请上传党员信息表:</td><td><input type="file" name="file" onChange={this.handleFile}/></td></tr>
+					<tr><td>导入党员信息:</td><td><input type="file" name="file" onChange={this.handleCommunistInfoFile}/></td></tr>
+					<tr><td>导入监察对象信息:</td><td><input type="file" name="file" onChange={this.handleInspectPersonInfoFile}/></td></tr>
+					<tr><td>导入案件信息:</td><td><input type="file" name="file" onChange={this.handleLawcaseInfoFile}/></td></tr>
 				</table>
-				<MultiNamesSearchCommunistInfoDisplay names={this.state.names} />
-				<MultiNamesSearchCommunistInfoDisplay names={this.state.names} />
-				<MultiNamesSearchCommunistInfoDisplay names={this.state.names} />
+				
 				</div>
 		);
 	}

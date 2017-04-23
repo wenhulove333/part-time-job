@@ -19,6 +19,8 @@ public interface CommunistInfoRespository extends PagingAndSortingRepository<Com
 	@Override
 	void delete(CommunistInfo communistInfo);
 	
+	CommunistInfo findByIdNumber(String idNumber);
+	
 	Page<CommunistInfo> findByName(@Param("name") String name, Pageable pageable);
 	
 	Page<CommunistInfo> findByNameContaining(@Param("name") String name, Pageable pageable);

@@ -7,18 +7,18 @@ const client = require('./client');
 
 const follow = require('./follow'); // function to hop multiple links by "rel"
 
-class MultiNamesSearchCommunistInfoDisplay extends React.Component {
+class MultiNamesSearchLawcaseInfoDisplay extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {communistInfoes: [], page: 1, pageSize: 6, links: {}};
+		this.state = {lawcaseInfoes: [], page: 1, pageSize: 6, links: {}};
 		this.onNavigate = this.onNavigate.bind(this);
 	}
 
 	loadFromServer(names, pageSize) {
 		client({
 			method: 'POST',
-			path: '/communistinfo/multinamesearch',
+			path: '/lawcaseinfo/multirespondentnamesearch',
 			params: {size: pageSize},
 			entity: names,
 			headers: {'Content-Type': 'application/json'}
@@ -26,7 +26,7 @@ class MultiNamesSearchCommunistInfoDisplay extends React.Component {
 			if ("_embedded" in response.entity) {
 				this.setState({
 					page: response.entity.page,
-					communistInfoes: response.entity._embedded.communistInfoes,
+					lawcaseInfoes: response.entity._embedded.lawcaseInfoes,
 					pageSize: pageSize,
 					links: response.entity._links
 				});
@@ -44,7 +44,7 @@ class MultiNamesSearchCommunistInfoDisplay extends React.Component {
 			if ("_embedded" in response.entity) {
 				this.setState({
 					page: response.entity.page,
-					communistInfoes: response.entity._embedded.communistInfoes,
+					lawcaseInfoes: response.entity._embedded.lawcaseInfoes,
 					pageSize: this.state.pageSize,
 					links: response.entity._links
 				});
@@ -62,8 +62,8 @@ class MultiNamesSearchCommunistInfoDisplay extends React.Component {
 		return (
 			<div className="searchBarPlusDataDisplay">
 				<div className="datadisplay">
-					<CommunistInfoList page={this.state.page}
-								  communistInfoes={this.state.communistInfoes}
+					<LawcaseInfoList page={this.state.page}
+								  lawcaseInfoes={this.state.lawcaseInfoes}
 								  links={this.state.links}
 								  pageSize={this.state.pageSize}
 								  onNavigate={this.onNavigate}/>
@@ -73,7 +73,7 @@ class MultiNamesSearchCommunistInfoDisplay extends React.Component {
 	}
 }
 
-class CommunistInfoList extends React.Component {
+class LawcaseInfoList extends React.Component {
 
 	constructor(props) {
 		super(props);
@@ -104,8 +104,8 @@ class CommunistInfoList extends React.Component {
 	}
 
 	render() {
-		var communistInfoes = this.props.communistInfoes.map(communistInfo =>
-			<CommunistInfo communistInfo={communistInfo}/>
+		var lawcaseInfoes = this.props.lawcaseInfoes.map(lawcaseInfo =>
+			<LawcaseInfo lawcaseInfo={lawcaseInfo}/>
 		);
 
 		var navLinks = [];
@@ -127,20 +127,18 @@ class CommunistInfoList extends React.Component {
 				<table>
 					<thead>
 						<tr>
-							<th>党员姓名</th>
-							<th>身份证号</th>
-							<th>性别</th>
+							<th>被调查人</th>
+							<th>出生年月</th>
 							<th>入党日期</th>
-							<th>学历</th>
-							<th>党支部</th>
-							<th>上级组织</th>
-							<th>籍贯</th>
-							<th>民族</th>
-							<th>个人身份</th>
+							<th>工作单位及职务</th>
+							<th>立案时间</th>
+							<th>结案时间</th>
+							<th>党纪处分</th>
+							<th>政纪处分</th>
 						</tr>
 					</thead>
 					<tbody>
-						{communistInfoes}
+						{lawcaseInfoes}
 					</tbody>
 				</table>
 				<div>
@@ -151,29 +149,27 @@ class CommunistInfoList extends React.Component {
 	}
 }
 
-class CommunistInfo extends React.Component {
+class LawcaseInfo extends React.Component {
 
 	constructor(props) {
 		super(props);
 	}
-	
+
 	render() {
 		return (
 			<tr>
-				<td>{this.props.communistInfo.name}</td>
-				<td>{this.props.communistInfo.idNumber}</td>
-				<td>{this.props.communistInfo.gender}</td>
-				<td>{this.props.communistInfo.joinDate}</td>
-				<td>{this.props.communistInfo.education}</td>
-				<td>{this.props.communistInfo.partyBranch}</td>
-				<td>{this.props.communistInfo.superiorOrg}</td>
-				<td>{this.props.communistInfo.nativePlace}</td>
-				<td>{this.props.communistInfo.nation}</td>
-				<td>{this.props.communistInfo.individualStatus}</td>
+				<td>{this.props.lawcaseInfo.respondentName}</td>
+				<td>{this.props.lawcaseInfo.birthDate}</td>
+				<td>{this.props.lawcaseInfo.joinDate}</td>
+				<td>{this.props.lawcaseInfo.workPlaceAndPosition}</td>
+				<td>{this.props.lawcaseInfo.caseFilingDate}</td>
+				<td>{this.props.lawcaseInfo.caseCloseDate}</td>
+				<td>{this.props.lawcaseInfo.partyDisciplinePunishment}</td>
+				<td>{this.props.lawcaseInfo.politicalDisciplinePunishment}</td>
 			</tr>
 		)
 	}
 }
 
-module.exports = MultiNamesSearchCommunistInfoDisplay;
+module.exports = MultiNamesSearchLawcaseInfoDisplay;
 

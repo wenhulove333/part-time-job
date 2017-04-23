@@ -40,6 +40,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -67,9 +68,9 @@ public class HomeController {
 		return "login";
 	}
 	
-	@RequestMapping(value = "/upload/excelforsearch")
+	@RequestMapping(value = "/upload/excel")
 	@ResponseBody
-	public List<String> uploadExcel(@RequestBody String payload) {
+	public List<String> uploadExcel(@RequestBody String payload, @RequestParam("action") String action) {
 		String excelData = payload.substring(payload.indexOf("base64,") + 7);
 		List<String> names = Arrays.asList("error");
 		
@@ -79,9 +80,9 @@ public class HomeController {
 			);
 			
 			ExcelReader reader = new ExcelReader();
-			names = reader.readSearchUserName(dataInputStream);
-			
-			System.out.println(names);
+			if (action.equals("namessearch")) {
+				names = reader.readSearchUserName(dataInputStream);
+			}
 		} catch (Exception e) {
 			return names;
 		}
