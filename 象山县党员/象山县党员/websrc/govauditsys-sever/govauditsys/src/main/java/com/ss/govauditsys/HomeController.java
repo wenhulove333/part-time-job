@@ -82,6 +82,8 @@ public class HomeController {
 			ExcelReader reader = new ExcelReader();
 			if (action.equals("namessearch")) {
 				names = reader.readSearchUserName(dataInputStream);
+			} else if (action.equals("uploadcommunistinfo")) {
+				
 			}
 		} catch (Exception e) {
 			return names;

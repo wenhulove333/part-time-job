@@ -16,6 +16,8 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
+import com.ss.govauditsys.sysdata.model.CommunistInfo;
+
 public class ExcelReader {
     private POIFSFileSystem fs;
 
@@ -77,6 +79,45 @@ public class ExcelReader {
             content.add(name);
         }
         return content;
+    }
+    
+    public List<CommunistInfo> readCommunistInfo( InputStream is) {
+    	List<CommunistInfo> communistInfoes = new ArrayList<>();
+    	
+    	List<String> content = new ArrayList<String>();
+        try
+        {
+            fs = new POIFSFileSystem( is );
+            wb = new HSSFWorkbook( fs );
+        }
+        catch( IOException e )
+        {
+            e.printStackTrace();
+        }
+        sheet = wb.getSheetAt( 0 );
+
+        int rowNum = sheet.getLastRowNum();
+        row = sheet.getRow( 0 );
+
+        for( int i = 1; i <= rowNum; i++ )
+        {
+            row = sheet.getRow( i );
+            CommunistInfo communistInfo = new CommunistInfo();
+        	
+        	communistInfo.setName(row.getCell( 0 ).getStringCellValue());
+        	communistInfo.setIdNumber(row.getCell( 1 ).getStringCellValue());
+        	communistInfo.setGender(row.getCell( 2 ).getStringCellValue());
+        	communistInfo.setJoinDate(row.getCell( 3 ).getStringCellValue());
+        	communistInfo.setEducation(row.getCell( 4 ).getStringCellValue());
+        	communistInfo.setPartyBranch(row.getCell( 5 ).getStringCellValue());
+        	communistInfo.setSuperiorOrg(row.getCell( 6 ).getStringCellValue());
+        	communistInfo.setNativePlace(row.getCell( 7 ).getStringCellValue());
+        	communistInfo.setNation(row.getCell( 8 ).getStringCellValue());
+        	communistInfo.setNation(row.getCell( 9 ).getStringCellValue());
+            
+            communistInfoes.add(communistInfo);
+        }
+        return communistInfoes;
     }
 
     private String getStringCellValue( HSSFCell cell )
