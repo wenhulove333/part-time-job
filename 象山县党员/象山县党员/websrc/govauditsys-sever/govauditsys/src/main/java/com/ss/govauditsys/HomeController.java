@@ -46,6 +46,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.ss.govauditsys.sysdata.model.CommunistInfo;
 import com.ss.govauditsys.sysdata.model.CommunistInfoRespository;
+import com.ss.govauditsys.sysdata.model.InspectPersonInfo;
+import com.ss.govauditsys.sysdata.model.InspectPersonInfoRespository;
+import com.ss.govauditsys.sysdata.model.LawcaseInfo;
+import com.ss.govauditsys.sysdata.model.LawcaseInfoRepository;
 import com.ss.govauditsys.sysdata.model.QCommunistInfo;
 import com.ss.govauditsys.usermanager.model.SysUser;
 import com.ss.govauditsys.usermanager.model.SysUserManagement;
@@ -58,6 +62,15 @@ import com.ss.govauditsys.utils.ExcelReader;
 // tag::code[]
 @Controller
 public class HomeController {
+	@Autowired
+	CommunistInfoRespository communistInfoRespository;
+	
+	@Autowired
+	InspectPersonInfoRespository inspectPersonInfoRespository;
+	
+	@Autowired
+	LawcaseInfoRepository lawcaseInfoRepository;
+	
 	@RequestMapping(value = "/")
 	public String index() {
 		return "index";
@@ -73,6 +86,8 @@ public class HomeController {
 	public List<String> uploadExcel(@RequestBody String payload, @RequestParam("action") String action) {
 		String excelData = payload.substring(payload.indexOf("base64,") + 7);
 		List<String> names = Arrays.asList("error");
+		CommunistInfo communistInfoSearchByIdNumber = null;
+		InspectPersonInfo inspectPersonInfoByIdNumber = null;
 		
 		try{
 			ByteArrayInputStream dataInputStream = new ByteArrayInputStream(
@@ -83,7 +98,59 @@ public class HomeController {
 			if (action.equals("namessearch")) {
 				names = reader.readSearchUserName(dataInputStream);
 			} else if (action.equals("uploadcommunistinfo")) {
+				List<CommunistInfo> communistInfoes = reader.readCommunistInfoes(dataInputStream);
 				
+				for (CommunistInfo communistInfo : communistInfoes) {
+					communistInfoSearchByIdNumber = communistInfoRespository.findByIdNumber(communistInfo.getIdNumber());
+					if (null == communistInfoSearchByIdNumber) {
+						communistInfoRespository.save(communistInfo);
+					} else {
+						communistInfoRespository.setCommunistInfoFor(
+							communistInfo.getName(),
+							communistInfo.getIdNumber(),
+							communistInfo.getGender(),
+							communistInfo.getJoinDate(),
+							communistInfo.getEducation(),
+							communistInfo.getPartyBranch(),
+							communistInfo.getSuperiorOrg(),
+							communistInfo.getNativePlace(),
+							communistInfo.getNation(),
+							communistInfo.getIndividualStatus(),
+							communistInfoSearchByIdNumber.getId()
+						);
+						communistInfoSearchByIdNumber = null;
+					}
+				}
+				
+				names = Arrays.asList("success");
+			} else if (action.equals("uploadinspectpersoninfo")) {
+				List<InspectPersonInfo> inspectPersonInfoes = reader.readInspectPersonInfoes(dataInputStream);
+				
+				for(InspectPersonInfo inspectPersonInfo : inspectPersonInfoes) {
+					inspectPersonInfoByIdNumber = inspectPersonInfoRespository.findByIdNumber(inspectPersonInfo.getIdNumber());
+					if (null == inspectPersonInfoByIdNumber) {
+						inspectPersonInfoRespository.save(inspectPersonInfo);
+					} else {
+						inspectPersonInfoRespository.setInspectPersonInfoFor(
+							inspectPersonInfo.getName(),
+							inspectPersonInfo.getIdNumber(),
+							inspectPersonInfo.getGender(),
+							inspectPersonInfo.getEducation(),
+							inspectPersonInfo.getWorkPlace(),
+							inspectPersonInfoByIdNumber.getId()
+						);
+					}
+				}
+				
+				names = Arrays.asList("success");
+			} else if (action.equals("uploadlawcaseinfo")) {
+				List<LawcaseInfo> lawcaseInfoes = reader.readLawcaseInfoes(dataInputStream);
+				
+				for(LawcaseInfo lawcaseInfo : lawcaseInfoes) {
+					lawcaseInfoRepository.save(lawcaseInfo);
+				}
+				
+				names = Arrays.asList("success");
 			}
 		} catch (Exception e) {
 			return names;

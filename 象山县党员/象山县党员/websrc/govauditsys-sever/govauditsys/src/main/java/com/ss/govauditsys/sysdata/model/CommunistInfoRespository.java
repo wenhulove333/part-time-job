@@ -10,6 +10,7 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface CommunistInfoRespository extends PagingAndSortingRepository<CommunistInfo, Long>, QueryDslPredicateExecutor<CommunistInfo> {
 	@Override
@@ -27,10 +28,11 @@ public interface CommunistInfoRespository extends PagingAndSortingRepository<Com
 	
 	Page<CommunistInfo> findByNameContaining(@Param("name") String name, Pageable pageable);
 	
-	@Modifying
-	@Query("update CommunistInfo u set u.name = ?1, set u.idNumber = ?2, set u.gender = ?3, "
-			+ "set u.joinDate = ?4, set u.education = ?5, set u.partyBranch = ?6, set u.superiorOrg = ?7, "
-			+ "set u.nativePlace = ?8, set u.nation = ?9, set u.individualStatus = ?10 where u.id = ?11")
+	@Transactional
+	@Modifying(clearAutomatically = true)
+	@Query("update CommunistInfo communistInfo set communistInfo.name = ?1, communistInfo.idNumber = ?2, communistInfo.gender = ?3, "
+			+ "communistInfo.joinDate = ?4, communistInfo.education = ?5, communistInfo.partyBranch = ?6, communistInfo.superiorOrg = ?7, "
+			+ "communistInfo.nativePlace = ?8, communistInfo.nation = ?9, communistInfo.individualStatus = ?10 where communistInfo.id = ?11")
 	int setCommunistInfoFor(
 		String name, String idNumber, String gender, String joinDate,
 		String education, String partyBranch, String superiorOrg, String nativePlace,

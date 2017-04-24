@@ -52,7 +52,7 @@ class AdminOps extends React.Component {
 				data_uri: upload.target.result
 			});
 			
-			this.handleSubmit('uploadinspectpersoninfoinfo');
+			this.handleSubmit('uploadinspectpersoninfo');
 		}.bind(this);
 		
 		reader.readAsDataURL(file);

@@ -17,6 +17,8 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
 import com.ss.govauditsys.sysdata.model.CommunistInfo;
+import com.ss.govauditsys.sysdata.model.InspectPersonInfo;
+import com.ss.govauditsys.sysdata.model.LawcaseInfo;
 
 public class ExcelReader {
     private POIFSFileSystem fs;
@@ -81,7 +83,7 @@ public class ExcelReader {
         return content;
     }
     
-    public List<CommunistInfo> readCommunistInfo( InputStream is) {
+    public List<CommunistInfo> readCommunistInfoes( InputStream is) {
     	List<CommunistInfo> communistInfoes = new ArrayList<>();
     	
     	List<String> content = new ArrayList<String>();
@@ -113,11 +115,82 @@ public class ExcelReader {
         	communistInfo.setSuperiorOrg(row.getCell( 6 ).getStringCellValue());
         	communistInfo.setNativePlace(row.getCell( 7 ).getStringCellValue());
         	communistInfo.setNation(row.getCell( 8 ).getStringCellValue());
-        	communistInfo.setNation(row.getCell( 9 ).getStringCellValue());
+        	communistInfo.setIndividualStatus(row.getCell( 9 ).getStringCellValue());
             
             communistInfoes.add(communistInfo);
         }
         return communistInfoes;
+    }
+    
+    public List<InspectPersonInfo> readInspectPersonInfoes( InputStream is) {
+    	List<InspectPersonInfo> inspectPersonInfoes = new ArrayList<>();
+    	
+    	List<String> content = new ArrayList<String>();
+        try
+        {
+            fs = new POIFSFileSystem( is );
+            wb = new HSSFWorkbook( fs );
+        }
+        catch( IOException e )
+        {
+            e.printStackTrace();
+        }
+        sheet = wb.getSheetAt( 0 );
+
+        int rowNum = sheet.getLastRowNum();
+        row = sheet.getRow( 0 );
+
+        for( int i = 1; i <= rowNum; i++ )
+        {
+            row = sheet.getRow( i );
+            InspectPersonInfo inspectPersonInfo = new InspectPersonInfo();
+        	
+            inspectPersonInfo.setName(row.getCell( 0 ).getStringCellValue());
+            inspectPersonInfo.setIdNumber(row.getCell( 1 ).getStringCellValue());
+            inspectPersonInfo.setGender(row.getCell( 2 ).getStringCellValue());
+            inspectPersonInfo.setEducation(row.getCell( 3 ).getStringCellValue());
+            inspectPersonInfo.setWorkPlace(row.getCell( 4 ).getStringCellValue());
+            
+            inspectPersonInfoes.add(inspectPersonInfo);
+        }
+        return inspectPersonInfoes;
+    }
+    
+    public List<LawcaseInfo> readLawcaseInfoes( InputStream is) {
+    	List<LawcaseInfo> lawcaseInfoes = new ArrayList<>();
+    	
+    	List<String> content = new ArrayList<String>();
+        try
+        {
+            fs = new POIFSFileSystem( is );
+            wb = new HSSFWorkbook( fs );
+        }
+        catch( IOException e )
+        {
+            e.printStackTrace();
+        }
+        sheet = wb.getSheetAt( 0 );
+
+        int rowNum = sheet.getLastRowNum();
+        row = sheet.getRow( 0 );
+
+        for( int i = 1; i <= rowNum; i++ )
+        {
+            row = sheet.getRow( i );
+            LawcaseInfo lawcaseInfo = new LawcaseInfo();
+
+            lawcaseInfo.setRespondentName(row.getCell( 0 ).getStringCellValue());
+            lawcaseInfo.setBirthDate(row.getCell( 1 ).getStringCellValue());
+            lawcaseInfo.setJoinDate(row.getCell( 2 ).getStringCellValue());
+            lawcaseInfo.setWorkPlaceAndPosition(row.getCell( 3 ).getStringCellValue());
+            lawcaseInfo.setCaseFilingDate(row.getCell( 4 ).getStringCellValue());
+            lawcaseInfo.setCaseCloseDate(row.getCell( 5 ).getStringCellValue());
+            lawcaseInfo.setPartyDisciplinePunishment(row.getCell( 6 ).getStringCellValue());
+            lawcaseInfo.setPoliticalDisciplinePunishment(row.getCell( 7 ).getStringCellValue());
+            
+            lawcaseInfoes.add(lawcaseInfo);
+        }
+        return lawcaseInfoes;
     }
 
     private String getStringCellValue( HSSFCell cell )

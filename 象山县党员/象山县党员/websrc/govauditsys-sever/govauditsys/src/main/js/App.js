@@ -59,7 +59,7 @@ class Entry extends React.Component {
 				>
 					<TabList>
 						<Tab>党员信息查询</Tab>
-						<Tab>检查对象信息查询</Tab>
+						<Tab>监察对象信息查询</Tab>
 						<Tab>案件信息查询</Tab>
 						<Tab>党员和监察对象信息比对</Tab>
 						<Tab>案件统计分析</Tab>

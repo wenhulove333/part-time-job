@@ -24,7 +24,6 @@ public class CommunistInfoMultiNamesSearchController {
 	@Autowired
 	CommunistInfoRespository communistInfoRespository;
 	
-	
 	@RequestMapping(
 			value = "/communistinfo/multinamesearch",
 			method = RequestMethod.POST,
