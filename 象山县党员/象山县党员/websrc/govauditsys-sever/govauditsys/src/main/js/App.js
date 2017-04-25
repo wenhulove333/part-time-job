@@ -14,6 +14,7 @@ const LawcaseInfoDisplay = require('./lawcase-info-display');
 const SysUserDisplay = require('./system-user-mgmt');
 const CommunistInfoAndInspectPersonInfoComparison = require('./communist-info-and-inpsect-person-info-comparison');
 const AdminOps = require('./admin-ops');
+const LawcaseInfoStatisticsAnalysis = require('./lawcase-info-statistics-analysis');
 
 class Entry extends React.Component {
 	constructor(props) {
@@ -80,7 +81,7 @@ class Entry extends React.Component {
 						<CommunistInfoAndInspectPersonInfoComparison />
 					</TabPanel>
 					<TabPanel>
-						<h2>案件统计分析</h2>
+						<LawcaseInfoStatisticsAnalysis />
 					</TabPanel>					
 					<TabPanel>
 						<AdminOps />
