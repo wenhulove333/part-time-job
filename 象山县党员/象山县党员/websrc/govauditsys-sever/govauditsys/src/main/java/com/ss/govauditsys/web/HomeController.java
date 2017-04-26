@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ss.govauditsys;
+package com.ss.govauditsys.web;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
