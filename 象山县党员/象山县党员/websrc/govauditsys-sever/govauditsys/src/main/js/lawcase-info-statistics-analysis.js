@@ -15,31 +15,69 @@ const LineChart = ReactD3.LineChart;
 class BarChartAnalysis extends React.Component {
 	constructor(props) {
 		super(props);
-		
-		this.state = {dataSrc : [
-		    {
-			    label: 'somethingA',
-			    values: [{x: 'SomethingA', y: 10}, {x: 'SomethingB', y: 4}, {x: 'SomethingC', y: 3}]
-		    },
-		    {
-			    label: 'somethingB',
-			    values: [{x: 'SomethingA', y: 6}, {x: 'SomethingB', y: 8}, {x: 'SomethingC', y: 5}]
-		    },
-		    {
-			    label: 'somethingC',
-			    values: [{x: 'SomethingA', y: 6}, {x: 'SomethingB', y: 8}, {x: 'SomethingC', y: 5}]
-		    }
-	    ]}
 	}
-
+	
 	render() {
+		var divStyle = {
+            textAlign:'center',
+            fontWeight:'bold'
+		};
+		
+		var dataSrc = [
+			[
+				{
+					label: "xxx",
+					values: [{x: 'xxx', y: 0}, [{x: 'xxx', y: 0}, [{x: 'xxx', y: 0}]
+				}
+			],
+			[
+				{
+					label: "yyy",
+					values: [{x: 'xxx', y: 0}, [{x: 'xxx', y: 0}, [{x: 'xxx', y: 0}]
+				}
+			],
+			[
+				{
+					label: "zzz",
+					values: [{x: 'xxx', y: 0}, [{x: 'xxx', y: 0}, [{x: 'xxx', y: 0}]
+				}
+			]
+		];
+		
+		for(var key in this.props.data) {
+			dataSrc.push([{label: key, values: this.props.data[key]}]);
+		} 
+		
 		return (
-			<BarChart
-            groupedBars
-            data={this.state.dataSrc}
-            width={900}
-            height={600}
-            margin={{top: 10, bottom: 50, left: 50, right: 10}}/>
+			<div>
+				<div className="divabreastDisplay" >
+					<div style={divStyle}><span>{dataSrc[0][0]['label']}</span></div>
+					<BarChart
+		            groupedBars
+		            data={this.state.dataSrc[0]}
+		            width={300}
+		            height={200}
+		            margin={{top: 10, bottom: 50, left: 50, right: 10}}/>
+				</div>
+				<div className="divabreastDisplay" >
+					<div style={divStyle}><span>{dataSrc[1][0]['label']}</span></div>
+					<BarChart
+		            groupedBars
+		            data={this.state.dataSrc[1]}
+		            width={300}
+		            height={200}
+		            margin={{top: 10, bottom: 50, left: 50, right: 10}}/>
+				</div>
+				<div className="divabreastDisplay" >
+					<div style={divStyle}><span>{dataSrc[2][0]['label']}</span></div>
+					<BarChart
+		            groupedBars
+		            data={this.state.dataSrc[2]}
+		            width={300}
+		            height={200}
+		            margin={{top: 10, bottom: 50, left: 50, right: 10}}/>
+				</div>
+			</div>
 		);
 	}
 }
@@ -48,23 +86,63 @@ class PieChartAnalysis extends React.Component {
 	constructor(props) {
 		super(props);
 		
-		this.state = {dataSrc : {
-		        label: 'somethingA',
-		        values: [{x: 'SomethingA', y: 10}, {x: 'SomethingB', y: 4}, {x: 'SomethingC', y: 3}]
-			},
+		this.state = {dataSrc : [
+				{
+					label: '2015',
+			        values: [{x: 'xxx', y: 0}, {x: 'yyy', y: 0}, {x: 'zzz', y: 0}]
+				},
+				{
+					label: '2016',
+			        values: [{x: 'xxx', y: 10}, {x: 'yyy', y: 8}, {x: 'zzz', y: 3}]
+				},
+				{
+					label: '2017',
+			        values: [{x: 'xxx', y: 10}, {x: 'yyy', y: 4}, {x: 'zzz', y: 7}]
+				}
+			],
 			sort : null // d3.ascending, d3.descending, func(a,b) { return a - b; }, etc...
 		}
 	}
 	
 	render() {
+		var divStyle = {
+            textAlign:'center',
+            fontWeight:'bold'
+		};
+		
 		return (
-			<PieChart
-            data={this.state.dataSrc}
-            width={900}
-            height={600}
-            margin={{top: 10, bottom: 10, left: 100, right: 100}}
-            sort={this.state.sort}
-            />
+			<div>
+				<div className="divabreastDisplay" >
+					<div style={divStyle}><span>{this.state.dataSrc[0]['label']}</span></div>
+					<PieChart
+		            data={this.state.dataSrc[0]}
+		            width={300}
+		            height={300}
+		            margin={{top: 50, bottom: 50, left: 50, right: 50}}
+		            sort={this.state.sort}
+		            />
+				</div>
+				<div className="divabreastDisplay" >
+					<div style={divStyle}><span>{this.state.dataSrc[1]['label']}</span></div>
+					<PieChart
+		            data={this.state.dataSrc[1]}
+		            width={300}
+		            height={300}
+		            margin={{top: 50, bottom: 50, left: 50, right: 50}}
+		            sort={this.state.sort}
+		            />
+				</div>
+				<div className="divabreastDisplay" >
+					<div style={divStyle}><span>{this.state.dataSrc[2]['label']}</span></div>
+					<PieChart
+		            data={this.state.dataSrc[2]}
+		            width={300}
+		            height={300}
+		            margin={{top: 50, bottom: 50, left: 50, right: 50}}
+		            sort={this.state.sort}
+		            />
+				</div>
+			</div>
 		);
 	}
 }
@@ -75,12 +153,8 @@ class LineChartAnalysis extends React.Component {
 		
 		this.state = {dataSrc : [
 		    	{
-			        label: 'somethingA',
-			        values: [{x: 0, y: 2}, {x: 1.3, y: 5}, {x: 3, y: 6}, {x: 3.5, y: 6.5}, {x: 4, y: 6}, {x: 4.5, y: 6}, {x: 5, y: 7}, {x: 5.5, y: 8}]
-		        },
-		        {
-			        label: 'somethingB',
-			        values: [{x: 0, y: 3}, {x: 1.3, y: 4}, {x: 3, y: 7}, {x: 3.5, y: 8}, {x: 4, y: 7}, {x: 4.5, y: 7}, {x: 5, y: 7.8}, {x: 5.5, y: 9}]
+			        label: '2015',
+			        values: [{x: "2015", y: 2}, {x: "2016", y: 5}, {x: "2017", y: 6}]
 		        }
 		    ]
 		}
@@ -100,6 +174,28 @@ class LineChartAnalysis extends React.Component {
 class LawcaseInfoStatisticsAnalysis extends React.Component {
 	constructor(props) {
 		super(props);
+		this.state = {dataSrc : {}}
+	}
+	
+	loadFromServer() {
+		var myDate = new Date();
+		var currentYear = myDate.getFullYear();
+		years = [currentYear - 2, currentYear - 1, currentYear];
+		this.setState({dataSrc : {}});
+		
+		years.map(year => client({
+			method: 'GET',
+			path: '/lawcaseinfo/partydisciplinepunishmentcountgroupsearch',
+			params: {year: year},
+		}).done(response => {
+			this.state.dataSrc[year] = response;
+		}));
+		
+		this.setState(this.state);
+	}
+	
+	componentDidMount() {
+		this.loadFromServer();
 	}
 	
 	render() {
@@ -110,11 +206,11 @@ class LawcaseInfoStatisticsAnalysis extends React.Component {
 		
 		return (
 			<div className="subModuleDataDisplay">
-				<BarChartAnalysis />
+				<PieChartAnalysis data={this.state.dataSrc} />
 				<div style={divStyle}><span>近三年全县党员和监察对象违法违纪案件分布情况分析图</span></div>
-				<PieChartAnalysis />
+				<BarChartAnalysis data={this.state.dataSrc} />
 				<div style={divStyle}><span>近三年全县党员和监察对象案件总体数量比较情况分析图</span></div>
-				<LineChartAnalysis />
+				<LineChartAnalysis data={this.state.dataSrc} />
 				<div style={divStyle}><span>近三年全县党员和监察对象违法违纪案件增加和减少情况分析图</span></div>
 			</div>
 		);

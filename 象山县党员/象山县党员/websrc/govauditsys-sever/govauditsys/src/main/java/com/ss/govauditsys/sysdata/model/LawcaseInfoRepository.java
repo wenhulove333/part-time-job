@@ -1,5 +1,7 @@
 package com.ss.govauditsys.sysdata.model;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
@@ -8,6 +10,8 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.ss.govauditsys.sysdata.search.PartyDisciplinePunishmentCountGroup;
 
 public interface LawcaseInfoRepository  extends PagingAndSortingRepository<LawcaseInfo, Long>, QueryDslPredicateExecutor<LawcaseInfo>  {
 	@Override
@@ -32,4 +36,8 @@ public interface LawcaseInfoRepository  extends PagingAndSortingRepository<Lawca
 		String respondentName, String birthDate, String joinDate, String workPlaceAndPosition,
 		String caseFilingDate, String caseCloseDate, String partyDisciplinePunishment, String politicalDisciplinePunishment, long id
 	);
+
+	@Query("select new com.ss.govauditsys.sysdata.search.PartyDisciplinePunishmentCountGroup(lawcaseInfo.partyDisciplinePunishment, count(lawcaseInfo.partyDisciplinePunishment)) "
+			+ "from LawcaseInfo lawcaseInfo where lawcaseInfo.caseFilingDate like %?1% group by lawcaseInfo.partyDisciplinePunishment")
+	List<PartyDisciplinePunishmentCountGroup> findPartyDisciplinePunishmentCountGroup(String year);
 }

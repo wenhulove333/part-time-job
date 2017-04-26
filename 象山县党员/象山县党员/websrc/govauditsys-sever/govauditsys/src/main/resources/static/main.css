@@ -168,6 +168,10 @@ input[type="search"] {
  	margin-left: auto;
 }
 
+.divabreastDisplay {
+	display: inline-block;
+}
+
 .webdesigntuts-workshop {
 	height: 100%;
 	width: 100%;
