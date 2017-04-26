@@ -23,60 +23,31 @@ class BarChartAnalysis extends React.Component {
             fontWeight:'bold'
 		};
 		
-		var dataSrc = [
-			[
-				{
-					label: "xxx",
-					values: [{x: 'xxx', y: 0}, [{x: 'xxx', y: 0}, [{x: 'xxx', y: 0}]
-				}
-			],
-			[
-				{
-					label: "yyy",
-					values: [{x: 'xxx', y: 0}, [{x: 'xxx', y: 0}, [{x: 'xxx', y: 0}]
-				}
-			],
-			[
-				{
-					label: "zzz",
-					values: [{x: 'xxx', y: 0}, [{x: 'xxx', y: 0}, [{x: 'xxx', y: 0}]
-				}
-			]
-		];
+		var dataSrcs = [];
 		
 		for(var key in this.props.data) {
-			dataSrc.push([{label: key, values: this.props.data[key]}]);
+			dataSrcs.push([{label: key, values: this.props.data[key]}]);
 		} 
+		
+		var barCharts = <div style={divStyle}><span>没有获取到任何数据！！！</span></div>;
+		
+		if (dataSrcs.length != 0) {
+			barCharts = dataSrcs.map(dataSrc =>
+				<div className="divabreastDisplay" >
+					<div style={divStyle}><span>{dataSrc[0]['label']}</span></div>
+					<BarChart
+			        groupedBars
+			        data={dataSrc}
+			        width={900 / dataSrcs.length}
+			        height={600 / dataSrcs.length}
+			        margin={{top: 10, bottom: 50, left: 50, right: 10}}/>
+				</div>
+			);
+		}
 		
 		return (
 			<div>
-				<div className="divabreastDisplay" >
-					<div style={divStyle}><span>{dataSrc[0][0]['label']}</span></div>
-					<BarChart
-		            groupedBars
-		            data={this.state.dataSrc[0]}
-		            width={300}
-		            height={200}
-		            margin={{top: 10, bottom: 50, left: 50, right: 10}}/>
-				</div>
-				<div className="divabreastDisplay" >
-					<div style={divStyle}><span>{dataSrc[1][0]['label']}</span></div>
-					<BarChart
-		            groupedBars
-		            data={this.state.dataSrc[1]}
-		            width={300}
-		            height={200}
-		            margin={{top: 10, bottom: 50, left: 50, right: 10}}/>
-				</div>
-				<div className="divabreastDisplay" >
-					<div style={divStyle}><span>{dataSrc[2][0]['label']}</span></div>
-					<BarChart
-		            groupedBars
-		            data={this.state.dataSrc[2]}
-		            width={300}
-		            height={200}
-		            margin={{top: 10, bottom: 50, left: 50, right: 10}}/>
-				</div>
+				{barCharts}
 			</div>
 		);
 	}
@@ -85,23 +56,6 @@ class BarChartAnalysis extends React.Component {
 class PieChartAnalysis extends React.Component {
 	constructor(props) {
 		super(props);
-		
-		this.state = {dataSrc : [
-				{
-					label: '2015',
-			        values: [{x: 'xxx', y: 0}, {x: 'yyy', y: 0}, {x: 'zzz', y: 0}]
-				},
-				{
-					label: '2016',
-			        values: [{x: 'xxx', y: 10}, {x: 'yyy', y: 8}, {x: 'zzz', y: 3}]
-				},
-				{
-					label: '2017',
-			        values: [{x: 'xxx', y: 10}, {x: 'yyy', y: 4}, {x: 'zzz', y: 7}]
-				}
-			],
-			sort : null // d3.ascending, d3.descending, func(a,b) { return a - b; }, etc...
-		}
 	}
 	
 	render() {
@@ -110,38 +64,33 @@ class PieChartAnalysis extends React.Component {
             fontWeight:'bold'
 		};
 		
+		var sort = null;
+		var dataSrcs = [];
+		
+		for(var key in this.props.data) {
+			dataSrcs.push({label: key, values: this.props.data[key]});
+		}
+		
+		var pieCharts = <div style={divStyle}><span>没有获取到任何数据！！！</span></div>;
+		
+		if (dataSrcs.length != 0) {
+			pieCharts = dataSrcs.map(dataSrc =>
+				<div className="divabreastDisplay" >
+					<div style={divStyle}><span>{dataSrc['label']}</span></div>
+					<PieChart
+		            data={dataSrc}
+		            width={900 / dataSrcs.length}
+		            height={900 / dataSrcs.length}
+		            margin={{top: 80, bottom: 80, left: 80, right: 80}}
+		            sort={sort}
+		            />
+				</div>
+			);
+		}
+		
 		return (
 			<div>
-				<div className="divabreastDisplay" >
-					<div style={divStyle}><span>{this.state.dataSrc[0]['label']}</span></div>
-					<PieChart
-		            data={this.state.dataSrc[0]}
-		            width={300}
-		            height={300}
-		            margin={{top: 50, bottom: 50, left: 50, right: 50}}
-		            sort={this.state.sort}
-		            />
-				</div>
-				<div className="divabreastDisplay" >
-					<div style={divStyle}><span>{this.state.dataSrc[1]['label']}</span></div>
-					<PieChart
-		            data={this.state.dataSrc[1]}
-		            width={300}
-		            height={300}
-		            margin={{top: 50, bottom: 50, left: 50, right: 50}}
-		            sort={this.state.sort}
-		            />
-				</div>
-				<div className="divabreastDisplay" >
-					<div style={divStyle}><span>{this.state.dataSrc[2]['label']}</span></div>
-					<PieChart
-		            data={this.state.dataSrc[2]}
-		            width={300}
-		            height={300}
-		            margin={{top: 50, bottom: 50, left: 50, right: 50}}
-		            sort={this.state.sort}
-		            />
-				</div>
+				{pieCharts}
 			</div>
 		);
 	}
@@ -154,19 +103,39 @@ class LineChartAnalysis extends React.Component {
 		this.state = {dataSrc : [
 		    	{
 			        label: '2015',
-			        values: [{x: "2015", y: 2}, {x: "2016", y: 5}, {x: "2017", y: 6}]
+			        values: [{x: "2015", y: 5}, {x: "2016", y: 7}, {x: "2017", y: 9}]
 		        }
 		    ]
 		}
 	}
-		
+
 	render() {
+		var myDate = new Date();
+		var currentYear = myDate.getFullYear();
+		var years = [(currentYear - 2).toString(), (currentYear - 1).toString(), currentYear.toString()];
+		var dataSrcs = [
+	    	{
+		        label: 'LineChart',
+		        values: [{x: years[0], y: 0}, {x: years[1], y: 0}, {x: years[2], y: 0}]
+	        }
+	    ];
+		
+		for(var key in this.props.data) {
+			var sum = 0;
+			for (var item in this.props.data[key]) {
+				sum += this.props.data[key][item]['y'];
+			}
+			
+			dataSrcs[0]['values'][years.indexOf(key)]['y'] = sum;
+			sum = 0;
+		}
+		
 		return (
 			<LineChart
             data={this.state.dataSrc}
             width={900}
             height={600}
-            margin={{top: 10, bottom: 50, left: 50, right: 10}}/>
+            margin={{top: 50, bottom: 50, left: 50, right: 50}}/>
 		);
 	}
 }
@@ -180,18 +149,29 @@ class LawcaseInfoStatisticsAnalysis extends React.Component {
 	loadFromServer() {
 		var myDate = new Date();
 		var currentYear = myDate.getFullYear();
-		years = [currentYear - 2, currentYear - 1, currentYear];
-		this.setState({dataSrc : {}});
-		
-		years.map(year => client({
-			method: 'GET',
-			path: '/lawcaseinfo/partydisciplinepunishmentcountgroupsearch',
-			params: {year: year},
-		}).done(response => {
-			this.state.dataSrc[year] = response;
-		}));
-		
-		this.setState(this.state);
+		var years = [currentYear - 2, currentYear - 1, currentYear];
+		var dataSrc = {};
+
+		Promise.all(years.map(year => new Promise(function(resolve, reject) {
+			client({
+				method: 'GET',
+				path: '/lawcaseinfo/partydisciplinepunishmentcountgroupsearch',
+				params: {year: year},
+			}).done(response => {
+				if (!Array.isArray(response.entity)) {
+					reject('Exception');
+				} else {
+					if (response.entity.length != 0) {
+						dataSrc[year] = response.entity;
+					}
+					resolve('Success');
+				}
+			});
+		}))).then(() => {
+			this.setState({dataSrc:dataSrc});
+		}).catch(() => {
+			this.state = {dataSrc : {}}
+		});
 	}
 	
 	componentDidMount() {
