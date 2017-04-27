@@ -1,4 +1,4 @@
-package com.ss.govauditsys;
+package com.ss.govauditsys.web;
 
 import java.util.List;
 
@@ -13,39 +13,40 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.ss.govauditsys.sysdata.model.LawcaseInfo;
-import com.ss.govauditsys.sysdata.model.LawcaseInfoRepository;
-import com.ss.govauditsys.sysdata.model.QLawcaseInfo;
+import com.ss.govauditsys.sysdata.model.InspectPersonInfo;
+import com.ss.govauditsys.sysdata.model.InspectPersonInfoRespository;
+import com.ss.govauditsys.sysdata.model.QInspectPersonInfo;
 
 @RestController
-public class LawcaseInfoMultiNamesSearchController {
+public class InspectPersonInfoMultiNamesSearchController {
 	@Autowired
-	LawcaseInfoRepository lawcaseInfoRepository;
+	InspectPersonInfoRespository inspectPersonInfoRespository;
 	
 	@RequestMapping(
-			value = "/lawcaseinfo/multirespondentnamesearch",
+			value = "/inspectpersoninfo/multinamesearch",
 			method = RequestMethod.POST,
 			produces = {"application/json", "application/hal+json", "application/*+json;charset=UTF-8"})
-	public PagedResources<LawcaseInfo> multinamessearchLawcaseInfo(
+	public PagedResources<InspectPersonInfo> multinamessearchInspectPersonInfo(
 			Pageable pageable, PagedResourcesAssembler assembler, @RequestBody List<String> payload) {
-		QLawcaseInfo lawcaseInfo = QLawcaseInfo.lawcaseInfo;
+		QInspectPersonInfo inspectPersonInfo = QInspectPersonInfo.inspectPersonInfo;
 		BooleanExpression expression = null;
 		
 		if (payload.size() > 0) {
-			expression = lawcaseInfo.respondentName.contains(payload.get(0));
+			expression = inspectPersonInfo.name.contains(payload.get(0));
 			payload.remove(0);
 
 			for (String name : payload) {
-				expression = expression.or(lawcaseInfo.respondentName.contains(name));
+				expression = expression.or(inspectPersonInfo.name.contains(name));
 			}
 		} else {
-			expression = lawcaseInfo.respondentName.contains("!@#$%^&*()_+=-~`\"':;<>?/,.");
+			expression = inspectPersonInfo.name.contains("!@#$%^&*()_+=-~`\"':;<>?/,.");
 		}
 		
-		Page<LawcaseInfo> lawcaseInfoes = lawcaseInfoRepository.findAll(
+		Page<InspectPersonInfo> inspectPersonInfoes = inspectPersonInfoRespository.findAll(
 			expression, pageable
 		);
 		
-		return assembler.toResource(lawcaseInfoes);
-	}	
+		return assembler.toResource(inspectPersonInfoes);
+	}
+
 }

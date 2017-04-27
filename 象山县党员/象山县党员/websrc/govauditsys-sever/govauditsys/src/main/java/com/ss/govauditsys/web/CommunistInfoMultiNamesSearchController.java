@@ -1,4 +1,4 @@
-package com.ss.govauditsys;
+package com.ss.govauditsys.web;
 
 import java.util.List;
 

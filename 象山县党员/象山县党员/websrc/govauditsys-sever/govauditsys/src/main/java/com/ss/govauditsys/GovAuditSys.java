@@ -17,11 +17,13 @@ package com.ss.govauditsys;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 /**
  * @author Zhang Wenhu
  */
 // tag::code[]
+@EnableAspectJAutoProxy
 @SpringBootApplication
 public class GovAuditSys {
 

@@ -1,4 +1,4 @@
-package com.ss.govauditsys;
+package com.ss.govauditsys.web;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
