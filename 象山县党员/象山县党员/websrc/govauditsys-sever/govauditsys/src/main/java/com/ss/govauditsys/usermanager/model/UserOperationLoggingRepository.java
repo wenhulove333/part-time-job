@@ -9,5 +9,5 @@ public interface UserOperationLoggingRepository extends PagingAndSortingReposito
 	@Override
 	UserOperationLogging save(UserOperationLogging userOperationLogging);
 	
-	Page<UserOperationLogging> findByNameContaining(@Param("name") String name, Pageable pageable);
+	Page<UserOperationLogging> findByUserNameContaining(@Param("userName") String userName, Pageable pageable);
 }
