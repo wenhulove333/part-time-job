@@ -10,13 +10,19 @@ import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import com.ss.govauditsys.usermanager.model.UserOperationLoggingRepository;
+
 @Aspect
 @Component
 public class WebRequestAspect {
+	@Autowired
+	UserOperationLoggingRepository userOperationLoggingRepository;
+	
 	private Logger logger = Logger.getLogger(getClass());
 	
     @Pointcut("execution(public * com.ss.govauditsys.sysdata.model..*.*(..)) "
