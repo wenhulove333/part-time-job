@@ -38,8 +38,8 @@ class BarChartAnalysis extends React.Component {
 					<BarChart
 			        groupedBars
 			        data={dataSrc}
-			        width={900 / dataSrcs.length}
-			        height={600 / dataSrcs.length}
+			        width={1200 / dataSrcs.length}
+			        height={800 / dataSrcs.length}
 			        margin={{top: 10, bottom: 50, left: 50, right: 10}}/>
 				</div>
 			);
@@ -79,8 +79,8 @@ class PieChartAnalysis extends React.Component {
 					<div style={divStyle}><span>{dataSrc['label']}</span></div>
 					<PieChart
 		            data={dataSrc}
-		            width={900 / dataSrcs.length}
-		            height={900 / dataSrcs.length}
+		            width={1200 / dataSrcs.length}
+		            height={1200 / dataSrcs.length}
 		            margin={{top: 80, bottom: 80, left: 80, right: 80}}
 		            sort={sort}
 		            />
@@ -125,8 +125,8 @@ class LineChartAnalysis extends React.Component {
 		return (
 			<LineChart
             data={dataSrcs}
-            width={900}
-            height={600}
+            width={1200}
+            height={800}
             margin={{top: 50, bottom: 50, left: 50, right: 50}}/>
 		);
 	}
@@ -173,7 +173,8 @@ class LawcaseInfoStatisticsAnalysis extends React.Component {
 	render() {
 		var divStyle = {
             textAlign:'center',
-            fontWeight:'bold'
+            fontWeight:'bold',
+            margin: '0px 0px 100px 0px'
 	    };
 		
 		return (
