@@ -5,6 +5,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ss.govauditsys.GlobalInfo;
+
 @RestController
 public class UserDetailsController {
 	@RequestMapping(value="/userdetails")
