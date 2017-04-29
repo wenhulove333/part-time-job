@@ -7,6 +7,8 @@ const client = require('./client');
 
 const follow = require('./follow'); // function to hop multiple links by "rel"123
 
+const UserOperationLoggingDisplay = require('./user-operation-logging-display');
+
 class AdminOps extends React.Component {
 	constructor(props) {
 		super(props);
@@ -81,7 +83,7 @@ class AdminOps extends React.Component {
 					<tr><td>导入监察对象信息:</td><td><input type="file" name="file" onChange={this.handleInspectPersonInfoFile}/></td></tr>
 					<tr><td>导入案件信息:</td><td><input type="file" name="file" onChange={this.handleLawcaseInfoFile}/></td></tr>
 				</table>
-				
+				<UserOperationLoggingDisplay />
 				</div>
 		);
 	}

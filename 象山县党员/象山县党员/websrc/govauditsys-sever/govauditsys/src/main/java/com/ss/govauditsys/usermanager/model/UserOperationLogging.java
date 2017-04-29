@@ -43,6 +43,8 @@ public class UserOperationLogging {
 	public Long getId() {
 		return id;
 	}
+	
+	public UserOperationLogging() {}
 	public UserOperationLogging(String operator, String userName, String log, Calendar time) {
 		super();
 		this.operator = operator;

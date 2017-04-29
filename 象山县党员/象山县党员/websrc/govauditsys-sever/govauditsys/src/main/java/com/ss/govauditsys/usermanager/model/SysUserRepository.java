@@ -18,5 +18,6 @@ public interface SysUserRepository extends PagingAndSortingRepository<SysUser, L
 	
 	Page<SysUser> findByName(@Param("name") String name, Pageable pageable);
 	
+	
 	Page<SysUser> findByNameContaining(@Param("name") String name, Pageable pageable);
 }

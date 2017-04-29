@@ -177,9 +177,6 @@ class InspectPersonInfoList extends React.Component {
 	}
 
 	render() {
-		var pageInfo = this.props.page.hasOwnProperty("number") ?
-			<h3>CommunistInfoes - Page {this.props.page.number + 1} of {this.props.page.totalPages}</h3> : null;
-
 		var inspectPersonInfoes = this.props.inspectPersonInfoes.map(inspectPersonInfo =>
 			<InspectPersonInfo key={inspectPersonInfo.entity._links.self.href}
 					  inspectPersonInfo={inspectPersonInfo}/>

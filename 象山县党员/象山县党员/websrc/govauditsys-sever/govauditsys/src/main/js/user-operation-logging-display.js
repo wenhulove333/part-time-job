@@ -8,68 +8,69 @@ const client = require('./client');
 const follow = require('./follow'); // function to hop multiple links by "rel"
 
 var root = '/api';
-var children = 'lawcaseInfoes';
+var children = 'userOperationLoggings';
 
-class LawcaseInfoDisplay extends React.Component {
+class UserOperationLoggingDisplay extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {lawcaseInfoes: [], attributes: [], page: 1, pageSize: 12, links: {}};
+		this.state = {userOperationLoggings: [], attributes: [], page: 1, pageSize: 12, links: {}};
 		this.onNavigate = this.onNavigate.bind(this);
 		this.onSearch = this.onSearch.bind(this);
 	}
 
 	loadFromServer(pageSize) {
 		root = "/api";
-		children = "lawcaseInfoes";
+		children = "userOperationLoggings";
 		follow(client, root, [
 				{rel: children, params: {size: pageSize}}]
-		).then(lawcaseInfoCollection => {
-			this.page = lawcaseInfoCollection.entity.page;
-			this.links = lawcaseInfoCollection.entity._links;
-			return lawcaseInfoCollection.entity._embedded.lawcaseInfoes.map(lawcaseInfo =>
+		).then(userOperationLoggingCollection => {
+			this.page = userOperationLoggingCollection.entity.page;
+			this.links = userOperationLoggingCollection.entity._links;
+			return userOperationLoggingCollection.entity._embedded.userOperationLoggings.map(userOperationLogging =>
 					client({
 						method: 'GET',
-						path: lawcaseInfo._links.self.href
+						path: userOperationLogging._links.self.href
 					})
 			);
-		}).then(lawcaseInfoPromises => {
-			return when.all(lawcaseInfoPromises);
-		}).done(lawcaseInfoes => {
+		}).then(userOperationLoggingPromises => {
+			return when.all(userOperationLoggingPromises);
+		}).done(userOperationLoggings => {
 			this.setState({
 				page: this.page,
-				lawcaseInfoes: lawcaseInfoes,
+				userOperationLoggings: userOperationLoggings,
 				pageSize: pageSize,
 				links: this.links
 			});
 		});
 	}
 	
-	getlawcaseInfoesByName(respondentName, pageSize) {
-		if (respondentName === "") {
+	getUserOperationLoggingsByOperatorDuringSpecificTimeRange(operator, startTime, endTime, pageSize) {
+		if (operator === "") {
 			root = "/api";
-			children = "lawcaseInfoes";
+			children = "userOperationLoggings";
 		} else {
-			root = "/api/lawcaseInfoes/search";
-			children = "findByRespondentNameContaining";
+			root = "/api/userOperationLoggings/search";
+			children = "findByOperatorContaining";
 		}
+		
 		follow(client, root, [
-				{rel: children, params: {respondentName: respondentName, size: pageSize}}]
-		).then(lawcaseInfoCollection => {
-			this.page = lawcaseInfoCollection.entity.page;
-			this.links = lawcaseInfoCollection.entity._links;
-			return lawcaseInfoCollection.entity._embedded.lawcaseInfoes.map(lawcaseInfo =>
+				{rel: children, params: {operator: operator, startTime: startTime, endTime: endTime, size: pageSize}}]
+		).then(userOperationLoggingCollection => {
+			this.page = userOperationLoggingCollection.entity.page;
+			this.links = userOperationLoggingCollection.entity._links;
+			return userOperationLoggingCollection.entity._embedded.userOperationLoggings.map(userOperationLogging =>
 					client({
 						method: 'GET',
-						path: lawcaseInfo._links.self.href
+						path: userOperationLogging._links.self.href
 					})
 			);
-		}).then(lawcaseInfoPromises => {
-			return when.all(lawcaseInfoPromises);
-		}).done(lawcaseInfoes => {
+		}).then(userOperationLoggingPromises => {
+			return when.all(userOperationLoggingPromises);
+		}).done(userOperationLoggings => {
 			this.setState({
 				page: this.page,
-				lawcaseInfoes: lawcaseInfoes,
+				userOperationLoggings: userOperationLoggings,
 				pageSize: pageSize,
 				links: this.links
 			});
@@ -80,22 +81,22 @@ class LawcaseInfoDisplay extends React.Component {
 		client({
 			method: 'GET',
 			path: navUri
-		}).then(lawcaseInfoCollection => {
-			this.links = lawcaseInfoCollection.entity._links;
-			this.page = lawcaseInfoCollection.entity.page;
+		}).then(userOperationLoggingCollection => {
+			this.links = userOperationLoggingCollection.entity._links;
+			this.page = userOperationLoggingCollection.entity.page;
 
-			return lawcaseInfoCollection.entity._embedded.lawcaseInfoes.map(lawcaseInfo =>
+			return userOperationLoggingCollection.entity._embedded.userOperationLoggings.map(userOperationLogging =>
 					client({
 						method: 'GET',
-						path: lawcaseInfo._links.self.href
+						path: userOperationLogging._links.self.href
 					})
 			);
-		}).then(lawcaseInfoPromises => {
-			return when.all(lawcaseInfoPromises);
-		}).done(lawcaseInfoes => {
+		}).then(userOperationLoggingPromises => {
+			return when.all(userOperationLoggingPromises);
+		}).done(userOperationLoggings => {
 			this.setState({
 				page: this.page,
-				lawcaseInfoes: lawcaseInfoes,
+				userOperationLoggings: userOperationLoggings,
 				pageSize: this.state.pageSize,
 				links: this.links
 			});
@@ -103,7 +104,12 @@ class LawcaseInfoDisplay extends React.Component {
 	}
 	
 	onSearch(e) {
-		this.getlawcaseInfoesByName(document.getElementById("name").value, this.state.pageSize);
+		this.getUserOperationLoggingsByOperatorDuringSpecificTimeRange(
+			document.getElementById("name").value,
+			'2009-12-31T16:00:00.000+000',
+			'2098-12-31T16:00:00.000+000',
+			this.state.pageSize
+		);
 	}
 
 	// tag::websocket-handlers[]
@@ -123,7 +129,6 @@ class LawcaseInfoDisplay extends React.Component {
 	// tag::register-handlers[]
 	componentDidMount() {
 		this.loadFromServer(this.state.pageSize);
-		//this.getlawcaseInfoesByName('张三', this.state.pageSize);
 	}
 	// end::register-handlers[]
 
@@ -131,12 +136,12 @@ class LawcaseInfoDisplay extends React.Component {
 		return (
 			<div className="searchBarPlusDataDisplay">
 				<div className="webdesigntuts-workshop">
-				    <input type="search" id="name" placeholder="请输入你所要查询的人名"></input>
+				    <input type="search" id="name" placeholder="请输入你所要查询的系统用户"></input>
 					<button onClick={this.onSearch}>搜索</button>
 				</div>
 				<div className="datadisplay">
-					<LawcaseInfoList page={this.state.page}
-								  lawcaseInfoes={this.state.lawcaseInfoes}
+					<UserOperationLoggingList page={this.state.page}
+								  userOperationLoggings={this.state.userOperationLoggings}
 								  links={this.state.links}
 								  pageSize={this.state.pageSize}
 								  onNavigate={this.onNavigate}/>
@@ -146,7 +151,7 @@ class LawcaseInfoDisplay extends React.Component {
 	}
 }
 
-class LawcaseInfoList extends React.Component {
+class UserOperationLoggingList extends React.Component {
 
 	constructor(props) {
 		super(props);
@@ -188,14 +193,14 @@ class LawcaseInfoList extends React.Component {
 	}
 
 	render() {
-		var lawcaseInfoes = this.props.lawcaseInfoes.map(lawcaseInfo =>
-			<LawcaseInfo key={lawcaseInfo.entity._links.self.href}
-					  lawcaseInfo={lawcaseInfo}
+		var userOperationLoggings = this.props.userOperationLoggings.map(userOperationLogging =>
+			<UserOperationLogging key={userOperationLogging.entity._links.self.href}
+					  userOperationLogging={userOperationLogging}
 					  attributes={this.props.attributes}
 					  onUpdate={this.props.onUpdate}
 					  onDelete={this.props.onDelete}/>
 		);
-		
+
 		var navLinks = [];
 		if ("first" in this.props.links) {
 			navLinks.push(<button key="first" onClick={this.handleNavFirst}>首页</button>);
@@ -215,18 +220,14 @@ class LawcaseInfoList extends React.Component {
 				<table>
 					<thead>
 						<tr>
-							<th>被调查人</th>
-							<th>出生年月</th>
-							<th>入党日期</th>
-							<th>工作单位及职务</th>
-							<th>立案时间</th>
-							<th>结案时间</th>
-							<th>党纪处分</th>
-							<th>政纪处分</th>
+							<th>系统用户</th>
+							<th>查看时间</th>
+							<th>查看信息</th>
+							<th>被查看人</th>
 						</tr>
 					</thead>
 					<tbody>
-						{lawcaseInfoes}
+						{userOperationLoggings}
 					</tbody>
 				</table>
 				<div>
@@ -237,7 +238,7 @@ class LawcaseInfoList extends React.Component {
 	}
 }
 
-class LawcaseInfo extends React.Component {
+class UserOperationLogging extends React.Component {
 
 	constructor(props) {
 		super(props);
@@ -245,24 +246,22 @@ class LawcaseInfo extends React.Component {
 	}
 
 	handleDelete() {
-		this.props.onDelete(this.props.lawcaseInfo);
+		this.props.onDelete(this.props.communistInfo);
 	}
-
+	
 	render() {
+		var logDate = new Date(this.props.userOperationLogging.entity.time);
+		
 		return (
 			<tr>
-				<td>{this.props.lawcaseInfo.entity.respondentName}</td>
-				<td>{this.props.lawcaseInfo.entity.birthDate}</td>
-				<td>{this.props.lawcaseInfo.entity.joinDate}</td>
-				<td>{this.props.lawcaseInfo.entity.workPlaceAndPosition}</td>
-				<td>{this.props.lawcaseInfo.entity.caseFilingDate}</td>
-				<td>{this.props.lawcaseInfo.entity.caseCloseDate}</td>
-				<td>{this.props.lawcaseInfo.entity.partyDisciplinePunishment}</td>
-				<td>{this.props.lawcaseInfo.entity.politicalDisciplinePunishment}</td>
+				<td>{this.props.userOperationLogging.entity.operator}</td>
+				<td>{logDate.toLocaleString()}</td>
+				<td>{this.props.userOperationLogging.entity.log}</td>
+				<td>{this.props.userOperationLogging.entity.userName}</td>
 			</tr>
 		)
 	}
 }
 
-module.exports = LawcaseInfoDisplay;
+module.exports = UserOperationLoggingDisplay;
 
