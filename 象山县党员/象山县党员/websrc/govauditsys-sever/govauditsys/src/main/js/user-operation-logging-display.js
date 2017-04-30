@@ -112,7 +112,7 @@ class UserOperationLoggingDisplay extends React.Component {
 		var startTime = "1970-01-01";
 		var endTime = "2099-12-31";
 		
-		if (this.state.startTime.constructor.name === 'Moment') {
+		if (this.state.startTime.constructor.name !== 'String') {
 			var startDate = new Date(this.state.startTime);
 			var startMonth = startDate.getMonth() + 1;
 			var startDay = startDate.getDate();
@@ -120,7 +120,7 @@ class UserOperationLoggingDisplay extends React.Component {
 						 (startDay > 9 ? '' : '0') + startDay].join('-');
 		}
 				
-		if (this.state.endTime.constructor.name === 'Moment') {
+		if (this.state.endTime.constructor.name !== 'String') {
 		    var endDate = new Date(this.state.endTime);
 			var endMonth = endDate.getMonth() + 1;
 			var endDay = endDate.getDate();
@@ -190,12 +190,14 @@ class UserOperationLoggingDisplay extends React.Component {
 						selected={this.state.startTime}
 						onChange={this.handleSelectStartTime}
 				    	placeholderText="请选择开始时间"
+				    	locale="zh-cn"
 					/>
 					<DatePicker
 						dateFormat="YYYY-MM-DD"
 						selected={this.state.endTime}
 						onChange={this.handleSelectEndTime}
 				    	placeholderText="请选择结束时间"
+				    	locale="zh-cn"
 					/>
 					<button onClick={this.onSearch}>搜索</button>
 				</div>

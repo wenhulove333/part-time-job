@@ -1,13 +1,12 @@
 var path = require('path');
-var webpack = require('webpack');
 
 var node_dir = __dirname + '/node_modules';
 
 module.exports = {
     entry: './src/main/js/app.js',
-    devtool: false,
+    devtool: 'sourcemaps',
     cache: true,
-    debug: false,
+    debug: true,
     resolve: {
         alias: {
             'stompjs': node_dir + '/stompjs/lib/stomp.js',
@@ -17,19 +16,6 @@ module.exports = {
         path: __dirname,
         filename: './src/main/resources/static/built/bundle.js'
     },
-    plugins: [
-        new webpack.optimize.OccurenceOrderPlugin(),
-        new webpack.DefinePlugin({
-          'process.env': {
-            'NODE_ENV': JSON.stringify('production')
-          }
-        }),
-        new webpack.optimize.UglifyJsPlugin({
-          compressor: {
-            warnings: false
-          }
-        })
-    ],
     module: {
         loaders: [
             {
