@@ -106,8 +106,8 @@ class UserOperationLoggingDisplay extends React.Component {
 	onSearch(e) {
 		this.getUserOperationLoggingsByOperatorDuringSpecificTimeRange(
 			document.getElementById("name").value,
-			'2009-12-31T16:00:00.000+000',
-			'2098-12-31T16:00:00.000+000',
+			'2010-01-01 00:00:00',
+			'2099-01-01 00:00:00',
 			this.state.pageSize
 		);
 	}

@@ -15,9 +15,17 @@
  */
 package com.ss.govauditsys;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.format.FormatterRegistry;
+import org.springframework.format.support.FormattingConversionService;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+
+import com.ss.govauditsys.converter.StringToCalendar;
 
 /**
  * @author Zhang Wenhu
@@ -29,6 +37,12 @@ public class GovAuditSys {
 
 	public static void main(String[] args) {
 		SpringApplication.run(GovAuditSys.class, args);
+	}
+	
+	@Autowired
+	@Qualifier("defaultConversionService")
+	public void configureConversionService(FormattingConversionService formattingConversionService) {
+		formattingConversionService.addConverter(new StringToCalendar());
 	}
 }
 // end::code[]

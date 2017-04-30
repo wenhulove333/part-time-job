@@ -16,8 +16,8 @@ public interface UserOperationLoggingRepository extends PagingAndSortingReposito
 			+ "where userOperationLogging.operator like %?1% and userOperationLogging.time >= ?2 and userOperationLogging.time < ?3")
 	Page<UserOperationLogging> findByOperatorContaining(
 		@Param("operator") String operator,
-		@Param("startTime") String startTime,
-		@Param("endTime") String endTime,
+		@Param("startTime") Calendar startTime,
+		@Param("endTime") Calendar endTime,
 		Pageable pageable
 	);
 	
