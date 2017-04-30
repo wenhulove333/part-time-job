@@ -12,7 +12,15 @@ const UserOperationLoggingDisplay = require('./user-operation-logging-display');
 class AdminOps extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {data_uri: null, names: []};
+		this.state = {
+			data_uri: null,
+			uploadresult: {uploadcommunistinfo: '', uploadinspectpersoninfo: '', uploadlawcaseinfo: ''},
+			uploadresultStyle: {uploadcommunistinfo: {color: '#0F0'}, uploadinspectpersoninfo: {color: '#0F0'}, uploadlawcaseinfo: {color: '#0F0'}}
+		}
+		var divStyle = {
+	            textAlign:'center',
+	            fontWeight:'bold'
+			};
 		this.handleCommunistInfoFile = this.handleCommunistInfoFile.bind(this);
 		this.handleInspectPersonInfoFile = this.handleInspectPersonInfoFile.bind(this);
 		this.handleLawcaseInfoFile = this.handleLawcaseInfoFile.bind(this);
@@ -26,7 +34,24 @@ class AdminOps extends React.Component {
 			params: {action: action},
 			entity: this.state.data_uri
 		}).done(response =>{
-			this.setState({data_uri: this.state.data_uri, names: response.entity});
+			if(response.hasOwnProperty('entity') && response.entity.constructor.name === 'Array') {
+				if (response.entity[0] == 'success') {
+					var state = this.state;
+					state.uploadresultStyle[action] = {color: '#0F0'};
+					state.uploadresult[action] = '导入成功';
+					this.setState(state);
+				} else {
+					var state = this.state;
+					state.uploadresultStyle[action] = {color: '#F00'};
+					state.uploadresult[action] = '导入失败';
+					this.setState(state);
+				}
+			} else {
+				var state = this.state;
+				state.uploadresultStyle[action] = {color: '#F00'};
+				state.uploadresult[action] = '未知异常';
+				this.setState(state);
+			}
 		});
 	}
 	
@@ -79,9 +104,21 @@ class AdminOps extends React.Component {
 		return (
 			<div className="subModuleDataDisplay">
 				<table>
-					<tr><td>导入党员信息:</td><td><input type="file" name="file" onChange={this.handleCommunistInfoFile}/></td></tr>
-					<tr><td>导入监察对象信息:</td><td><input type="file" name="file" onChange={this.handleInspectPersonInfoFile}/></td></tr>
-					<tr><td>导入案件信息:</td><td><input type="file" name="file" onChange={this.handleLawcaseInfoFile}/></td></tr>
+					<tr>
+						<td>导入党员信息:</td>
+						<td><input type="file" name="file" onChange={this.handleCommunistInfoFile}/></td>
+						<td style={this.state.uploadresultStyle['uploadcommunistinfo']}>{this.state.uploadresult['uploadcommunistinfo']}</td>
+					</tr>
+					<tr>
+						<td>导入监察对象信息:</td>
+						<td><input type="file" name="file" onChange={this.handleInspectPersonInfoFile}/></td>
+						<td style={this.state.uploadresultStyle['uploadinspectpersoninfo']}>{this.state.uploadresult['uploadinspectpersoninfo']}</td>
+					</tr>
+					<tr>
+						<td>导入案件信息:</td>
+						<td><input type="file" name="file" onChange={this.handleLawcaseInfoFile}/></td>
+						<td style={this.state.uploadresultStyle['uploadlawcaseinfo']}>{this.state.uploadresult['uploadlawcaseinfo']}</td>
+					</tr>
 				</table>
 				<UserOperationLoggingDisplay />
 				</div>

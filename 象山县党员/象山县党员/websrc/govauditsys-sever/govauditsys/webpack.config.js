@@ -4,9 +4,9 @@ var node_dir = __dirname + '/node_modules';
 
 module.exports = {
     entry: './src/main/js/app.js',
-    devtool: 'sourcemaps',
+    devtool: false,
     cache: true,
-    debug: true,
+    debug: false,
     resolve: {
         alias: {
             'stompjs': node_dir + '/stompjs/lib/stomp.js',

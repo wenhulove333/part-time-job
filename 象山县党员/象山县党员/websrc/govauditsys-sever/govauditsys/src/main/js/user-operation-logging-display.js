@@ -7,6 +7,9 @@ const client = require('./client');
 
 const follow = require('./follow'); // function to hop multiple links by "rel"
 
+import DatePicker from 'react-datepicker';
+import moment from 'moment';
+
 var root = '/api';
 var children = 'userOperationLoggings';
 
@@ -14,9 +17,11 @@ class UserOperationLoggingDisplay extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {userOperationLoggings: [], attributes: [], page: 1, pageSize: 12, links: {}};
+		this.state = {userOperationLoggings: [], attributes: [], page: 1, pageSize: 12, links: {}, startTime: '', endTime: ''};
 		this.onNavigate = this.onNavigate.bind(this);
 		this.onSearch = this.onSearch.bind(this);
+		this.handleSelectStartTime = this.handleSelectStartTime.bind(this);
+		this.handleSelectEndTime = this.handleSelectEndTime.bind(this);
 	}
 
 	loadFromServer(pageSize) {
@@ -104,12 +109,55 @@ class UserOperationLoggingDisplay extends React.Component {
 	}
 	
 	onSearch(e) {
+		var startTime = "1970-01-01";
+		var endTime = "2099-12-31";
+		
+		if (this.state.startTime.constructor.name === 'Moment') {
+			var startDate = new Date(this.state.startTime);
+			var startMonth = startDate.getMonth() + 1;
+			var startDay = startDate.getDate();
+			startTime = [startDate.getFullYear(), (startMonth > 9 ? '' : '0') + startMonth,
+						 (startDay > 9 ? '' : '0') + startDay].join('-');
+		}
+				
+		if (this.state.endTime.constructor.name === 'Moment') {
+		    var endDate = new Date(this.state.endTime);
+			var endMonth = endDate.getMonth() + 1;
+			var endDay = endDate.getDate();
+			endTime = [endDate.getFullYear(), (endMonth > 9 ? '' : '0') + endMonth,
+						 (endDay > 9 ? '' : '0') + endDay].join('-');
+		}
+		
 		this.getUserOperationLoggingsByOperatorDuringSpecificTimeRange(
 			document.getElementById("name").value,
-			'2010-01-01 00:00:00',
-			'2099-01-01 00:00:00',
+			startTime + ' 00:00:00',
+			endTime + ' 00:00:00',
 			this.state.pageSize
 		);
+	}
+	
+	handleSelectStartTime(startTime) {
+		var state = this.state;
+		
+		if (startTime == null) {
+			startTime = '';
+		}
+		
+		state.startTime = startTime;
+		
+		this.setState(state);
+	}
+	
+	handleSelectEndTime(endTime) {
+		var state = this.state;
+		
+		if (endTime == null) {
+			endTime = '';
+		}
+		
+		state.endTime = endTime;
+		
+		this.setState(state);
 	}
 
 	// tag::websocket-handlers[]
@@ -137,6 +185,18 @@ class UserOperationLoggingDisplay extends React.Component {
 			<div className="searchBarPlusDataDisplay">
 				<div className="webdesigntuts-workshop">
 				    <input type="search" id="name" placeholder="请输入你所要查询的系统用户"></input>
+				    <DatePicker
+						dateFormat="YYYY-MM-DD"
+						selected={this.state.startTime}
+						onChange={this.handleSelectStartTime}
+				    	placeholderText="请选择开始时间"
+					/>
+					<DatePicker
+						dateFormat="YYYY-MM-DD"
+						selected={this.state.endTime}
+						onChange={this.handleSelectEndTime}
+				    	placeholderText="请选择结束时间"
+					/>
 					<button onClick={this.onSearch}>搜索</button>
 				</div>
 				<div className="datadisplay">
