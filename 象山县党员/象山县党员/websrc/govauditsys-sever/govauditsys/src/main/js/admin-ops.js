@@ -34,7 +34,7 @@ class AdminOps extends React.Component {
 			params: {action: action},
 			entity: this.state.data_uri
 		}).done(response =>{
-			if(response.hasOwnProperty('entity') && response.entity.constructor.name === 'Array') {
+			if(response.hasOwnProperty('entity')) {
 				if (response.entity[0] == 'success') {
 					var state = this.state;
 					state.uploadresultStyle[action] = {color: '#0F0'};

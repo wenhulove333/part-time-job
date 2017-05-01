@@ -7,6 +7,8 @@ const client = require('./client');
 
 const follow = require('./follow'); // function to hop multiple links by "rel"123
 
+const Promise = require("bluebird");
+
 const ReactD3 = require('react-d3-components');
 const BarChart = ReactD3.BarChart;
 const PieChart = ReactD3.PieChart;
@@ -24,6 +26,10 @@ class BarChartAnalysis extends React.Component {
 		};
 		
 		var dataSrcs = [];
+			
+		var tooltip = function(x, y, y0) {
+		    return x + ": " + y0;
+		};
 		
 		for(var key in this.props.data) {
 			dataSrcs.push([{label: key, values: this.props.data[key]}]);
@@ -36,11 +42,11 @@ class BarChartAnalysis extends React.Component {
 				<div className="divabreastDisplay" >
 					<div style={divStyle}><span>{dataSrc[0]['label']}</span></div>
 					<BarChart
-			        groupedBars
-			        data={dataSrc}
-			        width={1200 / dataSrcs.length}
-			        height={800 / dataSrcs.length}
-			        margin={{top: 10, bottom: 50, left: 50, right: 10}}/>
+				        data={dataSrc}
+				        width={1200 / dataSrcs.length}
+				        height={800 / dataSrcs.length}
+						tooltipHtml={tooltip}
+				        margin={{top: 10, bottom: 50, left: 50, right: 10}}/>
 				</div>
 			);
 		}
@@ -71,6 +77,10 @@ class PieChartAnalysis extends React.Component {
 			dataSrcs.push({label: key, values: this.props.data[key]});
 		}
 		
+		var tooltip = function(x, y) {
+		    return x + ": " + y;
+		};
+		
 		var pieCharts = <div style={divStyle}><span>没有获取到任何数据！！！</span></div>;
 		
 		if (dataSrcs.length != 0) {
@@ -82,6 +92,7 @@ class PieChartAnalysis extends React.Component {
 		            width={1200 / dataSrcs.length}
 		            height={1200 / dataSrcs.length}
 		            margin={{top: 80, bottom: 80, left: 80, right: 80}}
+					tooltipHtml={tooltip}
 		            sort={sort}
 		            />
 				</div>
@@ -104,7 +115,7 @@ class LineChartAnalysis extends React.Component {
 	render() {
 		var myDate = new Date();
 		var currentYear = myDate.getFullYear();
-		var years = [(currentYear - 2).toString(), (currentYear - 1).toString(), currentYear.toString()];
+		var years = [currentYear - 2, currentYear - 1, currentYear];
 		var dataSrcs = [
 	    	{
 		        label: 'LineChart',
@@ -112,22 +123,35 @@ class LineChartAnalysis extends React.Component {
 	        }
 	    ];
 		
+		var tooltip = function(label, data) {
+		    return data.x + ": " + data.y;
+		};
+		
+		var valuesAccessor = function(stack) { return stack.values; };
+		var xAccessor = function(element) { return parseInt(element.x); };
+		var yAccessor = function(element) { return element.y; };
+		
 		for(var key in this.props.data) {
 			var sum = 0;
+			var strKey = parseInt(key);
 			for (var item in this.props.data[key]) {
 				sum += this.props.data[key][item]['y'];
 			}
 			
-			dataSrcs[0]['values'][years.indexOf(key)]['y'] = sum;
+			dataSrcs[0]['values'][years.indexOf(strKey)]['y'] = sum;
 			sum = 0;
 		}
 		
 		return (
-			<LineChart
-            data={dataSrcs}
-            width={1200}
-            height={800}
-            margin={{top: 50, bottom: 50, left: 50, right: 50}}/>
+				<LineChart
+                data={dataSrcs}
+                width={1200}
+                height={800}
+                margin={{top: 10, bottom: 50, left: 50, right: 10}}
+                tooltipHtml={tooltip}
+				xScale={d3.time.scale().domain([years[0], years[2]]).range([0, 1200 - 200])}
+				xAxis={{tickFormat: d3.format("d")}}
+                />
 		);
 	}
 }
