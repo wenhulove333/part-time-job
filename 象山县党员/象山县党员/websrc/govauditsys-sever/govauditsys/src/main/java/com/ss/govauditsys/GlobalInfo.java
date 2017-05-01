@@ -9,7 +9,7 @@ public class GlobalInfo {
 	
 	static {
 			logMap.put("/api/communistInfoes/search/findByNameContaining", "查看党员信息");
-			logMap.put("／api/inspectPersonInfoes/search/findByNameContaining", "查看监察对象信息");
+			logMap.put("/api/inspectPersonInfoes/search/findByNameContaining", "查看监察对象信息");
 			logMap.put("/api/lawcaseInfoes/search/findByRespondentNameContaining", "查看案件信息");
 	};
 	

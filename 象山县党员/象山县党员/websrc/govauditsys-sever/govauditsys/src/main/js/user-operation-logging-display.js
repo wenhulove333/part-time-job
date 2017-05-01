@@ -312,7 +312,7 @@ class UserOperationLogging extends React.Component {
 	}
 	
 	render() {
-		var logDate = new Date(this.props.userOperationLogging.entity.time);
+		var logDate = new Date(this.props.userOperationLogging.entity.time.replace(/\+0000/, "Z"));
 		
 		return (
 			<tr>

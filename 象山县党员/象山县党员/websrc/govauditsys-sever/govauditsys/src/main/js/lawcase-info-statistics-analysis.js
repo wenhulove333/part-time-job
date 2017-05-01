@@ -7,6 +7,8 @@ const client = require('./client');
 
 const follow = require('./follow'); // function to hop multiple links by "rel"123
 
+const Promise = require("bluebird");
+
 const ReactD3 = require('react-d3-components');
 const BarChart = ReactD3.BarChart;
 const PieChart = ReactD3.PieChart;

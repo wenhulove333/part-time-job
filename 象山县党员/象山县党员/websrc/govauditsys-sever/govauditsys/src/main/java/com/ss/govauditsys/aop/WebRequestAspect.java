@@ -40,15 +40,15 @@ public class WebRequestAspect {
         // 接收到请求，记录请求内容
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
-        // 记录下请求内容
-        logger.info("URI : " + request.getRequestURI().toString());
-        logger.info("HTTP_METHOD : " + request.getMethod());
-        for(Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
-        	logger.info("HTTP Parameter: " + entry.getKey() + " -> " + entry.getValue());
-        }
-        logger.info("IP : " + request.getRemoteAddr());
-        logger.info("CLASS_METHOD : " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
-        logger.info("ARGS : " + Arrays.toString(joinPoint.getArgs()));
+//        // 记录下请求内容
+//        logger.info("URI : " + request.getRequestURI().toString());
+//        logger.info("HTTP_METHOD : " + request.getMethod());
+//        for(Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
+//        	logger.info("HTTP Parameter: " + entry.getKey() + " -> " + entry.getValue());
+//        }
+//        logger.info("IP : " + request.getRemoteAddr());
+//        logger.info("CLASS_METHOD : " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
+//        logger.info("ARGS : " + Arrays.toString(joinPoint.getArgs()));
         
         String uri = request.getRequestURI().toString();
         
@@ -64,9 +64,9 @@ public class WebRequestAspect {
         	));
         }
     }
-    @AfterReturning(returning = "ret", pointcut = "webLog()")
-    public void doAfterReturning(Object ret) throws Throwable {
-        // 处理完请求，返回内容
-        logger.info("RESPONSE : " + ret);
-    }
+//    @AfterReturning(returning = "ret", pointcut = "webLog()")
+//    public void doAfterReturning(Object ret) throws Throwable {
+//        // 处理完请求，返回内容
+////        logger.info("RESPONSE : " + ret);
+//    }
 }
