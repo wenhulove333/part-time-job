@@ -14,7 +14,7 @@ class InspectPersonInfoDisplay extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {inspectPersonInfoes: [], attributes: [], page: 1, pageSize: 12, links: {}};
+		this.state = {inspectPersonInfoes: [], attributes: [], page: 1, pageSize: 20, links: {}};
 		this.onNavigate = this.onNavigate.bind(this);
 		this.onSearch = this.onSearch.bind(this);
 	}
@@ -131,7 +131,7 @@ class InspectPersonInfoDisplay extends React.Component {
 		return (
 			<div className="searchBarPlusDataDisplay">
 				<div className="webdesigntuts-workshop">
-				    <input type="search" id="name" placeholder="请输入你所要查询的人名"></input>
+				    <input type="search" id="name" placeholder="请输入要查询的姓名或身份证号"></input>
 					<button onClick={this.onSearch}>搜索</button>
 				</div>
 				<div className="datadisplay">

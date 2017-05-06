@@ -16,6 +16,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
+import com.ss.govauditsys.exception.ExcelImportException;
 import com.ss.govauditsys.sysdata.model.CommunistInfo;
 import com.ss.govauditsys.sysdata.model.InspectPersonInfo;
 import com.ss.govauditsys.sysdata.model.LawcaseInfo;
@@ -51,6 +52,14 @@ public class ExcelReader {
         }
         return title;
     }
+    
+    private String getCellValueByIndex(HSSFRow row, int columIndex) {
+    	if (null == row.getCell(columIndex)) {
+    		return "";
+    	}
+    	
+    	return row.getCell(columIndex).getStringCellValue();
+    }
 
     /**
      * read the content of excel
@@ -77,13 +86,15 @@ public class ExcelReader {
         for( int i = 1; i <= rowNum; i++ )
         {
             row = sheet.getRow( i );
-            String name = row.getCell( 0 ).getStringCellValue();
-            content.add(name);
+            String name = getCellValueByIndex(row, 0);
+            if (!name.equals("")) {
+            	content.add(name);
+            }
         }
         return content;
     }
     
-    public List<CommunistInfo> readCommunistInfoes( InputStream is) {
+    public List<CommunistInfo> readCommunistInfoes( InputStream is) throws ExcelImportException {
     	List<CommunistInfo> communistInfoes = new ArrayList<>();
     	
     	List<String> content = new ArrayList<String>();
@@ -103,26 +114,31 @@ public class ExcelReader {
 
         for( int i = 1; i <= rowNum; i++ )
         {
+        	int columnIndex = 0;
+        	
             row = sheet.getRow( i );
             CommunistInfo communistInfo = new CommunistInfo();
-        	
-        	communistInfo.setName(row.getCell( 0 ).getStringCellValue());
-        	communistInfo.setIdNumber(row.getCell( 1 ).getStringCellValue());
-        	communistInfo.setGender(row.getCell( 2 ).getStringCellValue());
-        	communistInfo.setJoinDate(row.getCell( 3 ).getStringCellValue());
-        	communistInfo.setEducation(row.getCell( 4 ).getStringCellValue());
-        	communistInfo.setPartyBranch(row.getCell( 5 ).getStringCellValue());
-        	communistInfo.setSuperiorOrg(row.getCell( 6 ).getStringCellValue());
-        	communistInfo.setNativePlace(row.getCell( 7 ).getStringCellValue());
-        	communistInfo.setNation(row.getCell( 8 ).getStringCellValue());
-        	communistInfo.setIndividualStatus(row.getCell( 9 ).getStringCellValue());
+            
+        	communistInfo.setName(getCellValueByIndex(row, 0));
+        	if (getCellValueByIndex(row, 1).equals("")) {
+        		throw new ExcelImportException("第" + (i + 1) + "行" + "身份证号码为空");
+        	}
+        	communistInfo.setIdNumber(getCellValueByIndex(row, 1));
+        	communistInfo.setGender(getCellValueByIndex(row, 2));
+        	communistInfo.setJoinDate(getCellValueByIndex(row, 3));
+        	communistInfo.setEducation(getCellValueByIndex(row, 4));
+        	communistInfo.setPartyBranch(getCellValueByIndex(row, 5));
+        	communistInfo.setSuperiorOrg(getCellValueByIndex(row, 6));
+        	communistInfo.setNativePlace(getCellValueByIndex(row, 7));
+        	communistInfo.setNation(getCellValueByIndex(row, 8));
+        	communistInfo.setIndividualStatus(getCellValueByIndex(row, 9));
             
             communistInfoes.add(communistInfo);
         }
         return communistInfoes;
     }
     
-    public List<InspectPersonInfo> readInspectPersonInfoes( InputStream is) {
+    public List<InspectPersonInfo> readInspectPersonInfoes( InputStream is) throws ExcelImportException {
     	List<InspectPersonInfo> inspectPersonInfoes = new ArrayList<>();
     	
     	List<String> content = new ArrayList<String>();
@@ -145,11 +161,14 @@ public class ExcelReader {
             row = sheet.getRow( i );
             InspectPersonInfo inspectPersonInfo = new InspectPersonInfo();
         	
-            inspectPersonInfo.setName(row.getCell( 0 ).getStringCellValue());
-            inspectPersonInfo.setIdNumber(row.getCell( 1 ).getStringCellValue());
-            inspectPersonInfo.setGender(row.getCell( 2 ).getStringCellValue());
-            inspectPersonInfo.setEducation(row.getCell( 3 ).getStringCellValue());
-            inspectPersonInfo.setWorkPlace(row.getCell( 4 ).getStringCellValue());
+            inspectPersonInfo.setName(getCellValueByIndex(row, 0));
+            if (getCellValueByIndex(row, 1).equals("")) {
+        		throw new ExcelImportException("第" + (i + 1) + "行" + "身份证号码为空");
+        	}
+            inspectPersonInfo.setIdNumber(getCellValueByIndex(row, 1));
+            inspectPersonInfo.setGender(getCellValueByIndex(row, 2));
+            inspectPersonInfo.setEducation(getCellValueByIndex(row, 3));
+            inspectPersonInfo.setWorkPlace(getCellValueByIndex(row, 4));
             
             inspectPersonInfoes.add(inspectPersonInfo);
         }
@@ -179,14 +198,14 @@ public class ExcelReader {
             row = sheet.getRow( i );
             LawcaseInfo lawcaseInfo = new LawcaseInfo();
 
-            lawcaseInfo.setRespondentName(row.getCell( 0 ).getStringCellValue());
-            lawcaseInfo.setBirthDate(row.getCell( 1 ).getStringCellValue());
-            lawcaseInfo.setJoinDate(row.getCell( 2 ).getStringCellValue());
-            lawcaseInfo.setWorkPlaceAndPosition(row.getCell( 3 ).getStringCellValue());
-            lawcaseInfo.setCaseFilingDate(row.getCell( 4 ).getStringCellValue());
-            lawcaseInfo.setCaseCloseDate(row.getCell( 5 ).getStringCellValue());
-            lawcaseInfo.setPartyDisciplinePunishment(row.getCell( 6 ).getStringCellValue());
-            lawcaseInfo.setPoliticalDisciplinePunishment(row.getCell( 7 ).getStringCellValue());
+            lawcaseInfo.setRespondentName(getCellValueByIndex(row, 0));
+            lawcaseInfo.setBirthDate(getCellValueByIndex(row, 1));
+            lawcaseInfo.setJoinDate(getCellValueByIndex(row, 2));
+            lawcaseInfo.setWorkPlaceAndPosition(getCellValueByIndex(row, 3));
+            lawcaseInfo.setCaseFilingDate(getCellValueByIndex(row, 4));
+            lawcaseInfo.setCaseCloseDate(getCellValueByIndex(row, 5));
+            lawcaseInfo.setPartyDisciplinePunishment(getCellValueByIndex(row, 6));
+            lawcaseInfo.setPoliticalDisciplinePunishment(getCellValueByIndex(row, 7));
             
             lawcaseInfoes.add(lawcaseInfo);
         }

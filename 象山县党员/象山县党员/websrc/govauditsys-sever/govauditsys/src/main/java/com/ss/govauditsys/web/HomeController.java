@@ -43,7 +43,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.google.common.collect.Lists;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.ss.govauditsys.exception.ExcelImportException;
 import com.ss.govauditsys.sysdata.model.CommunistInfo;
 import com.ss.govauditsys.sysdata.model.CommunistInfoRespository;
 import com.ss.govauditsys.sysdata.model.InspectPersonInfo;
@@ -85,7 +87,7 @@ public class HomeController {
 	@ResponseBody
 	public List<String> uploadExcel(@RequestBody String payload, @RequestParam("action") String action) {
 		String excelData = payload.substring(payload.indexOf("base64,") + 7);
-		List<String> names = Arrays.asList("error");
+		List<String> names = Lists.newArrayList(Arrays.asList("error"));
 		CommunistInfo communistInfoSearchByIdNumber = null;
 		InspectPersonInfo inspectPersonInfoByIdNumber = null;
 		
@@ -152,7 +154,13 @@ public class HomeController {
 				
 				names = Arrays.asList("success");
 			}
+		} catch (ExcelImportException e) {
+			e.printStackTrace();
+			names.add(e.getMessage());
+			return names;
 		} catch (Exception e) {
+			e.printStackTrace();
+			names.add("未知异常");
 			return names;
 		}
 		

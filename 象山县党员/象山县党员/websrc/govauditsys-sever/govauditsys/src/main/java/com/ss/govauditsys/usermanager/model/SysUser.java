@@ -66,6 +66,16 @@ public class SysUser {
 		this.roles = roles;
 	}
 	
+	public SysUser(String name, String password, String[] roles, String accountName, String workPlace,
+			String position) {
+		this.name = name;
+		this.setPassword(password);
+		this.roles = roles;
+		this.accountName = accountName;
+		this.workPlace = workPlace;
+		this.position = position;
+	}
+
 	private String accountName;
 	private String workPlace;
 	private String position;

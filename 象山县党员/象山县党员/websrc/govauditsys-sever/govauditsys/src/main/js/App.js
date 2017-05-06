@@ -162,7 +162,7 @@ class Header extends React.Component {
 		return (
 			<div className="statusheader">
 		    	<div className="systemflag">
-		    		<span>象山县党员和监察对象管理系统</span>
+		    		<span>象山县党员和监察对象查询和比对系统</span>
 		    	</div>
 		    	<div className="headerlogin">
 			        <span>您好,来自</span><span>{this.state.from}</span><span>的</span><span>{this.state.position}</span><span>{this.state.userName}</span><span>.</span>        <span></span>

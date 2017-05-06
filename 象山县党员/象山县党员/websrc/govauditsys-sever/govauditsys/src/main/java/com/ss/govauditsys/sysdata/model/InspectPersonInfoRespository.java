@@ -25,6 +25,8 @@ public interface InspectPersonInfoRespository extends PagingAndSortingRepository
 	
 	Page<InspectPersonInfo> findByName(@Param("name") String name, Pageable pageable);
 	
+	@Query("select inspectPersonInfo from InspectPersonInfo inspectPersonInfo "
+			+ "where inspectPersonInfo.name like %?1% or inspectPersonInfo.idNumber like %?1%")
 	Page<InspectPersonInfo> findByNameContaining(@Param("name") String name, Pageable pageable);
 	
 	@Transactional

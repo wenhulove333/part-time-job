@@ -14,7 +14,7 @@ class LawcaseInfoDisplay extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {lawcaseInfoes: [], attributes: [], page: 1, pageSize: 12, links: {}};
+		this.state = {lawcaseInfoes: [], attributes: [], page: 1, pageSize: 20, links: {}};
 		this.onNavigate = this.onNavigate.bind(this);
 		this.onSearch = this.onSearch.bind(this);
 	}

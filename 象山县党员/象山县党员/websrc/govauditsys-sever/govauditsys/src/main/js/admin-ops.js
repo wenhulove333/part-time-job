@@ -28,6 +28,8 @@ class AdminOps extends React.Component {
 	}
 	
 	handleSubmit(action) {
+		this.initiateUploadResult(action);
+		
 		client({
 			method: 'POST',
 			path: '/upload/excel',
@@ -43,7 +45,7 @@ class AdminOps extends React.Component {
 				} else {
 					var state = this.state;
 					state.uploadresultStyle[action] = {color: '#F00'};
-					state.uploadresult[action] = '导入失败';
+					state.uploadresult[action] = response.entity[1];
 					this.setState(state);
 				}
 			} else {
@@ -58,6 +60,8 @@ class AdminOps extends React.Component {
 	handleCommunistInfoFile(e) {
 		var reader = new FileReader();
 		var file = e.target.files[0];
+		
+		this.initiateUploadResult();
 		
 		reader.onload = function(upload) {
 			this.setState({
@@ -98,6 +102,13 @@ class AdminOps extends React.Component {
 		}.bind(this);
 		
 		reader.readAsDataURL(file);
+	}
+	
+	initiateUploadResult(action) {
+		var state = this.state;
+		state.uploadresultStyle[action] = {color: '#000'};
+		state.uploadresult[action] = '导入中...';
+		this.setState(state);
 	}
 	
 	render() {
