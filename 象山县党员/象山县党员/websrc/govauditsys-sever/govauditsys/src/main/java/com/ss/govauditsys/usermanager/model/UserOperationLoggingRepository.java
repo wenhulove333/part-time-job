@@ -13,7 +13,8 @@ public interface UserOperationLoggingRepository extends PagingAndSortingReposito
 	UserOperationLogging save(UserOperationLogging userOperationLogging);
 	
 	@Query("select userOperationLogging from UserOperationLogging userOperationLogging "
-			+ "where userOperationLogging.operator like %?1% and userOperationLogging.time >= ?2 and userOperationLogging.time < ?3")
+			+ "where userOperationLogging.operator like %?1% and userOperationLogging.time >= ?2 and userOperationLogging.time <= ?3 "
+			+ "order by userOperationLogging.time desc")
 	Page<UserOperationLogging> findByOperatorContaining(
 		@Param("operator") String operator,
 		@Param("startTime") Calendar startTime,

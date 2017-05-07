@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.ss.govauditsys.converter.StringToCalendar;
 import com.ss.govauditsys.sysdata.model.CommunistInfo;
 import com.ss.govauditsys.sysdata.model.LawcaseInfoRepository;
 import com.ss.govauditsys.sysdata.model.QCommunistInfo;
@@ -33,7 +34,10 @@ public class PartyDisciplinePunishmentCountGroupSearchController {
 	public List<PartyDisciplinePunishmentCountGroup> multinamessearchCommunistinfo(@RequestParam("year") String year) {
 		List<PartyDisciplinePunishmentCountGroup> partyDisciplinePunishmentCountGroups = null;
 		
-		partyDisciplinePunishmentCountGroups = lawcaseInfoRepository.findPartyDisciplinePunishmentCountGroup(year);
+		partyDisciplinePunishmentCountGroups = lawcaseInfoRepository.findPartyDisciplinePunishmentCountGroup(
+			new StringToCalendar().convert(year + "-01-01 00:00:00"),
+			new StringToCalendar().convert(year + "-12-31 23:59:59")
+		);
 		
 		return partyDisciplinePunishmentCountGroups;
 	}

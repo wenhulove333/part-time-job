@@ -27,8 +27,9 @@ public interface CommunistInfoRespository extends PagingAndSortingRepository<Com
 	Page<CommunistInfo> findByName(@Param("name") String name, Pageable pageable);
 	
 	@Query("select communistInfo from CommunistInfo communistInfo "
-			+ "where communistInfo.name like %?1% or communistInfo.idNumber like %?1%")
-	Page<CommunistInfo> findByNameContaining(@Param("name") String name, Pageable pageable);
+			+ "where (communistInfo.name like %?1% or communistInfo.idNumber like %?1%) "
+			+ "and communistInfo.partyBranch like %?2%")
+	Page<CommunistInfo> findByNameContaining(@Param("name") String name, @Param("partyBranch") String partyBranch, Pageable pageable);
 	
 	@Transactional
 	@Modifying(clearAutomatically = true)

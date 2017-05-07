@@ -27,13 +27,13 @@ class AdminOps extends React.Component {
 		this.handleSubmit = this.handleSubmit.bind(this);
 	}
 	
-	handleSubmit(action) {
+	handleSubmit(action, filename) {
 		this.initiateUploadResult(action);
 		
 		client({
 			method: 'POST',
 			path: '/upload/excel',
-			params: {action: action},
+			params: {action: action, filename: filename},
 			entity: this.state.data_uri
 		}).done(response =>{
 			if(response.hasOwnProperty('entity')) {
@@ -68,7 +68,8 @@ class AdminOps extends React.Component {
 				data_uri: upload.target.result
 			});
 			
-			this.handleSubmit('uploadcommunistinfo');
+			this.handleSubmit('uploadcommunistinfo', file.name);
+			this.setState(state);
 		}.bind(this);
 		
 		reader.readAsDataURL(file);
@@ -83,7 +84,7 @@ class AdminOps extends React.Component {
 				data_uri: upload.target.result
 			});
 			
-			this.handleSubmit('uploadinspectpersoninfo');
+			this.handleSubmit('uploadinspectpersoninfo', file.name);
 		}.bind(this);
 		
 		reader.readAsDataURL(file);
@@ -98,7 +99,7 @@ class AdminOps extends React.Component {
 				data_uri: upload.target.result
 			});
 			
-			this.handleSubmit('uploadlawcaseinfo');
+			this.handleSubmit('uploadlawcaseinfo', file.name);
 		}.bind(this);
 		
 		reader.readAsDataURL(file);

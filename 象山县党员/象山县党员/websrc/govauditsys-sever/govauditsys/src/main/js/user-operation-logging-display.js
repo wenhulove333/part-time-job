@@ -51,7 +51,7 @@ class UserOperationLoggingDisplay extends React.Component {
 	}
 	
 	getUserOperationLoggingsByOperatorDuringSpecificTimeRange(operator, startTime, endTime, pageSize) {
-		if (operator === "") {
+		if (false) {
 			root = "/api";
 			children = "userOperationLoggings";
 		} else {
@@ -131,7 +131,7 @@ class UserOperationLoggingDisplay extends React.Component {
 		this.getUserOperationLoggingsByOperatorDuringSpecificTimeRange(
 			document.getElementById("name").value,
 			startTime + ' 00:00:00',
-			endTime + ' 00:00:00',
+			endTime + ' 23:59:59',
 			this.state.pageSize
 		);
 	}
@@ -176,7 +176,14 @@ class UserOperationLoggingDisplay extends React.Component {
 
 	// tag::register-handlers[]
 	componentDidMount() {
-		this.loadFromServer(this.state.pageSize);
+		var startTime = "1970-01-01";
+		var endTime = "2099-12-31";
+		this.getUserOperationLoggingsByOperatorDuringSpecificTimeRange(
+			"",
+			'1970-01-01 00:00:00',
+			'2099-12-31 23:59:59',
+			this.state.pageSize
+		);
 	}
 	// end::register-handlers[]
 

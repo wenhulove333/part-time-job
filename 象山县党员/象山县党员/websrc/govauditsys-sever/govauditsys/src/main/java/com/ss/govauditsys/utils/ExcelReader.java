@@ -15,13 +15,19 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import com.ss.govauditsys.converter.StringToCalendar;
 import com.ss.govauditsys.exception.ExcelImportException;
 import com.ss.govauditsys.sysdata.model.CommunistInfo;
 import com.ss.govauditsys.sysdata.model.InspectPersonInfo;
 import com.ss.govauditsys.sysdata.model.LawcaseInfo;
 
 public class ExcelReader {
+	private boolean isOldFormat;
+	
     private POIFSFileSystem fs;
 
     private HSSFWorkbook wb;
@@ -29,29 +35,20 @@ public class ExcelReader {
     private HSSFSheet sheet;
 
     private HSSFRow row;
+    
+    private XSSFWorkbook xwb;
+    
+    private XSSFSheet xsheet;
+    
+    private XSSFRow xrow;
 
-    public String[] readExcelTitle( InputStream is )
-    {
-        try
-        {
-            fs = new POIFSFileSystem( is );
-            wb = new HSSFWorkbook( fs );
-        }
-        catch( IOException e )
-        {
-            e.printStackTrace();
-        }
-        sheet = wb.getSheetAt( 0 );
-        row = sheet.getRow( 0 );
-        //标题总列数
-        int colNum = row.getPhysicalNumberOfCells();
-        String[] title = new String[ colNum ];
-        for( int i = 0; i < colNum; i++ )
-        {
-            title[i] = getStringCellValue( row.getCell( ( short ) i ) );
-        }
-        return title;
-    }
+    public ExcelReader(String fileName) {
+		if (fileName.contains(".xlsx")) {
+			isOldFormat = false;
+		} else {
+			isOldFormat = true;
+		}
+	}
     
     private String getCellValueByIndex(HSSFRow row, int columIndex) {
     	if (null == row.getCell(columIndex)) {
@@ -59,6 +56,32 @@ public class ExcelReader {
     	}
     	
     	return row.getCell(columIndex).getStringCellValue();
+    }
+    
+    private String getCellValueByIndex(XSSFRow row, int columIndex) {
+    	if (null == row.getCell(columIndex)) {
+    		return "";
+    	}
+    	
+    	return row.getCell(columIndex).getStringCellValue();
+    }
+    
+    private void openFirstSheetInWorkBook(InputStream is) {
+    	try
+        {
+	    	if (isOldFormat) {
+	            fs = new POIFSFileSystem( is );
+	            wb = new HSSFWorkbook( fs );
+	            sheet = wb.getSheetAt(0);
+	            
+	    	} else {
+	    		xwb = new XSSFWorkbook(is);
+	    		xsheet = xwb.getSheetAt(0);
+	    	}
+        } catch( IOException e )
+        {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -69,24 +92,13 @@ public class ExcelReader {
     public List<String> readSearchUserName( InputStream is )
     {
         List<String> content = new ArrayList<String>();
-        try
-        {
-            fs = new POIFSFileSystem( is );
-            wb = new HSSFWorkbook( fs );
-        }
-        catch( IOException e )
-        {
-            e.printStackTrace();
-        }
-        sheet = wb.getSheetAt( 0 );
+        openFirstSheetInWorkBook(is);
 
-        int rowNum = sheet.getLastRowNum();
-        row = sheet.getRow( 0 );
-
+        int rowNum = (isOldFormat ? sheet : xsheet).getLastRowNum();
+        
         for( int i = 1; i <= rowNum; i++ )
         {
-            row = sheet.getRow( i );
-            String name = getCellValueByIndex(row, 0);
+            String name = isOldFormat ? getCellValueByIndex(sheet.getRow(i), 0) : getCellValueByIndex(xsheet.getRow(i), 0);
             if (!name.equals("")) {
             	content.add(name);
             }
@@ -97,41 +109,47 @@ public class ExcelReader {
     public List<CommunistInfo> readCommunistInfoes( InputStream is) throws ExcelImportException {
     	List<CommunistInfo> communistInfoes = new ArrayList<>();
     	
-    	List<String> content = new ArrayList<String>();
-        try
-        {
-            fs = new POIFSFileSystem( is );
-            wb = new HSSFWorkbook( fs );
-        }
-        catch( IOException e )
-        {
-            e.printStackTrace();
-        }
-        sheet = wb.getSheetAt( 0 );
+    	openFirstSheetInWorkBook(is);
 
-        int rowNum = sheet.getLastRowNum();
-        row = sheet.getRow( 0 );
+        int rowNum = (isOldFormat ? sheet : xsheet).getLastRowNum();
 
         for( int i = 1; i <= rowNum; i++ )
         {
-        	int columnIndex = 0;
-        	
-            row = sheet.getRow( i );
             CommunistInfo communistInfo = new CommunistInfo();
             
-        	communistInfo.setName(getCellValueByIndex(row, 0));
-        	if (getCellValueByIndex(row, 1).equals("")) {
+        	communistInfo.setName(
+        		isOldFormat ? getCellValueByIndex(sheet.getRow(i), 0) : getCellValueByIndex(xsheet.getRow(i), 0)
+        	);
+        	if ((isOldFormat ? getCellValueByIndex(sheet.getRow(i), 1) : getCellValueByIndex(xsheet.getRow(i), 1)).equals("")) {
         		throw new ExcelImportException("第" + (i + 1) + "行" + "身份证号码为空");
         	}
-        	communistInfo.setIdNumber(getCellValueByIndex(row, 1));
-        	communistInfo.setGender(getCellValueByIndex(row, 2));
-        	communistInfo.setJoinDate(getCellValueByIndex(row, 3));
-        	communistInfo.setEducation(getCellValueByIndex(row, 4));
-        	communistInfo.setPartyBranch(getCellValueByIndex(row, 5));
-        	communistInfo.setSuperiorOrg(getCellValueByIndex(row, 6));
-        	communistInfo.setNativePlace(getCellValueByIndex(row, 7));
-        	communistInfo.setNation(getCellValueByIndex(row, 8));
-        	communistInfo.setIndividualStatus(getCellValueByIndex(row, 9));
+        	communistInfo.setIdNumber(
+            	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 1) : getCellValueByIndex(xsheet.getRow(i), 1)
+            );
+        	communistInfo.setGender(
+               	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 2) : getCellValueByIndex(xsheet.getRow(i), 2)
+            );
+        	communistInfo.setJoinDate(
+               	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 3) : getCellValueByIndex(xsheet.getRow(i), 3)
+            );
+        	communistInfo.setEducation(
+               	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 4) : getCellValueByIndex(xsheet.getRow(i), 4)
+            );
+        	communistInfo.setPartyBranch(
+               	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 5) : getCellValueByIndex(xsheet.getRow(i), 5)
+            );
+        	communistInfo.setSuperiorOrg(
+               	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 6) : getCellValueByIndex(xsheet.getRow(i), 6)
+            );
+        	communistInfo.setNativePlace(
+               	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 7) : getCellValueByIndex(xsheet.getRow(i), 7)
+            );
+        	communistInfo.setNation(
+               	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 8) : getCellValueByIndex(xsheet.getRow(i), 8)
+            );
+        	communistInfo.setIndividualStatus(
+               	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 9) : getCellValueByIndex(xsheet.getRow(i), 9)
+            );
             
             communistInfoes.add(communistInfo);
         }
@@ -141,34 +159,32 @@ public class ExcelReader {
     public List<InspectPersonInfo> readInspectPersonInfoes( InputStream is) throws ExcelImportException {
     	List<InspectPersonInfo> inspectPersonInfoes = new ArrayList<>();
     	
-    	List<String> content = new ArrayList<String>();
-        try
-        {
-            fs = new POIFSFileSystem( is );
-            wb = new HSSFWorkbook( fs );
-        }
-        catch( IOException e )
-        {
-            e.printStackTrace();
-        }
-        sheet = wb.getSheetAt( 0 );
-
-        int rowNum = sheet.getLastRowNum();
-        row = sheet.getRow( 0 );
+    	openFirstSheetInWorkBook(is);
+    	
+    	int rowNum = (isOldFormat ? sheet : xsheet).getLastRowNum();
 
         for( int i = 1; i <= rowNum; i++ )
         {
-            row = sheet.getRow( i );
             InspectPersonInfo inspectPersonInfo = new InspectPersonInfo();
         	
-            inspectPersonInfo.setName(getCellValueByIndex(row, 0));
-            if (getCellValueByIndex(row, 1).equals("")) {
+            inspectPersonInfo.setName(
+        		isOldFormat ? getCellValueByIndex(sheet.getRow(i), 0) : getCellValueByIndex(xsheet.getRow(i), 0)
+            );
+            if ((isOldFormat ? getCellValueByIndex(sheet.getRow(i), 1) : getCellValueByIndex(xsheet.getRow(i), 1)).equals("")) {
         		throw new ExcelImportException("第" + (i + 1) + "行" + "身份证号码为空");
         	}
-            inspectPersonInfo.setIdNumber(getCellValueByIndex(row, 1));
-            inspectPersonInfo.setGender(getCellValueByIndex(row, 2));
-            inspectPersonInfo.setEducation(getCellValueByIndex(row, 3));
-            inspectPersonInfo.setWorkPlace(getCellValueByIndex(row, 4));
+            inspectPersonInfo.setIdNumber(
+        		isOldFormat ? getCellValueByIndex(sheet.getRow(i), 1) : getCellValueByIndex(xsheet.getRow(i), 1)
+            );
+            inspectPersonInfo.setGender(
+        		isOldFormat ? getCellValueByIndex(sheet.getRow(i), 2) : getCellValueByIndex(xsheet.getRow(i), 2)
+            );
+            inspectPersonInfo.setEducation(
+        		isOldFormat ? getCellValueByIndex(sheet.getRow(i), 3) : getCellValueByIndex(xsheet.getRow(i), 3)
+            );
+            inspectPersonInfo.setWorkPlace(
+        		isOldFormat ? getCellValueByIndex(sheet.getRow(i), 4) : getCellValueByIndex(xsheet.getRow(i), 4)
+            );
             
             inspectPersonInfoes.add(inspectPersonInfo);
         }
@@ -177,35 +193,38 @@ public class ExcelReader {
     
     public List<LawcaseInfo> readLawcaseInfoes( InputStream is) {
     	List<LawcaseInfo> lawcaseInfoes = new ArrayList<>();
+    	openFirstSheetInWorkBook(is);
     	
-    	List<String> content = new ArrayList<String>();
-        try
-        {
-            fs = new POIFSFileSystem( is );
-            wb = new HSSFWorkbook( fs );
-        }
-        catch( IOException e )
-        {
-            e.printStackTrace();
-        }
-        sheet = wb.getSheetAt( 0 );
-
-        int rowNum = sheet.getLastRowNum();
-        row = sheet.getRow( 0 );
+    	int rowNum = (isOldFormat ? sheet : xsheet).getLastRowNum();
 
         for( int i = 1; i <= rowNum; i++ )
         {
-            row = sheet.getRow( i );
             LawcaseInfo lawcaseInfo = new LawcaseInfo();
 
-            lawcaseInfo.setRespondentName(getCellValueByIndex(row, 0));
-            lawcaseInfo.setBirthDate(getCellValueByIndex(row, 1));
-            lawcaseInfo.setJoinDate(getCellValueByIndex(row, 2));
-            lawcaseInfo.setWorkPlaceAndPosition(getCellValueByIndex(row, 3));
-            lawcaseInfo.setCaseFilingDate(getCellValueByIndex(row, 4));
-            lawcaseInfo.setCaseCloseDate(getCellValueByIndex(row, 5));
-            lawcaseInfo.setPartyDisciplinePunishment(getCellValueByIndex(row, 6));
-            lawcaseInfo.setPoliticalDisciplinePunishment(getCellValueByIndex(row, 7));
+            lawcaseInfo.setRespondentName(
+        		isOldFormat ? getCellValueByIndex(sheet.getRow(i), 0) : getCellValueByIndex(xsheet.getRow(i), 0)
+            );
+            lawcaseInfo.setBirthDate(new StringToCalendar().convert(
+            	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 1) : getCellValueByIndex(xsheet.getRow(i), 1)
+            ));
+            lawcaseInfo.setJoinDate(new StringToCalendar().convert(
+            	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 2) : getCellValueByIndex(xsheet.getRow(i), 2)
+            ));
+            lawcaseInfo.setWorkPlaceAndPosition(
+            	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 3) : getCellValueByIndex(xsheet.getRow(i), 3)
+            );
+            lawcaseInfo.setCaseFilingDate(new StringToCalendar().convert(
+            	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 4) : getCellValueByIndex(xsheet.getRow(i), 4)
+            ));
+            lawcaseInfo.setCaseCloseDate(new StringToCalendar().convert(
+            	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 5) : getCellValueByIndex(xsheet.getRow(i), 5)
+            ));
+            lawcaseInfo.setPartyDisciplinePunishment(
+        		isOldFormat ? getCellValueByIndex(sheet.getRow(i), 6) : getCellValueByIndex(xsheet.getRow(i), 6)
+        	);
+            lawcaseInfo.setPoliticalDisciplinePunishment(
+        		isOldFormat ? getCellValueByIndex(sheet.getRow(i), 7) : getCellValueByIndex(xsheet.getRow(i), 7)
+    		);
             
             lawcaseInfoes.add(lawcaseInfo);
         }

@@ -9,6 +9,7 @@ const Tabs = ReactTabs.Tabs;
 const TabList = ReactTabs.TabList;
 const TabPanel = ReactTabs.TabPanel;
 const CommunistInfoDisplay = require('./communist-info-display');
+const CommunistInfoLimitedDisplay = require('./communist-info-limited-display');
 const InspectPersonInfoDisplay = require('./inspect-person-info-display');
 const LawcaseInfoDisplay = require('./lawcase-info-display');
 const SysUserDisplay = require('./system-user-mgmt');
@@ -103,17 +104,21 @@ class Entry extends React.Component {
 						<Tab>党员信息查询</Tab>
 						<Tab>检查对象信息查询</Tab>
 						<Tab>案件信息查询</Tab>
+						<Tab>案件统计分析</Tab>
 					</TabList>
 		
 					<TabPanel>
-						<CommunistInfoDisplay />
+						<CommunistInfoLimitedDisplay />
 					</TabPanel>
 					<TabPanel>
 						<InspectPersonInfoDisplay />
 					</TabPanel>
 					<TabPanel>
 						<LawcaseInfoDisplay />
-					</TabPanel>							
+					</TabPanel>		
+					<TabPanel>
+						<LawcaseInfoStatisticsAnalysis />
+					</TabPanel>	
 				</Tabs>
 			);
 		}		

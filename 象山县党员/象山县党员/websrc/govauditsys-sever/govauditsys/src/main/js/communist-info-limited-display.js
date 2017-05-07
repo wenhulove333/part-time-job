@@ -8,69 +8,69 @@ const client = require('./client');
 const follow = require('./follow'); // function to hop multiple links by "rel"
 
 var root = '/api';
-var children = 'inspectPersonInfoes';
+var children = 'communistInfoes';
 
-class InspectPersonInfoDisplay extends React.Component {
+class CommunistInfoLimitDisplay extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {inspectPersonInfoes: [], attributes: [], page: 1, pageSize: 20, links: {}};
+		this.state = {communistInfoes: [], attributes: [], page: 1, pageSize: 20, links: {}};
 		this.onNavigate = this.onNavigate.bind(this);
 		this.onSearch = this.onSearch.bind(this);
 	}
 
 	loadFromServer(pageSize) {
 		root = "/api";
-		children = "inspectPersonInfoes";
+		children = "communistInfoes";
 		follow(client, root, [
 				{rel: children, params: {size: pageSize}}]
-		).then(inspectPersonInfoCollection => {
-			this.page = inspectPersonInfoCollection.entity.page;
-			this.links = inspectPersonInfoCollection.entity._links;
-			return inspectPersonInfoCollection.entity._embedded.inspectPersonInfoes.map(inspectPersonInfo =>
+		).then(communistInfoCollection => {
+			this.page = communistInfoCollection.entity.page;
+			this.links = communistInfoCollection.entity._links;
+			return communistInfoCollection.entity._embedded.communistInfoes.map(communistInfo =>
 					client({
 						method: 'GET',
-						path: inspectPersonInfo._links.self.href
+						path: communistInfo._links.self.href
 					})
 			);
-		}).then(inspectPersonInfoPromises => {
-			return when.all(inspectPersonInfoPromises);
-		}).done(inspectPersonInfoes => {
+		}).then(communistInfoPromises => {
+			return when.all(communistInfoPromises);
+		}).done(communistInfoes => {
 			this.setState({
 				page: this.page,
-				inspectPersonInfoes: inspectPersonInfoes,
+				communistInfoes: communistInfoes,
 				pageSize: pageSize,
 				links: this.links
 			});
 		});
 	}
 	
-	getInspectPersonInfoesContaining(name, workPlace, pageSize) {
-		if (false) {
+	getCommunistInfoesByName(name, pageSize) {
+		if (name === "") {
 			root = "/api";
-			children = "inspectPersonInfoes";
+			children = "communistInfoes";
 		} else {
-			root = "/api/inspectPersonInfoes/search";
+			root = "/api/communistInfoes/search";
 			children = "findByNameContaining";
 		}
 		
 		follow(client, root, [
-				{rel: children, params: {name: name, workPlace: workPlace, size: pageSize}}]
-		).then(inspectPersonInfoCollection => {
-			this.page = inspectPersonInfoCollection.entity.page;
-			this.links = inspectPersonInfoCollection.entity._links;
-			return inspectPersonInfoCollection.entity._embedded.inspectPersonInfoes.map(inspectPersonInfo =>
+				{rel: children, params: {name: name, size: pageSize}}]
+		).then(communistInfoCollection => {
+			this.page = communistInfoCollection.entity.page;
+			this.links = communistInfoCollection.entity._links;
+			return communistInfoCollection.entity._embedded.communistInfoes.map(communistInfo =>
 					client({
 						method: 'GET',
-						path: inspectPersonInfo._links.self.href
+						path: communistInfo._links.self.href
 					})
 			);
-		}).then(inspectPersonInfoPromises => {
-			return when.all(inspectPersonInfoPromises);
-		}).done(inspectPersonInfoes => {
+		}).then(communistInfoPromises => {
+			return when.all(communistInfoPromises);
+		}).done(communistInfoes => {
 			this.setState({
 				page: this.page,
-				inspectPersonInfoes: inspectPersonInfoes,
+				communistInfoes: communistInfoes,
 				pageSize: pageSize,
 				links: this.links
 			});
@@ -81,22 +81,22 @@ class InspectPersonInfoDisplay extends React.Component {
 		client({
 			method: 'GET',
 			path: navUri
-		}).then(inspectPersonInfoCollection => {
-			this.links = inspectPersonInfoCollection.entity._links;
-			this.page = inspectPersonInfoCollection.entity.page;
+		}).then(communistInfoCollection => {
+			this.links = communistInfoCollection.entity._links;
+			this.page = communistInfoCollection.entity.page;
 
-			return inspectPersonInfoCollection.entity._embedded.inspectPersonInfoes.map(inspectPersonInfo =>
+			return communistInfoCollection.entity._embedded.communistInfoes.map(communistInfo =>
 					client({
 						method: 'GET',
-						path: inspectPersonInfo._links.self.href
+						path: communistInfo._links.self.href
 					})
 			);
-		}).then(inspectPersonInfoPromises => {
-			return when.all(inspectPersonInfoPromises);
-		}).done(inspectPersonInfoes => {
+		}).then(communistInfoPromises => {
+			return when.all(communistInfoPromises);
+		}).done(communistInfoes => {
 			this.setState({
 				page: this.page,
-				inspectPersonInfoes: inspectPersonInfoes,
+				communistInfoes: communistInfoes,
 				pageSize: this.state.pageSize,
 				links: this.links
 			});
@@ -104,11 +104,7 @@ class InspectPersonInfoDisplay extends React.Component {
 	}
 	
 	onSearch(e) {
-		this.getInspectPersonInfoesContaining(
-			document.getElementById("name").value,
-			document.getElementById("workplace").value,
-			this.state.pageSize
-		);
+		this.getCommunistInfoesByName(document.getElementById("name").value, this.state.pageSize);
 	}
 
 	// tag::websocket-handlers[]
@@ -128,6 +124,7 @@ class InspectPersonInfoDisplay extends React.Component {
 	// tag::register-handlers[]
 	componentDidMount() {
 		this.loadFromServer(this.state.pageSize);
+		//this.getCommunistInfoesByName('张三', this.state.pageSize);
 	}
 	// end::register-handlers[]
 
@@ -136,12 +133,11 @@ class InspectPersonInfoDisplay extends React.Component {
 			<div className="searchBarPlusDataDisplay">
 				<div className="webdesigntuts-workshop">
 				    <input type="search" id="name" placeholder="请输入要查询的姓名或身份证号"></input>
-				    <input type="search" id="workplace" placeholder="请输入要查询的工作单位"></input>
 					<button onClick={this.onSearch}>搜索</button>
 				</div>
 				<div className="datadisplay">
-					<InspectPersonInfoList page={this.state.page}
-								  inspectPersonInfoes={this.state.inspectPersonInfoes}
+					<CommunistInfoList page={this.state.page}
+								  communistInfoes={this.state.communistInfoes}
 								  links={this.state.links}
 								  pageSize={this.state.pageSize}
 								  onNavigate={this.onNavigate}/>
@@ -151,7 +147,7 @@ class InspectPersonInfoDisplay extends React.Component {
 	}
 }
 
-class InspectPersonInfoList extends React.Component {
+class CommunistInfoList extends React.Component {
 
 	constructor(props) {
 		super(props);
@@ -159,6 +155,17 @@ class InspectPersonInfoList extends React.Component {
 		this.handleNavPrev = this.handleNavPrev.bind(this);
 		this.handleNavNext = this.handleNavNext.bind(this);
 		this.handleNavLast = this.handleNavLast.bind(this);
+		this.handleInput = this.handleInput.bind(this);
+	}
+
+	handleInput(e) {
+		e.preventDefault();
+		var pageSize = ReactDOM.findDOMNode(this.refs.pageSize).value;
+		if (/^[0-9]+$/.test(pageSize)) {
+			this.props.updatePageSize(pageSize);
+		} else {
+			ReactDOM.findDOMNode(this.refs.pageSize).value = pageSize.substring(0, pageSize.length - 1);
+		}
 	}
 
 	handleNavFirst(e) {
@@ -182,11 +189,17 @@ class InspectPersonInfoList extends React.Component {
 	}
 
 	render() {
-		var inspectPersonInfoes = this.props.inspectPersonInfoes.map(inspectPersonInfo =>
-			<InspectPersonInfo key={inspectPersonInfo.entity._links.self.href}
-					  inspectPersonInfo={inspectPersonInfo}/>
+		var pageInfo = this.props.page.hasOwnProperty("number") ?
+			<h3>CommunistInfoes - Page {this.props.page.number + 1} of {this.props.page.totalPages}</h3> : null;
+
+		var communistInfoes = this.props.communistInfoes.map(communistInfo =>
+			<CommunistInfo key={communistInfo.entity._links.self.href}
+					  communistInfo={communistInfo}
+					  attributes={this.props.attributes}
+					  onUpdate={this.props.onUpdate}
+					  onDelete={this.props.onDelete}/>
 		);
-		
+
 		var navLinks = [];
 		if ("first" in this.props.links) {
 			navLinks.push(<button key="first" onClick={this.handleNavFirst}>首页</button>);
@@ -206,15 +219,17 @@ class InspectPersonInfoList extends React.Component {
 				<table>
 					<thead>
 						<tr>
-							<th>姓名</th>
+							<th>党员姓名</th>
 							<th>身份证号</th>
 							<th>性别</th>
+							<th>入党日期</th>
 							<th>学历</th>
-							<th>工作单位</th>
+							<th>党支部</th>
+							<th>上级组织</th>
 						</tr>
 					</thead>
 					<tbody>
-						{inspectPersonInfoes}
+						{communistInfoes}
 					</tbody>
 				</table>
 				<div>
@@ -225,24 +240,31 @@ class InspectPersonInfoList extends React.Component {
 	}
 }
 
-class InspectPersonInfo extends React.Component {
+class CommunistInfo extends React.Component {
 
 	constructor(props) {
 		super(props);
+		this.handleDelete = this.handleDelete.bind(this);
+	}
+
+	handleDelete() {
+		this.props.onDelete(this.props.communistInfo);
 	}
 	
 	render() {
 		return (
 			<tr>
-				<td>{this.props.inspectPersonInfo.entity.name}</td>
-				<td>{this.props.inspectPersonInfo.entity.idNumber}</td>
-				<td>{this.props.inspectPersonInfo.entity.gender}</td>
-				<td>{this.props.inspectPersonInfo.entity.education}</td>
-				<td>{this.props.inspectPersonInfo.entity.workPlace}</td>
+				<td>{this.props.communistInfo.entity.name}</td>
+				<td>{this.props.communistInfo.entity.idNumber}</td>
+				<td>{this.props.communistInfo.entity.gender}</td>
+				<td>{this.props.communistInfo.entity.joinDate}</td>
+				<td>{this.props.communistInfo.entity.education}</td>
+				<td>{this.props.communistInfo.entity.partyBranch}</td>
+				<td>{this.props.communistInfo.entity.superiorOrg}</td>
 			</tr>
 		)
 	}
 }
 
-module.exports = InspectPersonInfoDisplay;
+module.exports = CommunistInfoLimitDisplay;
 

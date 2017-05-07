@@ -18,6 +18,7 @@ class SysUserDisplay extends React.Component {
 		this.onNavigate = this.onNavigate.bind(this);
 		this.onSearch = this.onSearch.bind(this);
 		this.onCreate = this.onCreate.bind(this);
+		this.onUpdate = this.onUpdate.bind(this);
 		this.onDelete = this.onDelete.bind(this);
 	}
 
@@ -109,6 +110,23 @@ class SysUserDisplay extends React.Component {
 			}
 		})
 	}
+	
+	onUpdate(sysUser, updatedSysUser) {
+		client({
+			method: 'PUT',
+			path: sysUser.entity._links.self.href,
+			entity: updatedSysUser,
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		}).done(response => {
+			if (response.status.code === 403) {
+				alert('您没有更新该用户的权限。');
+			} else {
+				this.loadFromServer(this.state.pageSize);
+			}
+		});
+	}
 
 	onNavigate(navUri) {
 		client({
@@ -177,7 +195,8 @@ class SysUserDisplay extends React.Component {
 								  links={this.state.links}
 								  pageSize={this.state.pageSize}
 								  onNavigate={this.onNavigate}
-								  onDelete={this.onDelete}/>
+								  onDelete={this.onDelete}
+								  onUpdate={this.onUpdate}/>
 				</div>
 			</div>
 		)
@@ -262,6 +281,7 @@ class SysUserList extends React.Component {
 							<th>用户职务</th>
 							<th>角色</th>
 							<th> </th>
+							<th> </th>
 						</tr>
 					</thead>
 					<tbody>
@@ -326,6 +346,9 @@ class SysUser extends React.Component {
 					<td>{this.props.sysUser.entity.workPlace}</td>
 					<td>{this.props.sysUser.entity.position}</td>
 					<td>{this.props.sysUser.entity.roles}</td>
+				    <td>
+					    <UpdateDialog sysUser={this.props.sysUser} onUpdate={this.props.onUpdate} />
+					</td>
 				</tr>
 			)
 		} else {
@@ -336,6 +359,9 @@ class SysUser extends React.Component {
 					<td>{this.props.sysUser.entity.workPlace}</td>
 					<td>{this.props.sysUser.entity.position}</td>
 					<td>{this.props.sysUser.entity.roles}</td>
+					<td>
+					    <UpdateDialog sysUser={this.props.sysUser} onUpdate={this.props.onUpdate} />
+					</td>
 					<td>
 						<button onClick={this.handleDelete}>删除用户</button>
 					</td>
@@ -368,9 +394,9 @@ class CreateDialog extends React.Component {
 	render() {
 		return (
 			<div className="createSysUserDialog">
-				<a href="#createEmployee">创建系统用户</a>
+				<a href="#createSysUserDialog">创建系统用户</a>
 			
-				<div id="createEmployee" className="modalDialog">
+				<div id="createSysUserDialog" className="modalDialog">
 					<div>
 						<a href="#" title="Close" className="close">X</a>
 
@@ -393,6 +419,63 @@ class CreateDialog extends React.Component {
 			</div>
 		)
 	}
+}
+
+class UpdateDialog extends React.Component {
+
+	constructor(props) {
+		super(props);
+		this.state = {value: '管理员'};
+		this.handleSubmit = this.handleSubmit.bind(this);
+		this.handleChange = this.handleChange.bind(this);
+	}
+
+	handleSubmit(e) {
+		e.preventDefault();
+		var updatedSysUser = {};
+		updatedSysUser['accountName'] = this.props.sysUser.entity['accountName'];
+		updatedSysUser['name'] = this.props.sysUser.entity['name'];
+		updatedSysUser['password'] = ReactDOM.findDOMNode(this.refs['password']).value.trim();
+		updatedSysUser['workPlace'] = this.props.sysUser.entity['workPlace'];
+		updatedSysUser['position'] = this.props.sysUser.entity['position'];
+		updatedSysUser['roles'] = [ReactDOM.findDOMNode(this.refs['roles']).value.trim()];
+		this.props.onUpdate(this.props.sysUser, updatedSysUser);
+		window.location = "#";
+	}
+	
+	componentDidMount() {
+		this.setState({value: this.props.sysUser.entity['roles'][0]});
+	}
+	
+	handleChange(event) {
+		this.setState({value: event.target.value});
+	}
+
+	render() {
+		return (
+				<div className="updateSysUserDialog">
+				<a href={"#updateSysUserDialog"+this.props.sysUser.entity['accountName']}>修改用户信息</a>
+			
+				<div id={"updateSysUserDialog"+this.props.sysUser.entity['accountName']} className="modalDialog">
+					<div>
+						<a href="#" title="Close" className="close">X</a>
+
+						<h2>修改用户信息</h2>
+
+						<form>
+							<p><input type="password" placeholder="请输入密码" ref="password" className="field" /></p>
+							<p><select ref="roles" value={this.state.value} onChange={this.handleChange}>
+								<option value ="普通用户">普通用户</option>
+								<option value ="管理员">管理员</option>
+							</select></p>
+							<button onClick={this.handleSubmit}>提交</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		)
+	}
+
 }
 
 module.exports = SysUserDisplay;

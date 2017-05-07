@@ -85,7 +85,11 @@ public class HomeController {
 	
 	@RequestMapping(value = "/upload/excel")
 	@ResponseBody
-	public List<String> uploadExcel(@RequestBody String payload, @RequestParam("action") String action) {
+	public List<String> uploadExcel(
+		@RequestBody String payload,
+		@RequestParam("action") String action,
+		@RequestParam("filename") String fileName
+	) {
 		String excelData = payload.substring(payload.indexOf("base64,") + 7);
 		List<String> names = Lists.newArrayList(Arrays.asList("error"));
 		CommunistInfo communistInfoSearchByIdNumber = null;
@@ -96,7 +100,7 @@ public class HomeController {
 				Base64.getDecoder().decode(excelData)
 			);
 			
-			ExcelReader reader = new ExcelReader();
+			ExcelReader reader = new ExcelReader(fileName);
 			if (action.equals("namessearch")) {
 				names = reader.readSearchUserName(dataInputStream);
 			} else if (action.equals("uploadcommunistinfo")) {

@@ -7,6 +7,9 @@ const client = require('./client');
 
 const follow = require('./follow'); // function to hop multiple links by "rel"
 
+import DatePicker from 'react-datepicker';
+import moment from 'moment';
+
 var root = '/api';
 var children = 'lawcaseInfoes';
 
@@ -14,9 +17,35 @@ class LawcaseInfoDisplay extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {lawcaseInfoes: [], attributes: [], page: 1, pageSize: 20, links: {}};
+		this.state = {lawcaseInfoes: [], attributes: [], page: 1, pageSize: 20, links: {}, startTime: '', endTime: ''};
 		this.onNavigate = this.onNavigate.bind(this);
 		this.onSearch = this.onSearch.bind(this);
+		this.handleSelectStartTime = this.handleSelectStartTime.bind(this);
+		this.handleSelectEndTime = this.handleSelectEndTime.bind(this);
+	}
+	
+	handleSelectStartTime(startTime) {
+		var state = this.state;
+		
+		if (startTime == null) {
+			startTime = '';
+		}
+		
+		state.startTime = startTime;
+		
+		this.setState(state);
+	}
+	
+	handleSelectEndTime(endTime) {
+		var state = this.state;
+		
+		if (endTime == null) {
+			endTime = '';
+		}
+		
+		state.endTime = endTime;
+		
+		this.setState(state);
 	}
 
 	loadFromServer(pageSize) {
@@ -45,8 +74,8 @@ class LawcaseInfoDisplay extends React.Component {
 		});
 	}
 	
-	getlawcaseInfoesByName(respondentName, pageSize) {
-		if (respondentName === "") {
+	getlawcaseInfoesContaining(respondentName, punishmentContent, startTime, endTime, pageSize) {
+		if (false) {
 			root = "/api";
 			children = "lawcaseInfoes";
 		} else {
@@ -54,7 +83,12 @@ class LawcaseInfoDisplay extends React.Component {
 			children = "findByRespondentNameContaining";
 		}
 		follow(client, root, [
-				{rel: children, params: {respondentName: respondentName, size: pageSize}}]
+				{rel: children, params: {
+					respondentName: respondentName,
+					punishmentContent: punishmentContent,
+					startTime: startTime,
+					endTime: endTime,
+					size: pageSize}}]
 		).then(lawcaseInfoCollection => {
 			this.page = lawcaseInfoCollection.entity.page;
 			this.links = lawcaseInfoCollection.entity._links;
@@ -103,7 +137,31 @@ class LawcaseInfoDisplay extends React.Component {
 	}
 	
 	onSearch(e) {
-		this.getlawcaseInfoesByName(document.getElementById("name").value, this.state.pageSize);
+		var startTime = "1970-01-01";
+		var endTime = "2099-12-31";
+		
+		if (this.state.startTime.constructor.name !== 'String') {
+			var startDate = new Date(this.state.startTime);
+			var startMonth = startDate.getMonth() + 1;
+			var startDay = startDate.getDate();
+			startTime = [startDate.getFullYear(), (startMonth > 9 ? '' : '0') + startMonth,
+						 (startDay > 9 ? '' : '0') + startDay].join('-');
+		}
+				
+		if (this.state.endTime.constructor.name !== 'String') {
+		    var endDate = new Date(this.state.endTime);
+			var endMonth = endDate.getMonth() + 1;
+			var endDay = endDate.getDate();
+			endTime = [endDate.getFullYear(), (endMonth > 9 ? '' : '0') + endMonth,
+						 (endDay > 9 ? '' : '0') + endDay].join('-');
+		}
+		
+		this.getlawcaseInfoesContaining(
+			document.getElementById("name").value,
+			document.getElementById("punishmentContent").value,
+			startTime + ' 00:00:00',
+			endTime + ' 23:59:59',
+			this.state.pageSize);
 	}
 
 	// tag::websocket-handlers[]
@@ -132,6 +190,21 @@ class LawcaseInfoDisplay extends React.Component {
 			<div className="searchBarPlusDataDisplay">
 				<div className="webdesigntuts-workshop">
 				    <input type="search" id="name" placeholder="请输入你所要查询的人名"></input>
+				    <input type="search" id="punishmentContent" placeholder="请输入你所要查询的处分内容"></input>
+				    <DatePicker
+						dateFormat="YYYY-MM-DD"
+						selected={this.state.startTime}
+						onChange={this.handleSelectStartTime}
+				    	placeholderText="请选择开始时间"
+				    	locale="zh-cn"
+					/>
+					<DatePicker
+						dateFormat="YYYY-MM-DD"
+						selected={this.state.endTime}
+						onChange={this.handleSelectEndTime}
+				    	placeholderText="请选择结束时间"
+				    	locale="zh-cn"
+					/>
 					<button onClick={this.onSearch}>搜索</button>
 				</div>
 				<div className="datadisplay">
@@ -247,16 +320,29 @@ class LawcaseInfo extends React.Component {
 	handleDelete() {
 		this.props.onDelete(this.props.lawcaseInfo);
 	}
+	
+	convertDateAsSimpleDisplayTime(gmtTime) {
+		var month = gmtTime.getMonth() + 1;
+		var day = gmtTime.getDate();
+		var simpleTime = [gmtTime.getFullYear(), (month > 9 ? '' : '0') + month,
+					 (day > 9 ? '' : '0') + day].join('-');
+		return simpleTime;
+	}
 
 	render() {
+		var birthDate = new Date(this.props.lawcaseInfo.entity.birthDate.replace(/\+0000/, "Z"));
+		var joinDate = new Date(this.props.lawcaseInfo.entity.joinDate.replace(/\+0000/, "Z"));
+		var caseFilingDate = new Date(this.props.lawcaseInfo.entity.caseFilingDate.replace(/\+0000/, "Z"));
+		var caseCloseDate = new Date(this.props.lawcaseInfo.entity.caseCloseDate.replace(/\+0000/, "Z"));
+		
 		return (
 			<tr>
 				<td>{this.props.lawcaseInfo.entity.respondentName}</td>
-				<td>{this.props.lawcaseInfo.entity.birthDate}</td>
-				<td>{this.props.lawcaseInfo.entity.joinDate}</td>
+				<td>{this.convertDateAsSimpleDisplayTime(birthDate)}</td>
+				<td>{this.convertDateAsSimpleDisplayTime(joinDate)}</td>
 				<td>{this.props.lawcaseInfo.entity.workPlaceAndPosition}</td>
-				<td>{this.props.lawcaseInfo.entity.caseFilingDate}</td>
-				<td>{this.props.lawcaseInfo.entity.caseCloseDate}</td>
+				<td>{this.convertDateAsSimpleDisplayTime(caseFilingDate)}</td>
+				<td>{this.convertDateAsSimpleDisplayTime(caseCloseDate)}</td>
 				<td>{this.props.lawcaseInfo.entity.partyDisciplinePunishment}</td>
 				<td>{this.props.lawcaseInfo.entity.politicalDisciplinePunishment}</td>
 			</tr>

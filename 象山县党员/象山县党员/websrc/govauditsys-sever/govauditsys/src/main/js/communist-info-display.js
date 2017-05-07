@@ -45,8 +45,8 @@ class CommunistInfoDisplay extends React.Component {
 		});
 	}
 	
-	getCommunistInfoesByName(name, pageSize) {
-		if (name === "") {
+	getCommunistInfoesContaining(name, partyBranch, pageSize) {
+		if (false) {
 			root = "/api";
 			children = "communistInfoes";
 		} else {
@@ -55,7 +55,7 @@ class CommunistInfoDisplay extends React.Component {
 		}
 		
 		follow(client, root, [
-				{rel: children, params: {name: name, size: pageSize}}]
+				{rel: children, params: {name: name, partyBranch: partyBranch, size: pageSize}}]
 		).then(communistInfoCollection => {
 			this.page = communistInfoCollection.entity.page;
 			this.links = communistInfoCollection.entity._links;
@@ -104,7 +104,11 @@ class CommunistInfoDisplay extends React.Component {
 	}
 	
 	onSearch(e) {
-		this.getCommunistInfoesByName(document.getElementById("name").value, this.state.pageSize);
+		this.getCommunistInfoesContaining(
+			document.getElementById("name").value,
+			document.getElementById("partyBranch").value,
+			this.state.pageSize
+		);
 	}
 
 	// tag::websocket-handlers[]
@@ -133,6 +137,7 @@ class CommunistInfoDisplay extends React.Component {
 			<div className="searchBarPlusDataDisplay">
 				<div className="webdesigntuts-workshop">
 				    <input type="search" id="name" placeholder="请输入要查询的姓名或身份证号"></input>
+				    <input type="search" id="partyBranch" placeholder="请输入要查询的党支部"></input>
 					<button onClick={this.onSearch}>搜索</button>
 				</div>
 				<div className="datadisplay">

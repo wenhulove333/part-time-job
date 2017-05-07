@@ -1,5 +1,6 @@
 package com.ss.govauditsys.sysdata.model;
 
+import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -25,7 +26,17 @@ public interface LawcaseInfoRepository  extends PagingAndSortingRepository<Lawca
 	
 	Page<LawcaseInfo> findByRespondentName(@Param("respondentName") String respondentName, Pageable pageable);
 	
-	Page<LawcaseInfo> findByRespondentNameContaining(@Param("respondentName") String respondentName, Pageable pageable);
+	@Query("select lawcaseInfo from LawcaseInfo lawcaseInfo "
+			+ "where lawcaseInfo.respondentName like %?1% and "
+			+ "(lawcaseInfo.partyDisciplinePunishment like %?2% or lawcaseInfo.politicalDisciplinePunishment like %?2%) "
+			+ "and lawcaseInfo.caseFilingDate >= ?3 and lawcaseInfo.caseFilingDate <= ?4 ")
+	Page<LawcaseInfo> findByRespondentNameContaining(
+		@Param("respondentName") String respondentName,
+		@Param("punishmentContent") String punishmentContent,
+		@Param("startTime") Calendar startTime,
+		@Param("endTime") Calendar endTime,
+		Pageable pageable
+	);
 
 	@Transactional
 	@Modifying(clearAutomatically = true)
@@ -38,6 +49,10 @@ public interface LawcaseInfoRepository  extends PagingAndSortingRepository<Lawca
 	);
 
 	@Query("select new com.ss.govauditsys.sysdata.search.PartyDisciplinePunishmentCountGroup(lawcaseInfo.partyDisciplinePunishment, count(lawcaseInfo.partyDisciplinePunishment)) "
-			+ "from LawcaseInfo lawcaseInfo where lawcaseInfo.caseFilingDate like %?1% group by lawcaseInfo.partyDisciplinePunishment")
-	List<PartyDisciplinePunishmentCountGroup> findPartyDisciplinePunishmentCountGroup(String year);
+			+ "from LawcaseInfo lawcaseInfo where lawcaseInfo.caseFilingDate >= ?1 and lawcaseInfo.caseFilingDate <= ?2 "
+			+ "group by lawcaseInfo.partyDisciplinePunishment")
+	List<PartyDisciplinePunishmentCountGroup> findPartyDisciplinePunishmentCountGroup(
+		@Param("startTime") Calendar startTime,
+		@Param("endTime") Calendar endTime
+	);
 }

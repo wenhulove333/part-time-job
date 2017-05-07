@@ -1,5 +1,7 @@
 package com.ss.govauditsys.sysdata.model;
 
+import java.util.Calendar;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -11,11 +13,11 @@ import lombok.Data;
 public class LawcaseInfo {
 	private @Id @GeneratedValue Long id;
 	private String respondentName;
-	private String birthDate;
-	private String joinDate;
+	private Calendar birthDate;
+	private Calendar joinDate;
 	private String workPlaceAndPosition;
-	private String caseFilingDate;
-	private String caseCloseDate;
+	private Calendar caseFilingDate;
+	private Calendar caseCloseDate;
 	private String partyDisciplinePunishment;
 	private String politicalDisciplinePunishment;
 	public String getRespondentName() {
@@ -24,16 +26,16 @@ public class LawcaseInfo {
 	public void setRespondentName(String respondentName) {
 		this.respondentName = respondentName;
 	}
-	public String getBirthDate() {
+	public Calendar getBirthDate() {
 		return birthDate;
 	}
-	public void setBirthDate(String birthDate) {
+	public void setBirthDate(Calendar birthDate) {
 		this.birthDate = birthDate;
 	}
-	public String getJoinDate() {
+	public Calendar getJoinDate() {
 		return joinDate;
 	}
-	public void setJoinDate(String joinDate) {
+	public void setJoinDate(Calendar joinDate) {
 		this.joinDate = joinDate;
 	}
 	public String getWorkPlaceAndPosition() {
@@ -42,16 +44,16 @@ public class LawcaseInfo {
 	public void setWorkPlaceAndPosition(String workPlaceAndPosition) {
 		this.workPlaceAndPosition = workPlaceAndPosition;
 	}
-	public String getCaseFilingDate() {
+	public Calendar getCaseFilingDate() {
 		return caseFilingDate;
 	}
-	public void setCaseFilingDate(String caseFilingDate) {
+	public void setCaseFilingDate(Calendar caseFilingDate) {
 		this.caseFilingDate = caseFilingDate;
 	}
-	public String getCaseCloseDate() {
+	public Calendar getCaseCloseDate() {
 		return caseCloseDate;
 	}
-	public void setCaseCloseDate(String caseCloseDate) {
+	public void setCaseCloseDate(Calendar caseCloseDate) {
 		this.caseCloseDate = caseCloseDate;
 	}
 	public String getPartyDisciplinePunishment() {
