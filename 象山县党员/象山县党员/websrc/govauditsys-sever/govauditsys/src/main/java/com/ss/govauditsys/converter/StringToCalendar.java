@@ -23,4 +23,21 @@ public class StringToCalendar implements Converter<String, Calendar> {
 		return calendar;
 	}
 
+	public Calendar convertAsSpeicificFmt(String arg0, String fmt) {
+		// TODO Auto-generated method stub
+		Calendar calendar = Calendar.getInstance();
+		if (fmt.contains("yyyy.MM.dd")) {
+			arg0 = arg0.replace("-", ".");
+		}
+		
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(fmt);
+		try {
+			calendar.setTime(simpleDateFormat.parse(arg0));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return calendar;
+	}
 }

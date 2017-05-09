@@ -204,20 +204,24 @@ public class ExcelReader {
             lawcaseInfo.setRespondentName(
         		isOldFormat ? getCellValueByIndex(sheet.getRow(i), 0) : getCellValueByIndex(xsheet.getRow(i), 0)
             );
-            lawcaseInfo.setBirthDate(new StringToCalendar().convert(
-            	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 1) : getCellValueByIndex(xsheet.getRow(i), 1)
+            lawcaseInfo.setBirthDate(new StringToCalendar().convertAsSpeicificFmt(
+            	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 1) : getCellValueByIndex(xsheet.getRow(i), 1),
+            	"yyyy.MM.dd"
             ));
-            lawcaseInfo.setJoinDate(new StringToCalendar().convert(
-            	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 2) : getCellValueByIndex(xsheet.getRow(i), 2)
+            lawcaseInfo.setJoinDate(new StringToCalendar().convertAsSpeicificFmt(
+            	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 2) : getCellValueByIndex(xsheet.getRow(i), 2),
+            	"yyyy.MM.dd"
             ));
             lawcaseInfo.setWorkPlaceAndPosition(
             	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 3) : getCellValueByIndex(xsheet.getRow(i), 3)
             );
-            lawcaseInfo.setCaseFilingDate(new StringToCalendar().convert(
-            	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 4) : getCellValueByIndex(xsheet.getRow(i), 4)
+            lawcaseInfo.setCaseFilingDate(new StringToCalendar().convertAsSpeicificFmt(
+            	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 4) : getCellValueByIndex(xsheet.getRow(i), 4),
+            	"yyyy.MM.dd"
             ));
-            lawcaseInfo.setCaseCloseDate(new StringToCalendar().convert(
-            	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 5) : getCellValueByIndex(xsheet.getRow(i), 5)
+            lawcaseInfo.setCaseCloseDate(new StringToCalendar().convertAsSpeicificFmt(
+            	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 5) : getCellValueByIndex(xsheet.getRow(i), 5),
+            	"yyyy.MM.dd"
             ));
             lawcaseInfo.setPartyDisciplinePunishment(
         		isOldFormat ? getCellValueByIndex(sheet.getRow(i), 6) : getCellValueByIndex(xsheet.getRow(i), 6)

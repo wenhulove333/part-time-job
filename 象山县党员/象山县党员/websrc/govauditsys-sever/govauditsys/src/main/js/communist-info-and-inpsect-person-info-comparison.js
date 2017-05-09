@@ -19,11 +19,11 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 		this.handleSubmit = this.handleSubmit.bind(this);
 	}
 	
-	handleSubmit() {
+	handleSubmit(fileName) {
 		client({
 			method: 'POST',
 			path: '/upload/excel',
-			params: {action: 'namessearch'},
+			params: {action: 'namessearch', filename: fileName},
 			entity: this.state.data_uri
 		}).done(response =>{
 			this.setState({data_uri: this.state.data_uri, names: response.entity});
@@ -39,7 +39,7 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 				data_uri: upload.target.result
 			});
 			
-			this.handleSubmit();
+			this.handleSubmit(file.name);
 		}.bind(this);
 		
 		reader.readAsDataURL(file);

@@ -154,16 +154,29 @@ class LawcaseInfo extends React.Component {
 	constructor(props) {
 		super(props);
 	}
+	
+	convertDateAsSimpleDisplayTime(gmtTime) {
+		var month = gmtTime.getMonth() + 1;
+		var day = gmtTime.getDate();
+		var simpleTime = [gmtTime.getFullYear(), (month > 9 ? '' : '0') + month,
+					 (day > 9 ? '' : '0') + day].join('-');
+		return simpleTime;
+	}
 
 	render() {
+		var birthDate = new Date(this.props.lawcaseInfo.birthDate.replace(/\+0000/, "Z"));
+		var joinDate = new Date(this.props.lawcaseInfo.joinDate.replace(/\+0000/, "Z"));
+		var caseFilingDate = new Date(this.props.lawcaseInfo.caseFilingDate.replace(/\+0000/, "Z"));
+		var caseCloseDate = new Date(this.props.lawcaseInfo.caseCloseDate.replace(/\+0000/, "Z"));
+		
 		return (
 			<tr>
 				<td>{this.props.lawcaseInfo.respondentName}</td>
-				<td>{this.props.lawcaseInfo.birthDate}</td>
-				<td>{this.props.lawcaseInfo.joinDate}</td>
+				<td>{this.convertDateAsSimpleDisplayTime(birthDate)}</td>
+				<td>{this.convertDateAsSimpleDisplayTime(joinDate)}</td>
 				<td>{this.props.lawcaseInfo.workPlaceAndPosition}</td>
-				<td>{this.props.lawcaseInfo.caseFilingDate}</td>
-				<td>{this.props.lawcaseInfo.caseCloseDate}</td>
+				<td>{this.convertDateAsSimpleDisplayTime(caseFilingDate)}</td>
+				<td>{this.convertDateAsSimpleDisplayTime(caseCloseDate)}</td>
 				<td>{this.props.lawcaseInfo.partyDisciplinePunishment}</td>
 				<td>{this.props.lawcaseInfo.politicalDisciplinePunishment}</td>
 			</tr>
