@@ -20,11 +20,16 @@
   },
   "homepage": "https://github.com/spring-guides/tut-react-and-spring-data-rest",
   "dependencies": {
-    "react": "^15.3.2",
+    "babel-runtime": "^6.23.0",
+    "pagination-component": "^1.5.7",
+    "pagination-ss": "^1.5.8",
+    "react": "^15.5.4",
     "react-dom": "^15.3.2",
     "react-tabs": "^0.8.2",
+    "reactjs-pagination": "0.0.8",
     "rest": "^1.3.1",
     "sockjs-client": "^1.0.3",
+    "ss-pagination": "^1.0.0",
     "stompjs": "^2.3.3",
     "webpack": "^1.12.2"
   },
@@ -34,8 +39,16 @@
   "devDependencies": {
     "babel-core": "^6.18.2",
     "babel-loader": "^6.2.7",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
+    "babel-plugin-transform-runtime": "^6.23.0",
     "babel-polyfill": "^6.16.0",
     "babel-preset-es2015": "^6.18.0",
-    "babel-preset-react": "^6.16.0"
+    "babel-preset-react": "^6.16.0",
+    "babel-preset-stage-0": "^6.24.1",
+    "cross-env": "^2.0.0",
+    "css-loader": "^0.23.1",
+    "node-sass": "^3.8.0",
+    "sass-loader": "^4.0.0",
+    "style-loader": "^0.13.1"
   }
 }

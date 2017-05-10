@@ -5,6 +5,8 @@ const ReactDOM = require('react-dom');
 const when = require('when');
 const client = require('./client');
 
+const Pagination = require('ss-pagination');
+
 const follow = require('./follow'); // function to hop multiple links by "rel"
 
 var root = '/api';
