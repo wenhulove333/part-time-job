@@ -11,10 +11,25 @@ const MultiNamesSearchCommunistInfoDisplay = require('./multi-names-search-commu
 const MultiNamesSearchInspectPersonInfoDisplay = require('./multi-names-search-inspect-person-info-display');
 const MultiNamesSearchLawcaseInfoDisplay = require('./multi-names-search-lawcase-info-display');
 
+const styles = {
+	label: {
+		display: 'block'
+	},
+	input: {
+		width: 100
+	}
+};
+
 class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {data_uri: null, names: []};
+		this.state = {
+			data_uri: null,
+			names: [],
+			showCommunistInfo: false,
+			showInspectPersonInfo: false,
+			showLawcaseInfo: false
+		};
 		this.handleFile = this.handleFile.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
 	}
@@ -45,15 +60,63 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 		reader.readAsDataURL(file);
 	}
 	
+	onInputChange(name) {
+		return (event) => {
+			const target = event.target;
+			const value = target.type === 'checkbox' ? target.checked : +target.value;
+		    this.setState({[name]: value})
+		};
+	}
+	
 	render() {
 		return (
 			<div className="subModuleDataDisplay">
 				<table>
 					<tr><td>请上传党员信息表:</td><td><input type="file" name="file" onChange={this.handleFile}/></td></tr>
 				</table>
-				<MultiNamesSearchCommunistInfoDisplay names={this.state.names} />
-				<MultiNamesSearchInspectPersonInfoDisplay names={this.state.names} />
-				<MultiNamesSearchLawcaseInfoDisplay names={this.state.names} />
+				
+				<div>
+	            <label style={styles.label}>
+	              <input
+	                type="checkbox"
+	                id="showCommunistInfo"
+	                checked={this.state.showCommunistInfo}
+	                onChange={this.onInputChange('showCommunistInfo')}
+	              />
+	              显示党员信息
+	            </label>
+	            </div>
+
+	          <div>
+	            <label style={styles.label}>
+	              <input
+	                type="checkbox"
+	                id="showInspectPersonInfo"
+	                checked={this.state.showInspectPersonInfo}
+	                onChange={this.onInputChange('showInspectPersonInfo')}
+	              />
+	              显示处分人员信息
+	            </label>
+	          </div>
+
+	          <div>
+	            <label style={styles.label}>
+	              <input
+	                type="checkbox"
+	                id="showLawcaseInfo"
+	                checked={this.state.showLawcaseInfo}
+	                onChange={this.onInputChange('showLawcaseInfo')}
+	              />
+	              显示案件信息
+	            </label>
+	          </div>
+				
+				<MultiNamesSearchCommunistInfoDisplay names={this.state.names}
+					showCommunistInfo={this.state.showCommunistInfo} />
+				<MultiNamesSearchInspectPersonInfoDisplay names={this.state.names}
+					showInspectPersonInfo={this.state.showInspectPersonInfo} />
+				<MultiNamesSearchLawcaseInfoDisplay names={this.state.names}
+					showLawcaseInfo={this.state.showLawcaseInfo} />
 				</div>
 		);
 	}

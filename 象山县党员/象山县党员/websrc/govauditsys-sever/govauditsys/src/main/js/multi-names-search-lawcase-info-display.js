@@ -7,6 +7,13 @@ const client = require('./client');
 
 const follow = require('./follow'); // function to hop multiple links by "rel"
 
+import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import UltimatePagination from 'react-ultimate-pagination-material-ui';
+const lightMuiTheme = getMuiTheme(lightBaseTheme);
+const parseUrl = require('./parse-url');
+
 class MultiNamesSearchLawcaseInfoDisplay extends React.Component {
 
 	constructor(props) {
@@ -59,6 +66,10 @@ class MultiNamesSearchLawcaseInfoDisplay extends React.Component {
 	}
 
 	render() {
+		if (!this.props.showLawcaseInfo) {
+			return null;
+		}
+		
 		return (
 			<div className="searchBarPlusDataDisplay">
 				<div className="datadisplay">
@@ -81,6 +92,10 @@ class LawcaseInfoList extends React.Component {
 		this.handleNavPrev = this.handleNavPrev.bind(this);
 		this.handleNavNext = this.handleNavNext.bind(this);
 		this.handleNavLast = this.handleNavLast.bind(this);
+		this.onPageChangeFromPagination = this.onPageChangeFromPagination.bind(this);
+		this.state = {
+			currentPage: 1
+	    };
 	}
 
 	handleNavFirst(e) {
@@ -102,6 +117,14 @@ class LawcaseInfoList extends React.Component {
 		e.preventDefault();
 		this.props.onNavigate(this.props.links.last.href);
 	}
+	
+	onPageChangeFromPagination(newPage) {
+		var urlParser = parseUrl(this.props.links.first.href);
+		urlParser.changeParam('page', (newPage - 1));
+		this.props.onNavigate(urlParser.toUrl());
+		this.setState({currentPage: newPage});
+	    console.log(newPage);
+	}
 
 	render() {
 		var lawcaseInfoes = this.props.lawcaseInfoes.map(lawcaseInfo =>
@@ -114,12 +137,33 @@ class LawcaseInfoList extends React.Component {
 		}
 		if ("prev" in this.props.links) {
 			navLinks.push(<button key="prev" onClick={this.handleNavPrev}>前一页</button>);
+			var urlParser = parseUrl(this.props.links.prev.href);
+			this.state.currentPage = parseInt(urlParser.getParam('page')) + 2;
 		}
 		if ("next" in this.props.links) {
 			navLinks.push(<button key="next" onClick={this.handleNavNext}>后一页</button>);
+			var urlParser = parseUrl(this.props.links.next.href);
+			this.state.currentPage = parseInt(urlParser.getParam('page'));
 		}
 		if ("last" in this.props.links) {
 			navLinks.push(<button key="last" onClick={this.handleNavLast}>尾页</button>);
+		}
+		
+		var pagination = null; 
+		
+		if (this.props.page.totalPages > 1) {
+			pagination = (<MuiThemeProvider muiTheme={lightMuiTheme}>
+				<UltimatePagination
+		            currentPage={this.state.currentPage}
+		            totalPages={this.props.page.totalPages}
+		            boundaryPagesRange={0}
+		            siblingPagesRange={7}
+		            hidePreviousAndNextPageLinks={false}
+		            hideFirstAndLastPageLinks={false}
+		            hideEllipsis={true}
+		            onChange={this.onPageChangeFromPagination}
+				/>
+			</MuiThemeProvider>);
 		}
 
 		return (
@@ -142,7 +186,7 @@ class LawcaseInfoList extends React.Component {
 					</tbody>
 				</table>
 				<div>
-					{navLinks}
+					{pagination}
 				</div>
 			</div>
 		)
