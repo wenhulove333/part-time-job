@@ -5,7 +5,11 @@ const ReactDOM = require('react-dom');
 const when = require('when');
 const client = require('./client');
 
-const Pagination = require('ss-pagination');
+import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import UltimatePagination from 'react-ultimate-pagination-material-ui';
+const lightMuiTheme = getMuiTheme(lightBaseTheme);
 
 const follow = require('./follow'); // function to hop multiple links by "rel"
 
@@ -163,6 +167,10 @@ class CommunistInfoList extends React.Component {
 		this.handleNavNext = this.handleNavNext.bind(this);
 		this.handleNavLast = this.handleNavLast.bind(this);
 		this.handleInput = this.handleInput.bind(this);
+		this.onPageChangeFromPagination = this.onPageChangeFromPagination.bind(this);
+		this.state = {
+			currentPage: 1
+	    };
 	}
 
 	handleInput(e) {
@@ -194,6 +202,12 @@ class CommunistInfoList extends React.Component {
 		e.preventDefault();
 		this.props.onNavigate(this.props.links.last.href);
 	}
+	
+	onPageChangeFromPagination(newPage) {
+		this.props.onNavigate(this.props.links.last.href);
+		this.setState({currentPage: newPage});
+	    console.log(newPage);
+	}
 
 	render() {
 		var pageInfo = this.props.page.hasOwnProperty("number") ?
@@ -220,6 +234,23 @@ class CommunistInfoList extends React.Component {
 		if ("last" in this.props.links) {
 			navLinks.push(<button key="last" onClick={this.handleNavLast}>尾页</button>);
 		}
+		
+		var pagination = null; 
+		
+		if (this.props.page.totalPages >= 1) {
+			pagination = (<MuiThemeProvider muiTheme={lightMuiTheme}>
+				<UltimatePagination
+		            currentPage={this.state.currentPage}
+		            totalPages={this.props.page.totalPages}
+		            boundaryPagesRange={0}
+		            siblingPagesRange={5}
+		            hidePreviousAndNextPageLinks={false}
+		            hideFirstAndLastPageLinks={false}
+		            hideEllipsis={true}
+		            onChange={this.onPageChangeFromPagination}
+				/>
+			</MuiThemeProvider>);
+		}
 
 		return (
 			<div>
@@ -244,6 +275,7 @@ class CommunistInfoList extends React.Component {
 				</table>
 				<div>
 					{navLinks}
+					{pagination}
 				</div>
 			</div>
 		)

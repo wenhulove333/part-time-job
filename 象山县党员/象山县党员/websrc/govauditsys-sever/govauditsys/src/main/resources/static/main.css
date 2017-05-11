@@ -699,3 +699,18 @@ input[type="search"] {
     border-left-color: #ccc; }
     .react-datepicker__portal .react-datepicker__navigation--next:hover {
       border-left-color: #b3b2b2; }
+      
+      
+#react-paginate ul {
+    display: inline-block;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+#react-paginate li {
+    display: inline-block;
+}
+
+#react-paginate .break a {
+    cursor: default;
+}      
