@@ -7,7 +7,7 @@ const client = require('./client');
 
 const follow = require('./follow'); // function to hop multiple links by "rel"123
 
-const MultiNamesSearchCommunistInfoDisplay = require('./multi-names-search-communist-info-display');
+const MultiIdNumbersSearchCommunistInfoDisplay = require('./multi-idnumbers-search-communist-info-display');
 const MultiNamesSearchInspectPersonInfoDisplay = require('./multi-names-search-inspect-person-info-display');
 const MultiNamesSearchLawcaseInfoDisplay = require('./multi-names-search-lawcase-info-display');
 
@@ -26,15 +26,22 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 		this.state = {
 			data_uri: null,
 			names: [],
+			idnumbers: [],
+			namespulsbirthdate: [],
 			showCommunistInfo: false,
 			showInspectPersonInfo: false,
-			showLawcaseInfo: false
+			showLawcaseInfo: false,
+			uploadresult: '',
+			uploadresultStyle: {color: '#0F0'}
 		};
 		this.handleFile = this.handleFile.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
+		this.initiateUploadResult = this.initiateUploadResult.bind(this);
 	}
 	
 	handleSubmit(fileName) {
+		this.initiateUploadResult();
+		
 		client({
 			method: 'POST',
 			path: '/upload/excel',
@@ -42,6 +49,33 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 			entity: this.state.data_uri
 		}).done(response =>{
 			this.setState({data_uri: this.state.data_uri, names: response.entity});
+			if(response.hasOwnProperty('entity')) {
+				if (response.entity[0] == 'error') {
+					var state = this.state;
+					state.uploadresultStyle = {color: '#F00'};
+					state.uploadresult = response.entity[1];
+					this.setState(state);
+				} else {
+					var state = this.state;
+					state.uploadresultStyle = {color: '#0F0'};
+					state.uploadresult = '导入成功';
+					state.namespulsbirthdate = response.entity.map((item, index)=>{
+						if (index % 2 == 1) {
+							return item.substr(6, 8);
+						}
+						
+						return item;
+					});
+					state.names = response.entity.filter((item, index)=>index%2==0);
+					state.idnumbers = response.entity.filter((item, index)=>index%2==1);
+					this.setState(state);
+				}
+			} else {
+				var state = this.state;
+				state.uploadresultStyle = {color: '#F00'};
+				state.uploadresult = '未知异常';
+				this.setState(state);
+			}
 		});
 	}
 	
@@ -68,11 +102,21 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 		};
 	}
 	
+	initiateUploadResult() {
+		var state = this.state;
+		state.uploadresultStyle = {color: '#000'};
+		state.uploadresult = '导入中...';
+		this.setState(state);
+	}
+	
 	render() {
 		return (
 			<div className="subModuleDataDisplay">
 				<table>
-					<tr><td>请上传党员信息表:</td><td><input type="file" name="file" onChange={this.handleFile}/></td></tr>
+					<tr>
+						<td>请上传党员信息表:</td><td><input type="file" name="file" onChange={this.handleFile}/></td>
+						<td style={this.state.uploadresultStyle}>{this.state.uploadresult}</td>
+					</tr>
 				</table>
 				
 				<div>
@@ -111,7 +155,7 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 	            </label>
 	          </div>
 				
-				<MultiNamesSearchCommunistInfoDisplay names={this.state.names}
+				<MultiIdNumbersSearchCommunistInfoDisplay idNumbers={this.state.idnumbers}
 					showCommunistInfo={this.state.showCommunistInfo} />
 				<MultiNamesSearchInspectPersonInfoDisplay names={this.state.names}
 					showInspectPersonInfo={this.state.showInspectPersonInfo} />

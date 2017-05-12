@@ -15,6 +15,8 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -55,7 +57,14 @@ public class ExcelReader {
     		return "";
     	}
     	
-    	return row.getCell(columIndex).getStringCellValue();
+    	switch (row.getCell(columIndex).getCellType()) {
+	    	case HSSFCell.CELL_TYPE_STRING:  
+	    		return row.getCell(columIndex).getStringCellValue();  
+	        case HSSFCell.CELL_TYPE_NUMERIC:  
+	            return Double.toString(row.getCell(columIndex).getNumericCellValue());
+	        default:  
+	            return "";
+    	}
     }
     
     private String getCellValueByIndex(XSSFRow row, int columIndex) {
@@ -63,7 +72,14 @@ public class ExcelReader {
     		return "";
     	}
     	
-    	return row.getCell(columIndex).getStringCellValue();
+    	switch (row.getCell(columIndex).getCellType()) {
+	    	case XSSFCell.CELL_TYPE_STRING:  
+	    		return row.getCell(columIndex).getStringCellValue();  
+	        case XSSFCell.CELL_TYPE_NUMERIC:  
+	            return Double.toString(row.getCell(columIndex).getNumericCellValue());
+	        default:  
+	            return "";
+        }
     }
     
     private void openFirstSheetInWorkBook(InputStream is) {
@@ -89,7 +105,7 @@ public class ExcelReader {
      * @param is
      * @return
      */
-    public List<String> readSearchUserName( InputStream is )
+    public List<String> readSearchUserName( InputStream is ) throws ExcelImportException
     {
         List<String> content = new ArrayList<String>();
         openFirstSheetInWorkBook(is);
@@ -99,8 +115,13 @@ public class ExcelReader {
         for( int i = 1; i <= rowNum; i++ )
         {
             String name = isOldFormat ? getCellValueByIndex(sheet.getRow(i), 0) : getCellValueByIndex(xsheet.getRow(i), 0);
+            String idNumer = isOldFormat ? getCellValueByIndex(sheet.getRow(i), 1) : getCellValueByIndex(xsheet.getRow(i), 1);
             if (!name.equals("")) {
             	content.add(name);
+            	if (idNumer.equals("")) {
+            		throw new ExcelImportException("第" + (i + 1) + "行" + "身份证号码为空" + "或不支持的数据格式");
+            	}
+            	content.add(idNumer);
             }
         }
         return content;

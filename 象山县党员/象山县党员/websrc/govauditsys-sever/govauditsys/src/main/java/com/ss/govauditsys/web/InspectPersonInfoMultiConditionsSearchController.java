@@ -18,7 +18,7 @@ import com.ss.govauditsys.sysdata.model.InspectPersonInfoRespository;
 import com.ss.govauditsys.sysdata.model.QInspectPersonInfo;
 
 @RestController
-public class InspectPersonInfoMultiNamesSearchController {
+public class InspectPersonInfoMultiConditionsSearchController {
 	@Autowired
 	InspectPersonInfoRespository inspectPersonInfoRespository;
 	
@@ -40,6 +40,33 @@ public class InspectPersonInfoMultiNamesSearchController {
 			}
 		} else {
 			expression = inspectPersonInfo.name.contains("!@#$%^&*()_+=-~`\"':;<>?/,.");
+		}
+		
+		Page<InspectPersonInfo> inspectPersonInfoes = inspectPersonInfoRespository.findAll(
+			expression, pageable
+		);
+		
+		return assembler.toResource(inspectPersonInfoes);
+	}
+	
+	@RequestMapping(
+			value = "/inspectpersoninfo/multiidnumbersearch",
+			method = RequestMethod.POST,
+			produces = {"application/json", "application/hal+json", "application/*+json;charset=UTF-8"})
+	public PagedResources<InspectPersonInfo> multiIdNumberSearchInspectPersonInfo(
+			Pageable pageable, PagedResourcesAssembler assembler, @RequestBody List<String> payload) {
+		QInspectPersonInfo inspectPersonInfo = QInspectPersonInfo.inspectPersonInfo;
+		BooleanExpression expression = null;
+		
+		if (payload.size() > 0) {
+			expression = inspectPersonInfo.idNumber.contains(payload.get(0));
+			payload.remove(0);
+
+			for (String idNumber : payload) {
+				expression = expression.or(inspectPersonInfo.idNumber.contains(idNumber));
+			}
+		} else {
+			expression = inspectPersonInfo.idNumber.contains("!@#$%^&*()_+=-~`\"':;<>?/,.");
 		}
 		
 		Page<InspectPersonInfo> inspectPersonInfoes = inspectPersonInfoRespository.findAll(

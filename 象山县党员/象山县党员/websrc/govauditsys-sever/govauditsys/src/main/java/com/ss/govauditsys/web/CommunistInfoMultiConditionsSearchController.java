@@ -20,7 +20,7 @@ import com.ss.govauditsys.sysdata.model.CommunistInfoRespository;
 import com.ss.govauditsys.sysdata.model.QCommunistInfo;
 
 @RestController
-public class CommunistInfoMultiNamesSearchController {
+public class CommunistInfoMultiConditionsSearchController {
 	@Autowired
 	CommunistInfoRespository communistInfoRespository;
 	
@@ -42,6 +42,33 @@ public class CommunistInfoMultiNamesSearchController {
 			}
 		} else {
 			expression = communistInfo.name.contains("!@#$%^&*()_+=-~`\"':;<>?/,.");
+		}
+		
+		Page<CommunistInfo> communistInfoes = communistInfoRespository.findAll(
+			expression, pageable
+		);
+		
+		return assembler.toResource(communistInfoes);
+	}
+	
+	@RequestMapping(
+			value = "/communistinfo/multidnumbersearch",
+			method = RequestMethod.POST,
+			produces = {"application/json", "application/hal+json", "application/*+json;charset=UTF-8"})
+	public PagedResources<CommunistInfo> multiIdNumberSearchCommunistinfo(
+			Pageable pageable, PagedResourcesAssembler assembler, @RequestBody List<String> payload) {
+		QCommunistInfo communistInfo = QCommunistInfo.communistInfo;
+		BooleanExpression expression = null;
+		
+		if (payload.size() > 0) {
+			expression = communistInfo.idNumber.contains(payload.get(0));
+			payload.remove(0);
+
+			for (String idNumer : payload) {
+				expression = expression.or(communistInfo.idNumber.contains(idNumer));
+			}
+		} else {
+			expression = communistInfo.idNumber.contains("!@#$%^&*()_+=-~`\"':;<>?/,.");
 		}
 		
 		Page<CommunistInfo> communistInfoes = communistInfoRespository.findAll(
