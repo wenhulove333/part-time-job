@@ -125,7 +125,7 @@ class UserOperationLoggingDisplay extends React.Component {
 		var startTime = "1970-01-01";
 		var endTime = "2099-12-31";
 		
-		if (this.state.startTime.constructor.name !== 'String') {
+		if (this.state.startTime.toString() !== '') {
 			var startDate = new Date(this.state.startTime);
 			var startMonth = startDate.getMonth() + 1;
 			var startDay = startDate.getDate();
@@ -133,7 +133,7 @@ class UserOperationLoggingDisplay extends React.Component {
 						 (startDay > 9 ? '' : '0') + startDay].join('-');
 		}
 				
-		if (this.state.endTime.constructor.name !== 'String') {
+		if (this.state.endTime.toString() !== '') {
 		    var endDate = new Date(this.state.endTime);
 			var endMonth = endDate.getMonth() + 1;
 			var endDay = endDate.getDate();

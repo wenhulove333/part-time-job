@@ -8,8 +8,8 @@ const client = require('./client');
 const follow = require('./follow'); // function to hop multiple links by "rel"123
 
 const MultiIdNumbersSearchCommunistInfoDisplay = require('./multi-idnumbers-search-communist-info-display');
-const MultiNamesSearchInspectPersonInfoDisplay = require('./multi-names-search-inspect-person-info-display');
-const MultiNamesSearchLawcaseInfoDisplay = require('./multi-names-search-lawcase-info-display');
+const MultiIdNumbersSearchInspectPersonInfoDisplay = require('./multi-idnumbers-search-inspect-person-info-display');
+const MultiNamesPlusBirthdateSearchLawcaseInfoDisplay = require('./multi-names-plus-idnumbers-search-lawcase-info-display');
 
 const styles = {
 	label: {
@@ -27,7 +27,7 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 			data_uri: null,
 			names: [],
 			idnumbers: [],
-			namespulsbirthdate: [],
+			namesplusbirthdate: [],
 			showCommunistInfo: false,
 			showInspectPersonInfo: false,
 			showLawcaseInfo: false,
@@ -59,7 +59,7 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 					var state = this.state;
 					state.uploadresultStyle = {color: '#0F0'};
 					state.uploadresult = '导入成功';
-					state.namespulsbirthdate = response.entity.map((item, index)=>{
+					state.namesplusbirthdate = response.entity.map((item, index)=>{
 						if (index % 2 == 1) {
 							return item.substr(6, 8);
 						}
@@ -157,9 +157,9 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 				
 				<MultiIdNumbersSearchCommunistInfoDisplay idNumbers={this.state.idnumbers}
 					showCommunistInfo={this.state.showCommunistInfo} />
-				<MultiNamesSearchInspectPersonInfoDisplay names={this.state.names}
+				<MultiIdNumbersSearchInspectPersonInfoDisplay idNumbers={this.state.idnumbers}
 					showInspectPersonInfo={this.state.showInspectPersonInfo} />
-				<MultiNamesSearchLawcaseInfoDisplay names={this.state.names}
+				<MultiNamesPlusBirthdateSearchLawcaseInfoDisplay namesPlusBirthdate={this.state.namesplusbirthdate}
 					showLawcaseInfo={this.state.showLawcaseInfo} />
 				</div>
 		);

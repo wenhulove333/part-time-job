@@ -64,9 +64,9 @@ class Entry extends React.Component {
 					<TabList>
 						<Tab>党员信息查询</Tab>
 						<Tab>监察对象信息查询</Tab>
-						<Tab>案件信息查询</Tab>
+						<Tab>处分人员信息查询</Tab>
 						<Tab>党员和监察对象信息比对</Tab>
-						<Tab>案件统计分析</Tab>
+						<Tab>统计分析</Tab>
 						<Tab>管理员操作</Tab>
 						<Tab>系统用户管理</Tab>
 					</TabList>
@@ -103,8 +103,8 @@ class Entry extends React.Component {
 					<TabList>
 						<Tab>党员信息查询</Tab>
 						<Tab>检查对象信息查询</Tab>
-						<Tab>案件信息查询</Tab>
-						<Tab>案件统计分析</Tab>
+						<Tab>处分人员信息查询</Tab>
+						<Tab>统计分析</Tab>
 					</TabList>
 		
 					<TabPanel>
