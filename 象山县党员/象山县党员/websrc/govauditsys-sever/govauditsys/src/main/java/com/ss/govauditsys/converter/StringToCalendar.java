@@ -30,9 +30,9 @@ public class StringToCalendar implements Converter<String, Calendar> {
 			arg0 = arg0.replace("-", ".");
 		}
 		
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(fmt);
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(fmt + " HH:mm:ss");
 		try {
-			calendar.setTime(simpleDateFormat.parse(arg0));
+			calendar.setTime(simpleDateFormat.parse(arg0 + " 23:00:00"));
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

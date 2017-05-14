@@ -37,6 +37,13 @@ class MultiIdNumbersSearchInspectPersonInfoDisplay extends React.Component {
 					pageSize: pageSize,
 					links: response.entity._links
 				});
+			} else {
+				this.setState({
+					page: response.entity.page,
+					inspectPersonInfoes: [],
+					pageSize: pageSize,
+					links: response.entity._links
+				});
 			}
 		});
 	}

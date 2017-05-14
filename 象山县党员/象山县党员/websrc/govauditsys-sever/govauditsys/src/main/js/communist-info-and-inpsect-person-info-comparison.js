@@ -37,6 +37,7 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 		this.handleFile = this.handleFile.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.initiateUploadResult = this.initiateUploadResult.bind(this);
+		this.onSearch = this.onSearch.bind(this);
 	}
 	
 	handleSubmit(fileName) {
@@ -109,6 +110,21 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 		this.setState(state);
 	}
 	
+	onSearch(e) {
+		var name = document.getElementById("name").value;
+		var idNumber = document.getElementById("idnumber").value;
+		if (name === "" || idNumber.value === "") {
+			window.location = "#alertDialog";
+			return;
+		}
+		
+		var state = this.state;
+		state.namesplusbirthdate = [name, idNumber.substr(6, 8)];
+		state.names = [name];
+		state.idnumbers = [idNumber];
+		this.setState(state);
+	}
+	
 	render() {
 		return (
 			<div className="subModuleDataDisplay">
@@ -117,6 +133,16 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 						<td>请上传党员信息表:</td><td><input type="file" name="file" onChange={this.handleFile}/></td>
 						<td style={this.state.uploadresultStyle}>{this.state.uploadresult}</td>
 					</tr>
+					<tr>
+						<td colSpan="2">
+							<div className="webdesigntuts-workshop">
+							    <input type="search" id="name" placeholder="请输入要查询的姓名"></input>
+							    <input type="search" id="idnumber" placeholder="请输入要查询的或身份证号"></input>
+								<button onClick={this.onSearch}>搜索</button>
+							</div>
+						</td>
+					</tr>
+					<tr><AlertDialog messageStyle={{color: '#F00'}} title="党员与监察对象信息比对" alertMessage="错误: 姓名或身份证号为空" /></tr>
 				</table>
 				
 				<div>
@@ -139,7 +165,7 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 	                checked={this.state.showInspectPersonInfo}
 	                onChange={this.onInputChange('showInspectPersonInfo')}
 	              />
-	              显示处分人员信息
+	              显示监察对象信息
 	            </label>
 	          </div>
 
@@ -151,7 +177,7 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 	                checked={this.state.showLawcaseInfo}
 	                onChange={this.onInputChange('showLawcaseInfo')}
 	              />
-	              显示案件信息
+	              显示处分人员信息
 	            </label>
 	          </div>
 				
@@ -163,6 +189,41 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 					showLawcaseInfo={this.state.showLawcaseInfo} />
 				</div>
 		);
+	}
+}
+
+class AlertDialog extends React.Component {
+
+	constructor(props) {
+		super(props);
+		this.handleSubmit = this.handleSubmit.bind(this);
+	}
+
+	handleSubmit(e) {
+		e.preventDefault();
+		window.location = "#";
+	}
+
+	render() {
+		return (
+			<div className="alertDialog">
+				<div id="alertDialog" className="modalDialog">
+					<div>
+						<a href="#" title="Close" className="close">X</a>
+
+						<h2>{this.props.title}</h2>
+
+						<form>
+							<label style={this.props.messageStyle}>{this.props.alertMessage}</label>
+							<br />
+							<br />
+							<br />
+							<button onClick={this.handleSubmit}>确定</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		)
 	}
 }
 
