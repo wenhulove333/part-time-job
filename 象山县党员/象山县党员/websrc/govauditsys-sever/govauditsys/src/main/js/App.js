@@ -61,14 +61,14 @@ class Entry extends React.Component {
 					onSelect={this.handleSelect}
 					selectedIndex={0}
 				>
-					<TabList>
-						<Tab>党员信息查询</Tab>
-						<Tab>监察对象信息查询</Tab>
-						<Tab>处分人员信息查询</Tab>
-						<Tab>党员和监察对象信息比对</Tab>
-						<Tab>统计分析</Tab>
-						<Tab>管理员操作</Tab>
-						<Tab>系统用户管理</Tab>
+					<TabList activeTabClassName="ss_tab_selected">
+						<Tab activeTabClassName="ss_tab_selected">党员信息查询</Tab>
+						<Tab activeTabClassName="ss_tab_selected">监察对象信息查询</Tab>
+						<Tab activeTabClassName="ss_tab_selected">处分人员信息查询</Tab>
+						<Tab activeTabClassName="ss_tab_selected">信息比对</Tab>
+						<Tab activeTabClassName="ss_tab_selected">统计分析</Tab>
+						<Tab activeTabClassName="ss_tab_selected">管理员操作</Tab>
+						<Tab activeTabClassName="ss_tab_selected">系统用户管理</Tab>
 					</TabList>
 		
 					<TabPanel>
@@ -100,11 +100,11 @@ class Entry extends React.Component {
 					onSelect={this.handleSelect}
 					selectedIndex={0}
 				>
-					<TabList>
-						<Tab>党员信息查询</Tab>
-						<Tab>检查对象信息查询</Tab>
-						<Tab>处分人员信息查询</Tab>
-						<Tab>统计分析</Tab>
+					<TabList activeTabClassName="ss_tab_selected">
+						<Tab activeTabClassName="ss_tab_selected">党员信息查询</Tab>
+						<Tab activeTabClassName="ss_tab_selected">检查对象信息查询</Tab>
+						<Tab activeTabClassName="ss_tab_selected">处分人员信息查询</Tab>
+						<Tab activeTabClassName="ss_tab_selected">统计分析</Tab>
 					</TabList>
 		
 					<TabPanel>

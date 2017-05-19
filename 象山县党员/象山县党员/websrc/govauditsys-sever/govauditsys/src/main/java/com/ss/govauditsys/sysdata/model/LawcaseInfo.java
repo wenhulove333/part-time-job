@@ -14,6 +14,7 @@ public class LawcaseInfo {
 	private @Id @GeneratedValue Long id;
 	private String respondentName;
 	private Calendar birthDate;
+	private String strFmtBirthDate;
 	private Calendar joinDate;
 	private String workPlaceAndPosition;
 	private Calendar caseFilingDate;
@@ -31,6 +32,12 @@ public class LawcaseInfo {
 	}
 	public void setBirthDate(Calendar birthDate) {
 		this.birthDate = birthDate;
+	}
+	public String getStrFmtBirthDate() {
+		return strFmtBirthDate;
+	}
+	public void setStrFmtBirthDate(String strFmtBirthDate) {
+		this.strFmtBirthDate = strFmtBirthDate;
 	}
 	public Calendar getJoinDate() {
 		return joinDate;

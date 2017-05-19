@@ -127,7 +127,7 @@ class AdminOps extends React.Component {
 						<td style={this.state.uploadresultStyle['uploadinspectpersoninfo']}>{this.state.uploadresult['uploadinspectpersoninfo']}</td>
 					</tr>
 					<tr>
-						<td>导入案件信息:</td>
+						<td>导入处分人员信息:</td>
 						<td><input type="file" name="file" onChange={this.handleLawcaseInfoFile}/></td>
 						<td style={this.state.uploadresultStyle['uploadlawcaseinfo']}>{this.state.uploadresult['uploadlawcaseinfo']}</td>
 					</tr>

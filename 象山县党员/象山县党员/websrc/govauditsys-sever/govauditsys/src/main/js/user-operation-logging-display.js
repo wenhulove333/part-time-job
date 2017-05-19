@@ -338,7 +338,7 @@ class UserOperationLoggingList extends React.Component {
 							<th>系统用户</th>
 							<th>查看时间</th>
 							<th>查看信息</th>
-							<th>被查看人</th>
+							<th>查看对象</th>
 						</tr>
 					</thead>
 					<tbody>

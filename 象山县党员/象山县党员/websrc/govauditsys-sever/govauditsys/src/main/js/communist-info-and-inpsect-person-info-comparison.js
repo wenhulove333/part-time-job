@@ -7,6 +7,9 @@ const client = require('./client');
 
 const follow = require('./follow'); // function to hop multiple links by "rel"123
 
+const MultiNamesSearchCommunistInfoDisplay = require('./multi-names-search-communist-info-display');
+const MultiNamesSearchInspectPersonInfoDisplay = require('./multi-names-search-inspect-person-info-display');
+const MultiNamesSearchLawcaseInfoDisplay = require('./multi-names-search-lawcase-info-display');
 const MultiIdNumbersSearchCommunistInfoDisplay = require('./multi-idnumbers-search-communist-info-display');
 const MultiIdNumbersSearchInspectPersonInfoDisplay = require('./multi-idnumbers-search-inspect-person-info-display');
 const MultiNamesPlusBirthdateSearchLawcaseInfoDisplay = require('./multi-names-plus-idnumbers-search-lawcase-info-display');
@@ -62,7 +65,7 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 					state.uploadresult = '导入成功';
 					state.namesplusbirthdate = response.entity.map((item, index)=>{
 						if (index % 2 == 1) {
-							return item.substr(6, 8);
+							return item.substr(6, 6);
 						}
 						
 						return item;
@@ -111,38 +114,65 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 	}
 	
 	onSearch(e) {
+		var state = this.state;
+		state.namesplusbirthdate = [];
+		state.names = [];
+		state.idnumbers = [];
 		var name = document.getElementById("name").value;
 		var idNumber = document.getElementById("idnumber").value;
-		if (name === "" || idNumber.value === "") {
+		if (name === "") {
 			window.location = "#alertDialog";
 			return;
 		}
 		
-		var state = this.state;
-		state.namesplusbirthdate = [name, idNumber.substr(6, 8)];
-		state.names = [name];
-		state.idnumbers = [idNumber];
+		if (idNumber !== "") {
+			state.namesplusbirthdate = [name, idNumber.substr(6, 6)];
+			state.names = [name];
+			state.idnumbers = [idNumber];
+		} else {
+			state.namesplusbirthdate = [name, ""];
+			state.names = [name];
+		}
+		
 		this.setState(state);
 	}
 	
 	render() {
+		var communistInfoDisplay = <MultiIdNumbersSearchCommunistInfoDisplay idNumbers={this.state.idnumbers}
+		showCommunistInfo={this.state.showCommunistInfo} />;
+	
+		var inspectPersonInfoDisplay = <MultiIdNumbersSearchInspectPersonInfoDisplay idNumbers={this.state.idnumbers}
+		showInspectPersonInfo={this.state.showInspectPersonInfo} />;
+		
+		var lawcaseInfoDisplay = <MultiNamesPlusBirthdateSearchLawcaseInfoDisplay namesPlusBirthdate={this.state.namesplusbirthdate}
+		showLawcaseInfo={this.state.showLawcaseInfo} />;
+		
+		if (this.state.idnumbers.length == 0) {
+			communistInfoDisplay = <MultiNamesSearchCommunistInfoDisplay names={this.state.names}
+			showCommunistInfo={this.state.showCommunistInfo} />;
+			inspectPersonInfoDisplay =  <MultiNamesSearchInspectPersonInfoDisplay names={this.state.names}
+			showInspectPersonInfo={this.state.showInspectPersonInfo} />;
+			lawcaseInfoDisplay = <MultiNamesSearchLawcaseInfoDisplay names={this.state.names}
+			showLawcaseInfo={this.state.showLawcaseInfo} />;
+		}
+		
 		return (
 			<div className="subModuleDataDisplay">
 				<table>
 					<tr>
-						<td>请上传党员信息表:</td><td><input type="file" name="file" onChange={this.handleFile}/></td>
+						<td>请上传比对人员信息表:</td><td><input type="file" name="file" onChange={this.handleFile}/></td>
 						<td style={this.state.uploadresultStyle}>{this.state.uploadresult}</td>
 					</tr>
 					<tr>
 						<td colSpan="2">
 							<div className="webdesigntuts-workshop">
 							    <input type="search" id="name" placeholder="请输入要查询的姓名"></input>
-							    <input type="search" id="idnumber" placeholder="请输入要查询的或身份证号"></input>
+							    <input type="search" id="idnumber" placeholder="请输入要查询的身份证号"></input>
 								<button onClick={this.onSearch}>搜索</button>
 							</div>
 						</td>
 					</tr>
-					<tr><AlertDialog messageStyle={{color: '#F00'}} title="党员与监察对象信息比对" alertMessage="错误: 姓名或身份证号为空" /></tr>
+					<tr><AlertDialog messageStyle={{color: '#F00'}} title="信息比对" alertMessage="信息: 姓名不能为空，请输入要查询的姓名" /></tr>
 				</table>
 				
 				<div>
@@ -153,7 +183,7 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 	                checked={this.state.showCommunistInfo}
 	                onChange={this.onInputChange('showCommunistInfo')}
 	              />
-	              显示党员信息
+	              党员信息
 	            </label>
 	            </div>
 
@@ -165,7 +195,7 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 	                checked={this.state.showInspectPersonInfo}
 	                onChange={this.onInputChange('showInspectPersonInfo')}
 	              />
-	              显示监察对象信息
+	              监察对象信息
 	            </label>
 	          </div>
 
@@ -177,16 +207,13 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 	                checked={this.state.showLawcaseInfo}
 	                onChange={this.onInputChange('showLawcaseInfo')}
 	              />
-	              显示处分人员信息
+	              处分人员信息
 	            </label>
 	          </div>
 				
-				<MultiIdNumbersSearchCommunistInfoDisplay idNumbers={this.state.idnumbers}
-					showCommunistInfo={this.state.showCommunistInfo} />
-				<MultiIdNumbersSearchInspectPersonInfoDisplay idNumbers={this.state.idnumbers}
-					showInspectPersonInfo={this.state.showInspectPersonInfo} />
-				<MultiNamesPlusBirthdateSearchLawcaseInfoDisplay namesPlusBirthdate={this.state.namesplusbirthdate}
-					showLawcaseInfo={this.state.showLawcaseInfo} />
+				{communistInfoDisplay}
+				{inspectPersonInfoDisplay}
+				{lawcaseInfoDisplay}
 				</div>
 		);
 	}

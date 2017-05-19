@@ -71,6 +71,12 @@ class MultiIdNumbersSearchCommunistInfoDisplay extends React.Component {
 			this.loadFromServer(nextProps.idNumbers, this.state.pageSize);
 		}
 	}
+	
+	componentDidMount() {
+		if (this.props.idNumbers.length != 0) {
+			this.loadFromServer(this.props.idNumbers, this.state.pageSize);
+		}
+	}
 
 	render() {
 		if (!this.props.showCommunistInfo) {

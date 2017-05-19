@@ -25,7 +25,7 @@ class MultiNamesPlusBirthdateSearchLawcaseInfoDisplay extends React.Component {
 	loadFromServer(namesPlusBirthdate, pageSize) {
 		client({
 			method: 'POST',
-			path: '/lawcaseinfo/multirespondentnamesplusbirthdateearch',
+			path: '/lawcaseinfo/multirespondentnamesplusbirthdatesearch',
 			params: {size: pageSize},
 			entity: namesPlusBirthdate,
 			headers: {'Content-Type': 'application/json'}
@@ -69,6 +69,12 @@ class MultiNamesPlusBirthdateSearchLawcaseInfoDisplay extends React.Component {
 	componentWillReceiveProps(nextProps) {
 		if (nextProps.namesPlusBirthdate.length != 0) {
 			this.loadFromServer(nextProps.namesPlusBirthdate, this.state.pageSize);
+		}
+	}
+	
+	componentDidMount() {
+		if (this.props.namesPlusBirthdate.length != 0) {
+			this.loadFromServer(this.props.namesPlusBirthdate, this.state.pageSize);
 		}
 	}
 

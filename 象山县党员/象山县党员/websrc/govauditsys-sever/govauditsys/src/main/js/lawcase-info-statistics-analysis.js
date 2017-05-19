@@ -43,8 +43,8 @@ class BarChartAnalysis extends React.Component {
 					<div style={divStyle}><span>{dataSrc[0]['label']}</span></div>
 					<BarChart
 				        data={dataSrc}
-				        width={1200 / dataSrcs.length}
-				        height={800 / dataSrcs.length}
+				        width={400}
+				        height={300}
 						tooltipHtml={tooltip}
 				        margin={{top: 10, bottom: 50, left: 50, right: 10}}/>
 				</div>
@@ -89,8 +89,8 @@ class PieChartAnalysis extends React.Component {
 					<div style={divStyle}><span>{dataSrc['label']}</span></div>
 					<PieChart
 		            data={dataSrc}
-		            width={1200 / dataSrcs.length}
-		            height={1200 / dataSrcs.length}
+		            width={400}
+		            height={400}
 		            margin={{top: 80, bottom: 80, left: 80, right: 80}}
 					tooltipHtml={tooltip}
 		            sort={sort}
@@ -115,13 +115,28 @@ class LineChartAnalysis extends React.Component {
 	render() {
 		var myDate = new Date();
 		var currentYear = myDate.getFullYear();
-		var years = [currentYear - 2, currentYear - 1, currentYear];
+		var minYear = currentYear;
+		var maxYear = currentYear;
+		for(var key in this.props.data) {
+			var intKey = parseInt(key);
+			if (intKey < minYear) {
+				minYear = intKey;
+			}
+		}
+		if (maxYear - minYear < 2) {
+			minYear = maxYear - 2;
+		}
+		var years = [];
 		var dataSrcs = [
 	    	{
 		        label: 'LineChart',
-		        values: [{x: years[0], y: 0}, {x: years[1], y: 0}, {x: years[2], y: 0}]
+		        values: []
 	        }
 	    ];
+		for (var i = minYear; i <= maxYear; i++) {
+			years.push(i)
+			dataSrcs[0].values.push({x: i, y: 0});
+		};
 		
 		var tooltip = function(label, data) {
 		    return data.x + ": " + data.y;
@@ -145,11 +160,11 @@ class LineChartAnalysis extends React.Component {
 		return (
 				<LineChart
                 data={dataSrcs}
-                width={1200}
-                height={800}
+                width={900}
+                height={600}
                 margin={{top: 10, bottom: 50, left: 50, right: 10}}
                 tooltipHtml={tooltip}
-				xScale={d3.time.scale().domain([years[0], years[2]]).range([0, 1200 - 200])}
+				xScale={d3.time.scale().domain([minYear, maxYear]).range([0, 900 - 100])}
 				xAxis={{tickFormat: d3.format("d")}}
                 />
 		);
@@ -159,13 +174,11 @@ class LineChartAnalysis extends React.Component {
 class LawcaseInfoStatisticsAnalysis extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {dataSrc : {}}
+		this.state = {dataSrc : {}, options: [<option value ="全部">全部</option>], currentOption: "全部"};
+		this.handleChange = this.handleChange.bind(this);
 	}
 	
-	loadFromServer() {
-		var myDate = new Date();
-		var currentYear = myDate.getFullYear();
-		var years = [currentYear - 2, currentYear - 1, currentYear];
+	loadFromServer(years) {
 		var dataSrc = {};
 
 		Promise.all(years.map(year => new Promise(function(resolve, reject) {
@@ -184,14 +197,63 @@ class LawcaseInfoStatisticsAnalysis extends React.Component {
 				}
 			});
 		}))).then(() => {
-			this.setState({dataSrc:dataSrc});
+			var state = this.state;
+			state.dataSrc = dataSrc;
+			for(var key in dataSrc) {
+				state.options.push(<option value ={key}>{key}</option>);
+			}
+			this.setState(state);
 		}).catch(() => {
-			this.state = {dataSrc : {}}
+			this.setState({dataSrc : {}, options: [<option value ="全部">全部</option>], currentOption: "全部"});
+		});
+	}
+	
+	loadFromServerBySelectedYear(years) {
+		var dataSrc = {};
+
+		Promise.all(years.map(year => new Promise(function(resolve, reject) {
+			client({
+				method: 'GET',
+				path: '/lawcaseinfo/partydisciplinepunishmentcountgroupsearch',
+				params: {year: year},
+			}).done(response => {
+				if (!Array.isArray(response.entity)) {
+					reject('Exception');
+				} else {
+					if (response.entity.length != 0) {
+						dataSrc[year] = response.entity;
+					}
+					resolve('Success');
+				}
+			});
+		}))).then(() => {
+			var state = this.state;
+			state.dataSrc = dataSrc;
+			this.setState(state);
+		}).catch(() => {
+			this.setState({dataSrc : {}, options: [<option value ="全部">全部</option>], currentOption: "全部"});
 		});
 	}
 	
 	componentDidMount() {
-		this.loadFromServer();
+		var myDate = new Date();
+		var currentYear = myDate.getFullYear();
+		var years = [];
+		for (var i = 1949; i <= currentYear; i++) {years.push(i)};
+		
+		this.loadFromServer(years);
+	}
+	
+	handleChange(event) {
+		if (event.target.value == "全部") {
+			var myDate = new Date();
+			var currentYear = myDate.getFullYear();
+			var years = [];
+			for (var i = 1949; i <= currentYear; i++) {years.push(i)};
+			this.loadFromServerBySelectedYear(years);
+		} else {
+			this.loadFromServerBySelectedYear([event.target.value]);
+		}
 	}
 	
 	render() {
@@ -203,6 +265,14 @@ class LawcaseInfoStatisticsAnalysis extends React.Component {
 		
 		return (
 			<div className="subModuleDataDisplay">
+				<div style={divStyle}>
+					<label>
+					请选择要统计分析的年份：
+					<select ref="selectYear" value={this.state.value} onChange={this.handleChange}>
+						{this.state.options}
+					</select>
+					</label>
+				</div>
 				<PieChartAnalysis data={this.state.dataSrc} />
 				<div style={divStyle}><span>近三年全县党员和监察对象违法违纪案件分布情况分析图</span></div>
 				<BarChartAnalysis data={this.state.dataSrc} />

@@ -374,7 +374,7 @@ class SysUser extends React.Component {
 	}
 	
 	render() {
-		if (this.props.sysUser.entity.accountName == "administrator") {
+		if (this.props.sysUser.entity.accountName === "administrator" && this.state.accountName !== "administrator") {
 			return null;
 		}
 		

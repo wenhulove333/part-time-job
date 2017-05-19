@@ -51,7 +51,7 @@ public class LawcaseInfoMultiConditionsSearchController {
 	}
 	
 	@RequestMapping(
-			value = "/lawcaseinfo/multirespondentnamesplusbirthdateearch",
+			value = "/lawcaseinfo/multirespondentnamesplusbirthdatesearch",
 			method = RequestMethod.POST,
 			produces = {"application/json", "application/hal+json", "application/*+json;charset=UTF-8"})
 	public PagedResources<LawcaseInfo> multiRespondentNamePluasBirthDateSearchLawcaseInfo(
@@ -62,18 +62,14 @@ public class LawcaseInfoMultiConditionsSearchController {
 		
 		if (payload.size() > 0) {
 			subExpression = lawcaseInfo.respondentName.contains(payload.get(0));
-			subExpression = subExpression.and(lawcaseInfo.birthDate.eq(
-				new StringToCalendar().convertAsSpeicificFmt(payload.get(1), "yyyyMMdd")
-			));
+			subExpression = subExpression.and(lawcaseInfo.strFmtBirthDate.contains(payload.get(1)));
 			expression = subExpression;
 			payload.remove(0);
 			payload.remove(0);
 
 			for (int index = 0; index < payload.size(); index = index + 2) {
 				subExpression = lawcaseInfo.respondentName.contains(payload.get(index));
-				subExpression = subExpression.and(lawcaseInfo.birthDate.eq(
-					new StringToCalendar().convertAsSpeicificFmt(payload.get(index + 1), "yyyyMMdd")
-				));
+				subExpression = subExpression.and(lawcaseInfo.strFmtBirthDate.contains(payload.get(index + 1)));
 				
 				expression = expression.or(subExpression);
 			}

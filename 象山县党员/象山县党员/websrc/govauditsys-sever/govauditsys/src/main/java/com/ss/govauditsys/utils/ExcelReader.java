@@ -229,6 +229,10 @@ public class ExcelReader {
             	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 1) : getCellValueByIndex(xsheet.getRow(i), 1),
             	"yyyy.MM.dd"
             ));
+            String birthDate = isOldFormat ? getCellValueByIndex(sheet.getRow(i), 1) : getCellValueByIndex(xsheet.getRow(i), 1);
+            birthDate = birthDate.replace(".", "");
+            birthDate = birthDate.replace("-", "");
+            lawcaseInfo.setStrFmtBirthDate(birthDate);
             lawcaseInfo.setJoinDate(new StringToCalendar().convertAsSpeicificFmt(
             	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 2) : getCellValueByIndex(xsheet.getRow(i), 2),
             	"yyyy.MM.dd"

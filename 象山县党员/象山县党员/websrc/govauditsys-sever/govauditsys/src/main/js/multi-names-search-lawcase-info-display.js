@@ -64,6 +64,12 @@ class MultiNamesSearchLawcaseInfoDisplay extends React.Component {
 			this.loadFromServer(nextProps.names, this.state.pageSize);
 		}
 	}
+	
+	componentDidMount() {
+		if (this.props.names.length != 0) {
+			this.loadFromServer(this.props.names, this.state.pageSize);
+		}
+	}
 
 	render() {
 		if (!this.props.showLawcaseInfo) {
