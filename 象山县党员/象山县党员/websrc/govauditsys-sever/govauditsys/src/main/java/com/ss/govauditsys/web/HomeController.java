@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,7 +90,8 @@ public class HomeController {
 	public List<String> uploadExcel(
 		@RequestBody String payload,
 		@RequestParam("action") String action,
-		@RequestParam("filename") String fileName
+		@RequestParam("filename") String fileName,
+		HttpSession session
 	) {
 		String excelData = payload.substring(payload.indexOf("base64,") + 7);
 		List<String> names = Lists.newArrayList(Arrays.asList("error"));
@@ -103,6 +106,7 @@ public class HomeController {
 			ExcelReader reader = new ExcelReader(fileName);
 			if (action.equals("namessearch")) {
 				names = reader.readSearchUserName(dataInputStream);
+				session.setAttribute("payloadComparison", names);
 			} else if (action.equals("uploadcommunistinfo")) {
 				List<CommunistInfo> communistInfoes = reader.readCommunistInfoes(dataInputStream);
 				

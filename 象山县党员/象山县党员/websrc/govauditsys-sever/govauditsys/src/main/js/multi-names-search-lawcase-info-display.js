@@ -181,6 +181,7 @@ class LawcaseInfoList extends React.Component {
 							<th>出生年月</th>
 							<th>入党日期</th>
 							<th>工作单位及职务</th>
+							<th>立案机关</th>
 							<th>立案时间</th>
 							<th>结案时间</th>
 							<th>党纪处分</th>
@@ -225,6 +226,7 @@ class LawcaseInfo extends React.Component {
 				<td>{this.convertDateAsSimpleDisplayTime(birthDate)}</td>
 				<td>{this.convertDateAsSimpleDisplayTime(joinDate)}</td>
 				<td>{this.props.lawcaseInfo.workPlaceAndPosition}</td>
+				<td>{this.props.lawcaseInfo.filingOffice}</td>
 				<td>{this.convertDateAsSimpleDisplayTime(caseFilingDate)}</td>
 				<td>{this.convertDateAsSimpleDisplayTime(caseCloseDate)}</td>
 				<td>{this.props.lawcaseInfo.partyDisciplinePunishment}</td>

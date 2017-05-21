@@ -24,6 +24,7 @@ class InspectPersonInfoDisplay extends React.Component {
 		this.state = {inspectPersonInfoes: [], attributes: [], page: 1, pageSize: 20, links: {}};
 		this.onNavigate = this.onNavigate.bind(this);
 		this.onSearch = this.onSearch.bind(this);
+		this.onUpdate = this.onUpdate.bind(this);
 	}
 
 	loadFromServer(pageSize) {
@@ -84,6 +85,31 @@ class InspectPersonInfoDisplay extends React.Component {
 		});
 	}
 
+	onUpdate(inspectPersonInfo, updatedInspectPersonInfo) {
+        client({
+                method: 'PUT',
+                path: inspectPersonInfo.entity._links.self.href,
+                entity: updatedInspectPersonInfo,
+                headers: {
+    				'Content-Type': 'application/json'
+    			}
+        }).done(response => {
+            if (response.status.code === 403) {
+				alert("您没有修改监察对象信息的权限。");
+			} else {
+				var inspectPersonInfoes = this.state.inspectPersonInfoes;
+				inspectPersonInfoes.map((inspectPersonInfoMap, index) => {
+					if (inspectPersonInfo.entity._links.self.href === inspectPersonInfoMap.entity._links.self.href) {
+						for (var key in updatedInspectPersonInfo) {
+							inspectPersonInfoes[index].entity[key] = updatedInspectPersonInfo[key];
+						}
+					}
+				});
+				this.setState({inspectPersonInfoes:inspectPersonInfoes});
+			}
+        });
+	}
+	
 	onNavigate(navUri) {
 		client({
 			method: 'GET',
@@ -151,7 +177,8 @@ class InspectPersonInfoDisplay extends React.Component {
 								  inspectPersonInfoes={this.state.inspectPersonInfoes}
 								  links={this.state.links}
 								  pageSize={this.state.pageSize}
-								  onNavigate={this.onNavigate}/>
+								  onNavigate={this.onNavigate}
+								  onUpdate={this.onUpdate}/>
 				</div>
 			</div>
 		)
@@ -203,7 +230,8 @@ class InspectPersonInfoList extends React.Component {
 	render() {
 		var inspectPersonInfoes = this.props.inspectPersonInfoes.map(inspectPersonInfo =>
 			<InspectPersonInfo key={inspectPersonInfo.entity._links.self.href}
-					  inspectPersonInfo={inspectPersonInfo}/>
+					  inspectPersonInfo={inspectPersonInfo}
+					  onUpdate={this.props.onUpdate}/>
 		);
 		
 		var navLinks = [];
@@ -251,6 +279,7 @@ class InspectPersonInfoList extends React.Component {
 							<th>性别</th>
 							<th>学历</th>
 							<th>工作单位</th>
+							<th></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -279,7 +308,58 @@ class InspectPersonInfo extends React.Component {
 				<td>{this.props.inspectPersonInfo.entity.gender}</td>
 				<td>{this.props.inspectPersonInfo.entity.education}</td>
 				<td>{this.props.inspectPersonInfo.entity.workPlace}</td>
+				<td>
+					<UpdateDialog inspectPersonInfo={this.props.inspectPersonInfo} onUpdate={this.props.onUpdate} />
+				</td>
 			</tr>
+		)
+	}
+}
+
+class UpdateDialog extends React.Component {
+
+	constructor(props) {
+		super(props);
+		this.handleSubmit = this.handleSubmit.bind(this);
+	}
+	
+	handleSubmit(e) {
+		e.preventDefault();
+		var updatedInspectPersonInfo = {};
+		updatedInspectPersonInfo['name'] = ReactDOM.findDOMNode(this.refs['name']).value.trim();
+		updatedInspectPersonInfo['idNumber'] = ReactDOM.findDOMNode(this.refs['idNumber']).value.trim();
+		updatedInspectPersonInfo['gender'] = ReactDOM.findDOMNode(this.refs['gender']).value.trim();
+		updatedInspectPersonInfo['education'] = ReactDOM.findDOMNode(this.refs['education']).value.trim();
+		updatedInspectPersonInfo['workPlace'] = ReactDOM.findDOMNode(this.refs['workPlace']).value.trim();
+		this.props.onUpdate(this.props.inspectPersonInfo, updatedInspectPersonInfo);
+		window.location = "#";
+	}
+
+	render() {
+		var urlArr = this.props.inspectPersonInfo.entity._links.self.href.split('/');
+		var inspectPersonInfoId = urlArr[urlArr.length - 1];
+		
+		return (
+				<div className="updateInspectPersonInfoDialog">
+				<a href={"#updateInspectPersonInfoDialog" + inspectPersonInfoId}>修改监察对象信息</a>
+			
+				<div id={"updateInspectPersonInfoDialog" + inspectPersonInfoId} className="modalDialog">
+					<div>
+						<a href="#" title="Close" className="close">X</a>
+
+						<h2>修改监察对象信息</h2>
+
+						<form>
+							<p><input type="text" placeholder="请输入姓名" defaultValue={this.props.inspectPersonInfo.entity['name']} ref="name" className="field" /></p>
+							<p><input type="text" placeholder="请输入身份证号" defaultValue={this.props.inspectPersonInfo.entity['idNumber']} ref="idNumber" className="field" /></p>
+							<p><input type="text" placeholder="请输入性别" defaultValue={this.props.inspectPersonInfo.entity['gender']} ref="gender" className="field" /></p>
+							<p><input type="text" placeholder="请输入学历" defaultValue={this.props.inspectPersonInfo.entity['education']} ref="education" className="field" /></p>
+							<p><input type="text" placeholder="请输入工作单位" defaultValue={this.props.inspectPersonInfo.entity['workPlace']} ref="workPlace" className="field" /></p>
+							<button onClick={this.handleSubmit}>提交</button>
+						</form>
+					</div>
+				</div>
+			</div>
 		)
 	}
 }

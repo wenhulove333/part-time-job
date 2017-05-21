@@ -128,7 +128,7 @@ class SysUserDisplay extends React.Component {
 			}
 		}).done(response => {
 			if (response.status.code === 403) {
-				alert('您没有更新该用户的权限。');
+				alert('您没有修改该用户信息的权限。');
 			} else {
 				this.loadFromServer(this.state.pageSize);
 			}

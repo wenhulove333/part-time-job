@@ -1,5 +1,6 @@
 package com.ss.govauditsys.sysdata.model;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import javax.persistence.Entity;
@@ -17,6 +18,7 @@ public class LawcaseInfo {
 	private String strFmtBirthDate;
 	private Calendar joinDate;
 	private String workPlaceAndPosition;
+	private String filingOffice;
 	private Calendar caseFilingDate;
 	private Calendar caseCloseDate;
 	private String partyDisciplinePunishment;
@@ -31,6 +33,8 @@ public class LawcaseInfo {
 		return birthDate;
 	}
 	public void setBirthDate(Calendar birthDate) {
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+		setStrFmtBirthDate(simpleDateFormat.format(birthDate.getTime()));
 		this.birthDate = birthDate;
 	}
 	public String getStrFmtBirthDate() {
@@ -50,6 +54,12 @@ public class LawcaseInfo {
 	}
 	public void setWorkPlaceAndPosition(String workPlaceAndPosition) {
 		this.workPlaceAndPosition = workPlaceAndPosition;
+	}
+	public String getFilingOffice() {
+		return filingOffice;
+	}
+	public void setFilingOffice(String filingOffice) {
+		this.filingOffice = filingOffice;
 	}
 	public Calendar getCaseFilingDate() {
 		return caseFilingDate;
