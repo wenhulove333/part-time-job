@@ -24,11 +24,14 @@ class LawcaseInfoDisplay extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {lawcaseInfoes: [], attributes: [], page: 1, pageSize: 20, links: {}, startTime: '', endTime: ''};
+		this.state = {lawcaseInfoes: [], attributes: [], page: 1, pageSize: 20, links: {}, startTime: '', endTime: '', partyDisciplinePunishmentGroup: []};
 		this.onNavigate = this.onNavigate.bind(this);
 		this.onSearch = this.onSearch.bind(this);
 		this.handleSelectStartTime = this.handleSelectStartTime.bind(this);
 		this.handleSelectEndTime = this.handleSelectEndTime.bind(this);
+		this.onUpdate = this.onUpdate.bind(this);
+		this.loadPartyDisciplinePunishmentFromServer = this.loadPartyDisciplinePunishmentFromServer.bind(this);
+		this.handleChange = this.handleChange.bind(this);
 	}
 	
 	handleSelectStartTime(startTime) {
@@ -116,6 +119,31 @@ class LawcaseInfoDisplay extends React.Component {
 			});
 		});
 	}
+	
+	onUpdate(lawcaseInfo, updatedLawcaseInfo) {
+        client({
+                method: 'PUT',
+                path: lawcaseInfo.entity._links.self.href,
+                entity: updatedLawcaseInfo,
+                headers: {
+    				'Content-Type': 'application/json'
+    			}
+        }).done(response => {
+            if (response.status.code === 403) {
+				alert("您没有修改处分人员信息的权限。");
+			} else {
+				var lawcaseInfoes = this.state.lawcaseInfoes;
+				lawcaseInfoes.map((lawcaseInfoMap, index) => {
+					if (lawcaseInfo.entity._links.self.href === lawcaseInfoMap.entity._links.self.href) {
+						for (var key in updatedLawcaseInfo) {
+							lawcaseInfoes[index].entity[key] = updatedLawcaseInfo[key];
+						}
+					}
+				});
+				this.setState({lawcaseInfoes:lawcaseInfoes});
+			}
+        });
+	}
 
 	onNavigate(navUri) {
 		client({
@@ -185,19 +213,49 @@ class LawcaseInfoDisplay extends React.Component {
 		})
 	}
 
+	loadPartyDisciplinePunishmentFromServer() {
+		client({
+			method: 'GET',
+			path: '/lawcaseinfo/getpartydisciplinepunishmentcountgroup'
+		}).done(response => {
+			if (Array.isArray(response.entity)) {
+				if (response.entity.length != 0) {
+					this.setState({partyDisciplinePunishmentGroup: response.entity});
+				}
+			}
+		});
+	}
+	
 	// tag::register-handlers[]
 	componentDidMount() {
 		//this.loadFromServer(this.state.pageSize);
+		this.loadPartyDisciplinePunishmentFromServer();
 		//this.getlawcaseInfoesByName('张三', this.state.pageSize);
 	}
 	// end::register-handlers[]
 
+	handleChange(event) {
+		document.getElementById("punishmentContent").value = event.target.value;
+	}
+	
 	render() {
+		var options = [<option value ="">全部</option>];
+		this.state.partyDisciplinePunishmentGroup.map(elem => {
+			options.push(<option value ={elem.x}>{elem.x}</option>);
+		});
+		var select = null;
+		if (options.length != 0) {
+			select = <select ref="selectPartyDisciplinePunishmentGroup" onChange={this.handleChange}>{options}</select>
+		}
+		
 		return (
 			<div className="searchBarPlusDataDisplay">
 				<div className="webdesigntuts-workshop">
-				    <input type="search" id="name" placeholder="请输入你所要查询的人名"></input>
-				    <input type="search" id="punishmentContent" placeholder="请输入你所要查询的处分内容"></input>
+				    <input type="search" id="name" placeholder="请输入查询姓名"></input>
+				    <div>
+				    	<input type="search" id="punishmentContent" placeholder="请输入处分类别"></input>
+				    	{select}
+			    	</div>
 				    <DatePicker
 						dateFormat="YYYY-MM-DD"
 						selected={this.state.startTime}
@@ -219,7 +277,8 @@ class LawcaseInfoDisplay extends React.Component {
 								  lawcaseInfoes={this.state.lawcaseInfoes}
 								  links={this.state.links}
 								  pageSize={this.state.pageSize}
-								  onNavigate={this.onNavigate}/>
+								  onNavigate={this.onNavigate}
+							      onUpdate={this.onUpdate}/>
 				</div>
 			</div>
 		)
@@ -332,10 +391,12 @@ class LawcaseInfoList extends React.Component {
 							<th>出生年月</th>
 							<th>入党日期</th>
 							<th>工作单位及职务</th>
+							<th>立案机关</th>
 							<th>立案时间</th>
 							<th>结案时间</th>
 							<th>党纪处分</th>
 							<th>政纪处分</th>
+							<th></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -381,11 +442,84 @@ class LawcaseInfo extends React.Component {
 				<td>{this.convertDateAsSimpleDisplayTime(birthDate)}</td>
 				<td>{this.convertDateAsSimpleDisplayTime(joinDate)}</td>
 				<td>{this.props.lawcaseInfo.entity.workPlaceAndPosition}</td>
+				<td>{this.props.lawcaseInfo.entity.filingOffice}</td>
 				<td>{this.convertDateAsSimpleDisplayTime(caseFilingDate)}</td>
 				<td>{this.convertDateAsSimpleDisplayTime(caseCloseDate)}</td>
 				<td>{this.props.lawcaseInfo.entity.partyDisciplinePunishment}</td>
 				<td>{this.props.lawcaseInfo.entity.politicalDisciplinePunishment}</td>
+				<td>
+					<UpdateDialog lawcaseInfo={this.props.lawcaseInfo} onUpdate={this.props.onUpdate} />
+				</td>
 			</tr>
+		)
+	}
+}
+
+class UpdateDialog extends React.Component {
+
+	constructor(props) {
+		super(props);
+		this.handleSubmit = this.handleSubmit.bind(this);
+	}
+	
+	convertDateAsSimpleDisplayTime(gmtTime) {
+		var month = gmtTime.getMonth() + 1;
+		var day = gmtTime.getDate();
+		var simpleTime = [gmtTime.getFullYear(), (month > 9 ? '' : '0') + month,
+					 (day > 9 ? '' : '0') + day].join('-');
+		return simpleTime;
+	}
+	
+	handleSubmit(e) {
+		e.preventDefault();
+		var updatedLawcaseInfo = {};
+		updatedLawcaseInfo['respondentName'] = ReactDOM.findDOMNode(this.refs['respondentName']).value.trim();
+		updatedLawcaseInfo['birthDate'] = ReactDOM.findDOMNode(this.refs['birthDate']).value.trim();
+		updatedLawcaseInfo['joinDate'] = ReactDOM.findDOMNode(this.refs['joinDate']).value.trim();
+		updatedLawcaseInfo['workPlaceAndPosition'] = ReactDOM.findDOMNode(this.refs['workPlaceAndPosition']).value.trim();
+		updatedLawcaseInfo['filingOffice'] = ReactDOM.findDOMNode(this.refs['filingOffice']).value.trim();
+		updatedLawcaseInfo['caseFilingDate'] = ReactDOM.findDOMNode(this.refs['caseFilingDate']).value.trim();
+		updatedLawcaseInfo['caseCloseDate'] = ReactDOM.findDOMNode(this.refs['caseCloseDate']).value.trim();
+		updatedLawcaseInfo['partyDisciplinePunishment'] = ReactDOM.findDOMNode(this.refs['partyDisciplinePunishment']).value.trim();
+		updatedLawcaseInfo['politicalDisciplinePunishment'] = ReactDOM.findDOMNode(this.refs['politicalDisciplinePunishment']).value.trim();
+		this.props.onUpdate(this.props.lawcaseInfo, updatedLawcaseInfo);
+		window.location = "#";
+	}
+
+	render() {
+		var urlArr = this.props.lawcaseInfo.entity._links.self.href.split('/');
+		var lawcaseInfoId = urlArr[urlArr.length - 1];
+		
+		var birthDate = new Date(this.props.lawcaseInfo.entity.birthDate.replace(/\+0000/, "Z"));
+		var joinDate = new Date(this.props.lawcaseInfo.entity.joinDate.replace(/\+0000/, "Z"));
+		var caseFilingDate = new Date(this.props.lawcaseInfo.entity.caseFilingDate.replace(/\+0000/, "Z"));
+		var caseCloseDate = new Date(this.props.lawcaseInfo.entity.caseCloseDate.replace(/\+0000/, "Z"));
+		
+		return (
+				<div className="updatelawcaseInfoDialog">
+				<a href={"#updatelawcaseInfoDialog" + lawcaseInfoId}>修改处分人员信息</a>
+			
+				<div id={"updatelawcaseInfoDialog" + lawcaseInfoId} className="modalDialog">
+					<div>
+						<a href="#" title="Close" className="close">X</a>
+
+						<h2>修改处分人员信息</h2>
+
+						<form>
+							<p><input type="text" placeholder="请输入被调查人" defaultValue={this.props.lawcaseInfo.entity['respondentName']} ref="respondentName" className="field" /></p>
+							<p><input type="text" placeholder="请输入出生年月" defaultValue={this.convertDateAsSimpleDisplayTime(birthDate)} ref="birthDate" className="field" /></p>
+							<p><input type="text" placeholder="请输入入党日期" defaultValue={this.convertDateAsSimpleDisplayTime(joinDate)} ref="joinDate" className="field" /></p>
+							<p><input type="text" placeholder="请输入工作单位及职务" defaultValue={this.props.lawcaseInfo.entity['workPlaceAndPosition']} ref="workPlaceAndPosition" className="field" /></p>
+							<p><input type="text" placeholder="请输入立案机关" defaultValue={this.props.lawcaseInfo.entity['filingOffice']} ref="filingOffice" className="field" /></p>
+							<p><input type="text" placeholder="请输入立案时间" defaultValue={this.convertDateAsSimpleDisplayTime(caseFilingDate)} ref="caseFilingDate" className="field" /></p>
+							<p><input type="text" placeholder="请输入结案时间" defaultValue={this.convertDateAsSimpleDisplayTime(caseCloseDate)} ref="caseCloseDate" className="field" /></p>
+							<p><input type="text" placeholder="请输入党纪处分" defaultValue={this.props.lawcaseInfo.entity['partyDisciplinePunishment']} ref="partyDisciplinePunishment" className="field" /></p>
+							<p><input type="text" placeholder="请输入政纪处分" defaultValue={this.props.lawcaseInfo.entity['politicalDisciplinePunishment']} ref="politicalDisciplinePunishment" className="field" /></p>
+							<button onClick={this.handleSubmit}>提交</button>
+						</form>
+					</div>
+				</div>
+			</div>
 		)
 	}
 }

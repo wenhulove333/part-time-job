@@ -184,7 +184,7 @@ class LawcaseInfoStatisticsAnalysis extends React.Component {
 		Promise.all(years.map(year => new Promise(function(resolve, reject) {
 			client({
 				method: 'GET',
-				path: '/lawcaseinfo/partydisciplinepunishmentcountgroupsearch',
+				path: '/lawcaseinfo/getpartydisciplinepunishmentcountgroupbyyear',
 				params: {year: year},
 			}).done(response => {
 				if (!Array.isArray(response.entity)) {
@@ -214,7 +214,7 @@ class LawcaseInfoStatisticsAnalysis extends React.Component {
 		Promise.all(years.map(year => new Promise(function(resolve, reject) {
 			client({
 				method: 'GET',
-				path: '/lawcaseinfo/partydisciplinepunishmentcountgroupsearch',
+				path: '/lawcaseinfo/getpartydisciplinepunishmentcountgroupbyyear',
 				params: {year: year},
 			}).done(response => {
 				if (!Array.isArray(response.entity)) {

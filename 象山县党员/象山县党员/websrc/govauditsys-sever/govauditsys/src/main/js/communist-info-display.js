@@ -24,6 +24,7 @@ class CommunistInfoDisplay extends React.Component {
 		this.state = {communistInfoes: [], attributes: [], page: 1, pageSize: 20, links: {}};
 		this.onNavigate = this.onNavigate.bind(this);
 		this.onSearch = this.onSearch.bind(this);
+		this.onUpdate = this.onUpdate.bind(this);
 	}
 
 	loadFromServer(pageSize) {
@@ -86,6 +87,31 @@ class CommunistInfoDisplay extends React.Component {
 				links: this.links
 			});
 		});
+	}
+	
+	onUpdate(communistInfo, updatedCommunistInfo) {
+        client({
+                method: 'PUT',
+                path: communistInfo.entity._links.self.href,
+                entity: updatedCommunistInfo,
+                headers: {
+    				'Content-Type': 'application/json'
+    			}
+        }).done(response => {
+            if (response.status.code === 403) {
+				alert("您没有修改党员信息的权限。");
+			} else {
+				var communistInfoes = this.state.communistInfoes;
+				communistInfoes.map((communistInfoMap, index) => {
+					if (communistInfo.entity['idNumber'] == communistInfoMap.entity['idNumber']) {
+						for (var key in updatedCommunistInfo) {
+							communistInfoes[index].entity[key]=updatedCommunistInfo[key];
+						}
+					}
+				});
+				this.setState({communistInfoes:communistInfoes});
+			}
+        });
 	}
 
 	onNavigate(navUri) {
@@ -156,7 +182,8 @@ class CommunistInfoDisplay extends React.Component {
 								  communistInfoes={this.state.communistInfoes}
 								  links={this.state.links}
 								  pageSize={this.state.pageSize}
-								  onNavigate={this.onNavigate}/>
+								  onNavigate={this.onNavigate}
+								  onUpdate={this.onUpdate}/>
 				</div>
 			</div>
 		)
@@ -278,6 +305,7 @@ class CommunistInfoList extends React.Component {
 							<th>籍贯</th>
 							<th>民族</th>
 							<th>个人身份</th>
+							<th></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -316,7 +344,68 @@ class CommunistInfo extends React.Component {
 				<td>{this.props.communistInfo.entity.nativePlace}</td>
 				<td>{this.props.communistInfo.entity.nation}</td>
 				<td>{this.props.communistInfo.entity.individualStatus}</td>
+				<td>
+					<UpdateDialog communistInfo={this.props.communistInfo} onUpdate={this.props.onUpdate} />
+				</td>
 			</tr>
+		)
+	}
+}
+
+class UpdateDialog extends React.Component {
+
+	constructor(props) {
+		super(props);
+		this.handleSubmit = this.handleSubmit.bind(this);
+	}
+	
+	handleSubmit(e) {
+		e.preventDefault();
+		var updatedCommunistInfo = {};
+		updatedCommunistInfo['name'] = ReactDOM.findDOMNode(this.refs['name']).value.trim();
+		updatedCommunistInfo['idNumber'] = ReactDOM.findDOMNode(this.refs['idNumber']).value.trim();
+		updatedCommunistInfo['gender'] = ReactDOM.findDOMNode(this.refs['gender']).value.trim();
+		updatedCommunistInfo['joinDate'] = ReactDOM.findDOMNode(this.refs['joinDate']).value.trim();
+		updatedCommunistInfo['education'] = ReactDOM.findDOMNode(this.refs['education']).value.trim();
+		updatedCommunistInfo['partyBranch'] = ReactDOM.findDOMNode(this.refs['partyBranch']).value.trim();
+		updatedCommunistInfo['superiorOrg'] = ReactDOM.findDOMNode(this.refs['superiorOrg']).value.trim();
+		updatedCommunistInfo['nativePlace'] = ReactDOM.findDOMNode(this.refs['nativePlace']).value.trim();
+		updatedCommunistInfo['nation'] = ReactDOM.findDOMNode(this.refs['nation']).value.trim();
+		updatedCommunistInfo['individualStatus'] = ReactDOM.findDOMNode(this.refs['individualStatus']).value.trim();
+		this.props.onUpdate(this.props.communistInfo, updatedCommunistInfo);
+		window.location = "#";
+	}
+
+	render() {
+		var urlArr = this.props.communistInfo.entity._links.self.href.split('/');
+		var communistInfoId = urlArr[urlArr.length - 1];
+		
+		return (
+				<div className="updateCommunistInfoDialog">
+				<a href={"#updateCommunistInfoDialog" + communistInfoId}>修改党员信息</a>
+			
+				<div id={"updateCommunistInfoDialog" + communistInfoId} className="modalDialog">
+					<div>
+						<a href="#" title="Close" className="close">X</a>
+
+						<h2>修改党员信息</h2>
+
+						<form>
+							<p><input type="text" placeholder="请输入党员姓名" defaultValue={this.props.communistInfo.entity['name']} ref="name" className="field" /></p>
+							<p><input type="text" placeholder="请输入身份证号" defaultValue={this.props.communistInfo.entity['idNumber']} ref="idNumber" className="field" /></p>
+							<p><input type="text" placeholder="请输入性别" defaultValue={this.props.communistInfo.entity['gender']} ref="gender" className="field" /></p>
+							<p><input type="text" placeholder="请输入入党日期" defaultValue={this.props.communistInfo.entity['joinDate']} ref="joinDate" className="field" /></p>
+							<p><input type="text" placeholder="请输入学历" defaultValue={this.props.communistInfo.entity['education']} ref="education" className="field" /></p>
+							<p><input type="text" placeholder="请输入党支部" defaultValue={this.props.communistInfo.entity['partyBranch']} ref="partyBranch" className="field" /></p>
+							<p><input type="text" placeholder="请输入上级组织" defaultValue={this.props.communistInfo.entity['superiorOrg']} ref="superiorOrg" className="field" /></p>
+							<p><input type="text" placeholder="请输入籍贯" defaultValue={this.props.communistInfo.entity['nativePlace']} ref="nativePlace" className="field" /></p>
+							<p><input type="text" placeholder="请输入民族" defaultValue={this.props.communistInfo.entity['nation']} ref="nation" className="field" /></p>
+							<p><input type="text" placeholder="请输入个人身份" defaultValue={this.props.communistInfo.entity['individualStatus']} ref="individualStatus" className="field" /></p>
+							<button onClick={this.handleSubmit}>提交</button>
+						</form>
+					</div>
+				</div>
+			</div>
 		)
 	}
 }

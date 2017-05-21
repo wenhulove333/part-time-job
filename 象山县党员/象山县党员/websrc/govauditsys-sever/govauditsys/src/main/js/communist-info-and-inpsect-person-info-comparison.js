@@ -37,10 +37,17 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 			uploadresult: '',
 			uploadresultStyle: {color: '#0F0'}
 		};
+		this.search = {
+			names: [],
+			idnumbers: [],
+			namesplusbirthdate: []	
+		}
 		this.handleFile = this.handleFile.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.initiateUploadResult = this.initiateUploadResult.bind(this);
 		this.onSearch = this.onSearch.bind(this);
+		this.onUploadSearch = this.onUploadSearch.bind(this);
+		this.onExcelImport = this.onExcelImport.bind(this);
 	}
 	
 	handleSubmit(fileName) {
@@ -52,7 +59,6 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 			params: {action: 'namessearch', filename: fileName},
 			entity: this.state.data_uri
 		}).done(response =>{
-			this.setState({data_uri: this.state.data_uri, names: response.entity});
 			if(response.hasOwnProperty('entity')) {
 				if (response.entity[0] == 'error') {
 					var state = this.state;
@@ -63,15 +69,18 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 					var state = this.state;
 					state.uploadresultStyle = {color: '#0F0'};
 					state.uploadresult = '导入成功';
-					state.namesplusbirthdate = response.entity.map((item, index)=>{
+					state.namesplusbirthdate = [];
+					state.names = [];
+					state.idnumbers = [];
+					this.search.namesplusbirthdate = response.entity.map((item, index)=>{
 						if (index % 2 == 1) {
 							return item.substr(6, 6);
 						}
 						
 						return item;
 					});
-					state.names = response.entity.filter((item, index)=>index%2==0);
-					state.idnumbers = response.entity.filter((item, index)=>index%2==1);
+					this.search.names = response.entity.filter((item, index)=>index%2==0);
+					this.search.idnumbers = response.entity.filter((item, index)=>index%2==1);
 					this.setState(state);
 				}
 			} else {
@@ -137,6 +146,18 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 		this.setState(state);
 	}
 	
+	onUploadSearch() {
+		var state = this.state;
+		state.namesplusbirthdate = this.search.namesplusbirthdate;
+		state.names = this.search.names;
+		state.idnumbers = this.search.idnumbers;
+		this.setState(state);
+	}
+	
+	onExcelImport() {
+		window.open('/downloadcomparisoninfo');
+	}
+	
 	render() {
 		var communistInfoDisplay = <MultiIdNumbersSearchCommunistInfoDisplay idNumbers={this.state.idnumbers}
 		showCommunistInfo={this.state.showCommunistInfo} />;
@@ -161,6 +182,12 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 				<table>
 					<tr>
 						<td>请上传比对人员信息表:</td><td><input type="file" name="file" onChange={this.handleFile}/></td>
+						<td>
+							<div className="webdesigntuts-workshop">
+								<button onClick={this.onUploadSearch}>搜索</button>
+								<button onClick={this.onExcelImport}>导出</button>
+							</div>
+						</td>
 						<td style={this.state.uploadresultStyle}>{this.state.uploadresult}</td>
 					</tr>
 					<tr>

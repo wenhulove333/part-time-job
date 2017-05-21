@@ -11,7 +11,9 @@ const TabPanel = ReactTabs.TabPanel;
 const CommunistInfoDisplay = require('./communist-info-display');
 const CommunistInfoLimitedDisplay = require('./communist-info-limited-display');
 const InspectPersonInfoDisplay = require('./inspect-person-info-display');
+const InspectPersonInfoLimitedDisplay = require('./inspect-person-info-limited-display');
 const LawcaseInfoDisplay = require('./lawcase-info-display');
+const LawcaseInfoLimitedDisplay = require('./lawcase-info-limited-display');
 const SysUserDisplay = require('./system-user-mgmt');
 const CommunistInfoAndInspectPersonInfoComparison = require('./communist-info-and-inpsect-person-info-comparison');
 const AdminOps = require('./admin-ops');
@@ -102,7 +104,7 @@ class Entry extends React.Component {
 				>
 					<TabList activeTabClassName="ss_tab_selected">
 						<Tab activeTabClassName="ss_tab_selected">党员信息查询</Tab>
-						<Tab activeTabClassName="ss_tab_selected">检查对象信息查询</Tab>
+						<Tab activeTabClassName="ss_tab_selected">监察对象信息查询</Tab>
 						<Tab activeTabClassName="ss_tab_selected">处分人员信息查询</Tab>
 						<Tab activeTabClassName="ss_tab_selected">统计分析</Tab>
 					</TabList>
@@ -111,10 +113,10 @@ class Entry extends React.Component {
 						<CommunistInfoLimitedDisplay />
 					</TabPanel>
 					<TabPanel>
-						<InspectPersonInfoDisplay />
+						<InspectPersonInfoLimitedDisplay />
 					</TabPanel>
 					<TabPanel>
-						<LawcaseInfoDisplay />
+						<LawcaseInfoLimitedDisplay />
 					</TabPanel>		
 					<TabPanel>
 						<LawcaseInfoStatisticsAnalysis />

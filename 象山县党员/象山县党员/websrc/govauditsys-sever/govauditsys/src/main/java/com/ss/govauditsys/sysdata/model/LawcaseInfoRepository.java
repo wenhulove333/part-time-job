@@ -51,8 +51,12 @@ public interface LawcaseInfoRepository  extends PagingAndSortingRepository<Lawca
 	@Query("select new com.ss.govauditsys.sysdata.search.PartyDisciplinePunishmentCountGroup(lawcaseInfo.partyDisciplinePunishment, count(lawcaseInfo.partyDisciplinePunishment)) "
 			+ "from LawcaseInfo lawcaseInfo where lawcaseInfo.caseFilingDate >= ?1 and lawcaseInfo.caseFilingDate <= ?2 "
 			+ "group by lawcaseInfo.partyDisciplinePunishment")
-	List<PartyDisciplinePunishmentCountGroup> findPartyDisciplinePunishmentCountGroup(
+	List<PartyDisciplinePunishmentCountGroup> findPartyDisciplinePunishmentCountGroupByPeriod(
 		@Param("startTime") Calendar startTime,
 		@Param("endTime") Calendar endTime
 	);
+	
+	@Query("select new com.ss.govauditsys.sysdata.search.PartyDisciplinePunishmentCountGroup(lawcaseInfo.partyDisciplinePunishment, count(lawcaseInfo.partyDisciplinePunishment)) "
+			+ "from LawcaseInfo lawcaseInfo group by lawcaseInfo.partyDisciplinePunishment")
+	List<PartyDisciplinePunishmentCountGroup> findPartyDisciplinePunishmentCountGroup();
 }

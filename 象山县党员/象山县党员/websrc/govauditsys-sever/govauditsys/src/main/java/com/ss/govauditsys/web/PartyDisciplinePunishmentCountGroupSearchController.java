@@ -27,18 +27,31 @@ public class PartyDisciplinePunishmentCountGroupSearchController {
 	LawcaseInfoRepository lawcaseInfoRepository;
 
 	@RequestMapping(
-		value = "/lawcaseinfo/partydisciplinepunishmentcountgroupsearch",
+		value = "/lawcaseinfo/getpartydisciplinepunishmentcountgroupbyyear",
 		method = RequestMethod.GET
 	)
 	@ResponseBody
-	public List<PartyDisciplinePunishmentCountGroup> multinamessearchCommunistinfo(@RequestParam("year") String year) {
+	public List<PartyDisciplinePunishmentCountGroup> getPartyDisciplinePunishmentGroupsByYear(@RequestParam("year") String year) {
 		List<PartyDisciplinePunishmentCountGroup> partyDisciplinePunishmentCountGroups = null;
 		
-		partyDisciplinePunishmentCountGroups = lawcaseInfoRepository.findPartyDisciplinePunishmentCountGroup(
+		partyDisciplinePunishmentCountGroups = lawcaseInfoRepository.findPartyDisciplinePunishmentCountGroupByPeriod(
 			new StringToCalendar().convert(year + "-01-01 00:00:00"),
 			new StringToCalendar().convert(year + "-12-31 23:59:59")
 		);
 		
 		return partyDisciplinePunishmentCountGroups;
 	}
+	
+	@RequestMapping(
+			value = "/lawcaseinfo/getpartydisciplinepunishmentcountgroup",
+			method = RequestMethod.GET
+		)
+		@ResponseBody
+		public List<PartyDisciplinePunishmentCountGroup> getPartyDisciplinePunishmentGroups() {
+			List<PartyDisciplinePunishmentCountGroup> partyDisciplinePunishmentCountGroups = null;
+			
+			partyDisciplinePunishmentCountGroups = lawcaseInfoRepository.findPartyDisciplinePunishmentCountGroup();
+			
+			return partyDisciplinePunishmentCountGroups;
+		}
 }
