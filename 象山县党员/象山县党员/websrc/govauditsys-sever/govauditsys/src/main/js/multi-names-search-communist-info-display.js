@@ -37,6 +37,13 @@ class MultiNamesSearchCommunistInfoDisplay extends React.Component {
 					pageSize: pageSize,
 					links: response.entity._links
 				});
+			} else {
+				this.setState({
+					page: response.entity.page,
+					communistInfoes: [],
+					pageSize: this.state.pageSize,
+					links: response.entity._links
+				});
 			}
 		});
 	}
@@ -55,6 +62,13 @@ class MultiNamesSearchCommunistInfoDisplay extends React.Component {
 					pageSize: this.state.pageSize,
 					links: response.entity._links
 				});
+			} else {
+				this.setState({
+					page: response.entity.page,
+					communistInfoes: [],
+					pageSize: this.state.pageSize,
+					links: response.entity._links
+				});
 			}
 		});
 	}
@@ -62,6 +76,8 @@ class MultiNamesSearchCommunistInfoDisplay extends React.Component {
 	componentWillReceiveProps(nextProps) {
 		if (nextProps.names.length != 0) {
 			this.loadFromServer(nextProps.names, this.state.pageSize);
+		} else {
+			this.setState({communistInfoes: [], page: 1, pageSize: 6, links: {}});
 		}
 	}
 	

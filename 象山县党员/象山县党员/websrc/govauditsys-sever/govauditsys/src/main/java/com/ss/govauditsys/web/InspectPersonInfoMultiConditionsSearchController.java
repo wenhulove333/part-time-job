@@ -32,11 +32,18 @@ public class InspectPersonInfoMultiConditionsSearchController {
 		BooleanExpression expression = null;
 		
 		if (payload.size() > 0) {
-			expression = inspectPersonInfo.name.contains(payload.get(0));
-			payload.remove(0);
-
-			for (String name : payload) {
-				expression = expression.or(inspectPersonInfo.name.contains(name));
+			if (payload.get(1).equals("")) {
+				expression = inspectPersonInfo.name.contains(payload.get(0));
+			} else {
+				expression = inspectPersonInfo.idNumber.contains(payload.get(1));
+			}
+			
+			for (int index = 2; index < payload.size(); index += 2) {
+				if (payload.get(index + 1).equals("")) {
+					expression = expression.or(inspectPersonInfo.name.contains(payload.get(index)));
+				} else {
+					expression = expression.or(inspectPersonInfo.idNumber.contains(payload.get(index + 1)));
+				}
 			}
 		} else {
 			expression = inspectPersonInfo.name.contains("!@#$%^&*()_+=-~`\"':;<>?/,.");

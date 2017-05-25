@@ -118,9 +118,9 @@ public class ExcelReader {
             String idNumer = isOldFormat ? getCellValueByIndex(sheet.getRow(i), 1) : getCellValueByIndex(xsheet.getRow(i), 1);
             if (!name.equals("")) {
             	content.add(name);
-            	if (idNumer.equals("")) {
-            		throw new ExcelImportException("第" + (i + 1) + "行" + "身份证号码为空" + "或不支持的数据格式");
-            	}
+//            	if (idNumer.equals("")) {
+//            		throw new ExcelImportException("第" + (i + 1) + "行" + "身份证号码为空" + "或不支持的数据格式");
+//            	}
             	content.add(idNumer);
             }
         }

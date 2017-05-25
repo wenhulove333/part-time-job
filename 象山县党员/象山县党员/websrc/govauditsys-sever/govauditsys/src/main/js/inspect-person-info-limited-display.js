@@ -54,6 +54,10 @@ class InspectPersonInfoLimitedDisplay extends React.Component {
 	}
 	
 	getInspectPersonInfoesContaining(name, workPlace, pageSize) {
+		if (name === "" && workPlace === "") {
+			return;
+		}
+		
 		if (false) {
 			root = "/api";
 			children = "inspectPersonInfoes";

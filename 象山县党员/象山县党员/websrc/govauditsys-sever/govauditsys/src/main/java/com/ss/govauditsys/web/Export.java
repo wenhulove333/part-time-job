@@ -38,15 +38,23 @@ public class Export {
 	@Autowired
 	LawcaseInfoRepository lawcaseInfoRepository;
 	
-	private Iterable<CommunistInfo> multiIdNumberSearchCommunistinfo(List<String> payload) {
+	private Iterable<CommunistInfo> multiNamesPlusIdNumberSearchCommunistinfo(List<String> payload) {
 		QCommunistInfo communistInfo = QCommunistInfo.communistInfo;
 		BooleanExpression expression = null;
 		
 		if (payload.size() > 0) {
-			expression = communistInfo.idNumber.contains(payload.get(1));
+			if (payload.get(1).equals("")) {
+				expression = communistInfo.name.contains(payload.get(0));
+			} else {
+				expression = communistInfo.idNumber.contains(payload.get(1));
+			}
 
 			for (int index = 2; index < payload.size(); index += 2) {
-				expression = expression.or(communistInfo.idNumber.contains(payload.get(index + 1)));
+				if (payload.get(index + 1).equals("")) {
+					expression = expression.or(communistInfo.name.contains(payload.get(index)));
+				} else {
+					expression = expression.or(communistInfo.idNumber.contains(payload.get(index + 1)));
+				}
 			}
 		} else {
 			expression = communistInfo.idNumber.contains("!@#$%^&*()_+=-~`\"':;<>?/,.");
@@ -57,15 +65,23 @@ public class Export {
 		);
 	}
 	
-	private Iterable<InspectPersonInfo> multiIdNumberSearchInspectPersonInfo(List<String> payload) {
+	private Iterable<InspectPersonInfo> multiNamesPlusIdNumberSearchInspectPersonInfo(List<String> payload) {
 		QInspectPersonInfo inspectPersonInfo = QInspectPersonInfo.inspectPersonInfo;
 		BooleanExpression expression = null;
 		
 		if (payload.size() > 0) {
-			expression = inspectPersonInfo.idNumber.contains(payload.get(1));
+			if (payload.get(1).equals("")) {
+				expression = inspectPersonInfo.name.contains(payload.get(0));
+			} else {
+				expression = inspectPersonInfo.idNumber.contains(payload.get(1));
+			}
 
 			for (int index = 2; index < payload.size(); index += 2) {
-				expression = expression.or(inspectPersonInfo.idNumber.contains(payload.get(index + 1)));
+				if (payload.get(index + 1).equals("")) {
+					expression = expression.or(inspectPersonInfo.name.contains(payload.get(index)));
+				} else {
+					expression = expression.or(inspectPersonInfo.idNumber.contains(payload.get(index + 1)));
+				}
 			}
 		} else {
 			expression = inspectPersonInfo.idNumber.contains("!@#$%^&*()_+=-~`\"':;<>?/,.");
@@ -83,12 +99,16 @@ public class Export {
 		
 		if (payload.size() > 0) {
 			subExpression = lawcaseInfo.respondentName.contains(payload.get(0));
-			subExpression = subExpression.and(lawcaseInfo.strFmtBirthDate.contains(payload.get(1).substring(6, 12)));
+			if (!payload.get(1).equals("")) {
+				subExpression = subExpression.and(lawcaseInfo.strFmtBirthDate.contains(payload.get(1).substring(6, 12)));
+			}
 			expression = subExpression;
 
 			for (int index = 2; index < payload.size(); index = index + 2) {
 				subExpression = lawcaseInfo.respondentName.contains(payload.get(index));
-				subExpression = subExpression.and(lawcaseInfo.strFmtBirthDate.contains(payload.get(index + 1).substring(6, 12)));
+				if (!payload.get(index + 1).equals("")) {
+					subExpression = subExpression.and(lawcaseInfo.strFmtBirthDate.contains(payload.get(index + 1).substring(6, 12)));
+				}
 				
 				expression = expression.or(subExpression);
 			}
@@ -105,13 +125,13 @@ public class Export {
 	public String downloadComparisonInfo(Model model, HttpSession session) {
 		List<String> payload = (List<String>)session.getAttribute("payloadComparison");
 		
-		Iterable<CommunistInfo> communistInfoes = multiIdNumberSearchCommunistinfo(payload);
+		Iterable<CommunistInfo> communistInfoes = multiNamesPlusIdNumberSearchCommunistinfo(payload);
 		
 		List<CommunistInfo> listCommunistInfoes = new ArrayList<>();
 		communistInfoes.forEach(elem -> {listCommunistInfoes.add(elem);});
 		model.addAttribute("communistInfoes", listCommunistInfoes);
 		
-		Iterable<InspectPersonInfo> inspectPersonInfoes = multiIdNumberSearchInspectPersonInfo(payload);
+		Iterable<InspectPersonInfo> inspectPersonInfoes = multiNamesPlusIdNumberSearchInspectPersonInfo(payload);
 		
 		List<InspectPersonInfo> listinspectPersonInfoes = new ArrayList<>();
 		inspectPersonInfoes.forEach(elem -> {listinspectPersonInfoes.add(elem);});
