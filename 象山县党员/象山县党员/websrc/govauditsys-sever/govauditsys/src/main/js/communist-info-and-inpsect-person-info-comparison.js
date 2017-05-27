@@ -31,6 +31,7 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 			names: [],
 			idnumbers: [],
 			namesplusbirthdate: [],
+			namesplusidnumbers: [],
 			showCommunistInfo: false,
 			showInspectPersonInfo: false,
 			showLawcaseInfo: false,
@@ -48,6 +49,7 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 		this.onSearch = this.onSearch.bind(this);
 		this.onUploadSearch = this.onUploadSearch.bind(this);
 		this.onExcelImport = this.onExcelImport.bind(this);
+		this.resetComparisonInfo = this.resetComparisonInfo.bind(this);
 	}
 	
 	handleSubmit(fileName) {
@@ -73,7 +75,7 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 					state.names = [];
 					state.idnumbers = [];
 					this.search.namesplusbirthdate = response.entity.map((item, index)=>{
-						if (index % 2 == 1) {
+						if (index % 2 == 1 && (item !== "")) {
 							return item.substr(6, 6);
 						}
 						
@@ -81,6 +83,7 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 					});
 					this.search.names = response.entity.filter((item, index)=>index%2==0);
 					this.search.idnumbers = response.entity.filter((item, index)=>index%2==1);
+					this.search.namesplusidnumbers = response.entity;
 					this.setState(state);
 				}
 			} else {
@@ -138,9 +141,11 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 			state.namesplusbirthdate = [name, idNumber.substr(6, 6)];
 			state.names = [name];
 			state.idnumbers = [idNumber];
+			state.namesplusidnumbers = [name, idNumber];
 		} else {
 			state.namesplusbirthdate = [name, ""];
 			state.names = [name];
+			state.namesplusidnumbers = [name, ""];
 		}
 		
 		this.setState(state);
@@ -151,6 +156,7 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 		state.namesplusbirthdate = this.search.namesplusbirthdate;
 		state.names = this.search.names;
 		state.idnumbers = this.search.idnumbers;
+		state.namesplusidnumbers = this.search.namesplusidnumbers;
 		this.setState(state);
 	}
 	
@@ -158,30 +164,37 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 		window.open('/downloadcomparisoninfo');
 	}
 	
+	resetComparisonInfo() {
+		ReactDOM.findDOMNode(this.refs['uploadcomparisoninfoes']).value = '';
+		var state = this.state;
+		state.uploadresult = "";
+		state.uploadresultStyle = {color: '#0F0'};
+		state.namesplusbirthdate = [];
+		state.names = [];
+		state.idnumbers = [];
+		state.namesplusidnumbers = [];
+		this.search.namesplusbirthdate = [];
+		this.search.names = [];
+		this.search.idnumbers = [];
+		this.search.namesplusidnumbers = [];
+		this.setState(state);
+	}
+	
 	render() {
-		var communistInfoDisplay = <MultiIdNumbersSearchCommunistInfoDisplay idNumbers={this.state.idnumbers}
+		var communistInfoDisplay = <MultiNamesSearchCommunistInfoDisplay names={this.state.namesplusidnumbers}
 		showCommunistInfo={this.state.showCommunistInfo} />;
 	
-		var inspectPersonInfoDisplay = <MultiIdNumbersSearchInspectPersonInfoDisplay idNumbers={this.state.idnumbers}
+		var inspectPersonInfoDisplay = <MultiNamesSearchInspectPersonInfoDisplay names={this.state.namesplusidnumbers}
 		showInspectPersonInfo={this.state.showInspectPersonInfo} />;
 		
 		var lawcaseInfoDisplay = <MultiNamesPlusBirthdateSearchLawcaseInfoDisplay namesPlusBirthdate={this.state.namesplusbirthdate}
 		showLawcaseInfo={this.state.showLawcaseInfo} />;
 		
-		if (this.state.idnumbers.length == 0) {
-			communistInfoDisplay = <MultiNamesSearchCommunistInfoDisplay names={this.state.names}
-			showCommunistInfo={this.state.showCommunistInfo} />;
-			inspectPersonInfoDisplay =  <MultiNamesSearchInspectPersonInfoDisplay names={this.state.names}
-			showInspectPersonInfo={this.state.showInspectPersonInfo} />;
-			lawcaseInfoDisplay = <MultiNamesSearchLawcaseInfoDisplay names={this.state.names}
-			showLawcaseInfo={this.state.showLawcaseInfo} />;
-		}
-		
 		return (
 			<div className="subModuleDataDisplay">
 				<table>
 					<tr>
-						<td>请上传比对人员信息表:</td><td><input type="file" name="file" onChange={this.handleFile}/></td>
+						<td>请上传比对人员信息表(<a href="#" onClick={this.resetComparisonInfo}>重置</a>):</td><td><input type="file" name="file" ref="uploadcomparisoninfoes" onChange={this.handleFile}/></td>
 						<td>
 							<div className="webdesigntuts-workshop">
 								<button onClick={this.onUploadSearch}>搜索</button>

@@ -27,11 +27,12 @@ public interface LawcaseInfoRepository  extends PagingAndSortingRepository<Lawca
 	Page<LawcaseInfo> findByRespondentName(@Param("respondentName") String respondentName, Pageable pageable);
 	
 	@Query("select lawcaseInfo from LawcaseInfo lawcaseInfo "
-			+ "where lawcaseInfo.respondentName like %?1% and "
-			+ "(lawcaseInfo.partyDisciplinePunishment like %?2% or lawcaseInfo.politicalDisciplinePunishment like %?2%) "
-			+ "and lawcaseInfo.caseFilingDate >= ?3 and lawcaseInfo.caseFilingDate <= ?4 ")
+			+ "where lawcaseInfo.respondentName like %?1% and lawcaseInfo.filingOffice like %?2% and "
+			+ "(lawcaseInfo.partyDisciplinePunishment like %?3% or lawcaseInfo.politicalDisciplinePunishment like %?3%) "
+			+ "and lawcaseInfo.caseFilingDate >= ?4 and lawcaseInfo.caseFilingDate <= ?5 ")
 	Page<LawcaseInfo> findByRespondentNameContaining(
 		@Param("respondentName") String respondentName,
+		@Param("filingOffice") String filingOffice,
 		@Param("punishmentContent") String punishmentContent,
 		@Param("startTime") Calendar startTime,
 		@Param("endTime") Calendar endTime,

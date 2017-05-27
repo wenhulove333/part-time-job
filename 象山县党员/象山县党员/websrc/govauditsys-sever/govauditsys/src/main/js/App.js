@@ -106,6 +106,7 @@ class Entry extends React.Component {
 						<Tab activeTabClassName="ss_tab_selected">党员信息查询</Tab>
 						<Tab activeTabClassName="ss_tab_selected">监察对象信息查询</Tab>
 						<Tab activeTabClassName="ss_tab_selected">处分人员信息查询</Tab>
+						<Tab activeTabClassName="ss_tab_selected">信息比对</Tab>
 						<Tab activeTabClassName="ss_tab_selected">统计分析</Tab>
 					</TabList>
 		
@@ -117,7 +118,10 @@ class Entry extends React.Component {
 					</TabPanel>
 					<TabPanel>
 						<LawcaseInfoLimitedDisplay />
-					</TabPanel>		
+					</TabPanel>
+					<TabPanel>
+						<CommunistInfoAndInspectPersonInfoComparison />
+					</TabPanel>
 					<TabPanel>
 						<LawcaseInfoStatisticsAnalysis />
 					</TabPanel>	

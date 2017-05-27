@@ -37,6 +37,13 @@ class MultiNamesSearchInspectPersonInfoDisplay extends React.Component {
 					pageSize: pageSize,
 					links: response.entity._links
 				});
+			} else {
+				this.setState({
+					page: response.entity.page,
+					inspectPersonInfoes: [],
+					pageSize: this.state.pageSize,
+					links: response.entity._links
+				});
 			}
 		});
 	}
@@ -55,6 +62,13 @@ class MultiNamesSearchInspectPersonInfoDisplay extends React.Component {
 					pageSize: this.state.pageSize,
 					links: response.entity._links
 				});
+			} else {
+				this.setState({
+					page: response.entity.page,
+					inspectPersonInfoes: [],
+					pageSize: this.state.pageSize,
+					links: response.entity._links
+				});
 			}
 		});
 	}
@@ -62,6 +76,8 @@ class MultiNamesSearchInspectPersonInfoDisplay extends React.Component {
 	componentWillReceiveProps(nextProps) {
 		if (nextProps.names.length != 0) {
 			this.loadFromServer(nextProps.names, this.state.pageSize);
+		} else {
+			this.setState({inspectPersonInfoes: [], page: 1, pageSize: 6, links: {}});
 		}
 	}
 	

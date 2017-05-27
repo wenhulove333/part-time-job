@@ -25,6 +25,9 @@ class AdminOps extends React.Component {
 		this.handleInspectPersonInfoFile = this.handleInspectPersonInfoFile.bind(this);
 		this.handleLawcaseInfoFile = this.handleLawcaseInfoFile.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
+		this.resetCommunistInfo = this.resetCommunistInfo.bind(this);
+		this.resetInspectPersonInfo = this.resetInspectPersonInfo.bind(this);
+		this.resetLawcaseInfo = this.resetLawcaseInfo.bind(this);
 	}
 	
 	handleSubmit(action, filename) {
@@ -112,23 +115,54 @@ class AdminOps extends React.Component {
 		this.setState(state);
 	}
 	
+	resetCommunistInfo() {
+		var state = this.state;
+		
+		ReactDOM.findDOMNode(this.refs['uploadcommunistinfo']).value = '';
+
+		state.uploadresult.uploadcommunistinfo = '';
+		state.uploadresultStyle.uploadcommunistinfo = {color: '#0F0'};
+		
+		this.setState(state);
+	}
+	
+	resetInspectPersonInfo() {
+		var state = this.state;
+		ReactDOM.findDOMNode(this.refs['uploadinspectpersoninfo']).value = '';
+		
+		state.uploadresult.uploadinspectpersoninfo = '';
+		state.uploadresultStyle.uploadinspectpersoninfo = {color: '#0F0'};
+		
+		this.setState(state);
+	}
+	
+	resetLawcaseInfo() {
+		var state = this.state;
+		ReactDOM.findDOMNode(this.refs['uploadlawcaseinfo']).value = '';
+		
+		state.uploadresult.uploadlawcaseinfo = '';
+		state.uploadresultStyle.uploadlawcaseinfo = {color: '#0F0'};
+		
+		this.setState(state);
+	}
+	
 	render() {
 		return (
 			<div className="subModuleDataDisplay">
 				<table>
 					<tr>
-						<td>导入党员信息:</td>
-						<td><input type="file" name="file" onChange={this.handleCommunistInfoFile}/></td>
+						<td>导入党员信息(<a href="#" onClick={this.resetCommunistInfo}>重置</a>):</td>
+						<td><input type="file" name="file" ref="uploadcommunistinfo" onChange={this.handleCommunistInfoFile}/></td>
 						<td style={this.state.uploadresultStyle['uploadcommunistinfo']}>{this.state.uploadresult['uploadcommunistinfo']}</td>
 					</tr>
 					<tr>
-						<td>导入监察对象信息:</td>
-						<td><input type="file" name="file" onChange={this.handleInspectPersonInfoFile}/></td>
+						<td>导入监察对象信息(<a href="#" onClick={this.resetInspectPersonInfo}>重置</a>):</td>
+						<td><input type="file" name="file" ref="uploadinspectpersoninfo" onChange={this.handleInspectPersonInfoFile}/></td>
 						<td style={this.state.uploadresultStyle['uploadinspectpersoninfo']}>{this.state.uploadresult['uploadinspectpersoninfo']}</td>
 					</tr>
 					<tr>
-						<td>导入处分人员信息:</td>
-						<td><input type="file" name="file" onChange={this.handleLawcaseInfoFile}/></td>
+						<td>导入处分人员信息(<a href="#" onClick={this.resetLawcaseInfo}>重置</a>):</td>
+						<td><input type="file" name="file"ref="uploadlawcaseinfo" onChange={this.handleLawcaseInfoFile}/></td>
 						<td style={this.state.uploadresultStyle['uploadlawcaseinfo']}>{this.state.uploadresult['uploadlawcaseinfo']}</td>
 					</tr>
 				</table>

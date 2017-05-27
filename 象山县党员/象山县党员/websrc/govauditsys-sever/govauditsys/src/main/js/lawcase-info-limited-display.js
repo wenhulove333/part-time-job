@@ -84,7 +84,11 @@ class LawcaseInfoLimitedDisplay extends React.Component {
 		});
 	}
 	
-	getlawcaseInfoesContaining(respondentName, punishmentContent, startTime, endTime, pageSize) {
+	getlawcaseInfoesContaining(respondentName, filingOffice, punishmentContent, startTime, endTime, pageSize) {
+		if (respondentName === "" && filingOffice === "" && punishmentContent === "") {
+			return;
+		}
+		
 		if (false) {
 			root = "/api";
 			children = "lawcaseInfoes";
@@ -95,6 +99,7 @@ class LawcaseInfoLimitedDisplay extends React.Component {
 		follow(client, root, [
 				{rel: children, params: {
 					respondentName: respondentName,
+					filingOffice: filingOffice,
 					punishmentContent: punishmentContent,
 					startTime: startTime,
 					endTime: endTime,
@@ -193,6 +198,7 @@ class LawcaseInfoLimitedDisplay extends React.Component {
 		
 		this.getlawcaseInfoesContaining(
 			document.getElementById("name").value,
+			document.getElementById("filingOffice").value,
 			document.getElementById("punishmentContent").value,
 			startTime + ' 00:00:00',
 			endTime + ' 23:59:59',
@@ -252,7 +258,8 @@ class LawcaseInfoLimitedDisplay extends React.Component {
 			<div className="searchBarPlusDataDisplay">
 				<div className="webdesigntuts-workshop">
 				    <input type="search" id="name" placeholder="请输入查询姓名"></input>
-				    <div>
+				    <input type="search" id="filingOffice" placeholder="请输入立案机关"></input>
+				    <div style={{display: "inline-block", float: "left"}}>
 				    	<input type="search" id="punishmentContent" placeholder="请输入处分类别"></input>
 				    	{select}
 				    </div>
