@@ -18,7 +18,7 @@ class MultiNamesPlusBirthdateSearchLawcaseInfoDisplay extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {lawcaseInfoes: [], page: 1, pageSize: 6, links: {}};
+		this.state = {lawcaseInfoes: [], page: 1, pageSize: 10, links: {}};
 		this.onNavigate = this.onNavigate.bind(this);
 	}
 
@@ -77,7 +77,7 @@ class MultiNamesPlusBirthdateSearchLawcaseInfoDisplay extends React.Component {
 		if (nextProps.namesPlusBirthdate.length != 0) {
 			this.loadFromServer(nextProps.namesPlusBirthdate, this.state.pageSize);
 		} else {
-			this.setState({lawcaseInfoes: [], page: 1, pageSize: 6, links: {}});
+			this.setState({lawcaseInfoes: [], page: 1, pageSize: this.state.pageSize, links: {}});
 		}
 	}
 	

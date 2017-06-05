@@ -194,11 +194,12 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 			<div className="subModuleDataDisplay">
 				<table>
 					<tr>
-						<td>请上传比对人员信息表(<a href="#" onClick={this.resetComparisonInfo}>重置</a>):</td><td><input type="file" name="file" ref="uploadcomparisoninfoes" onChange={this.handleFile}/></td>
+						<td>请上传比对人员信息表:</td><td><input type="file" name="file" ref="uploadcomparisoninfoes" onChange={this.handleFile}/></td>
 						<td>
 							<div className="webdesigntuts-workshop">
 								<button onClick={this.onUploadSearch}>搜索</button>
 								<button onClick={this.onExcelImport}>导出</button>
+								<button onClick={this.resetComparisonInfo}>重置</button>
 							</div>
 						</td>
 						<td style={this.state.uploadresultStyle}>{this.state.uploadresult}</td>

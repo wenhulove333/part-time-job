@@ -151,18 +151,33 @@ class AdminOps extends React.Component {
 			<div className="subModuleDataDisplay">
 				<table>
 					<tr>
-						<td>导入党员信息(<a href="#" onClick={this.resetCommunistInfo}>重置</a>):</td>
+						<td>导入党员信息:</td>
 						<td><input type="file" name="file" ref="uploadcommunistinfo" onChange={this.handleCommunistInfoFile}/></td>
+						<td>
+							<div className="webdesigntuts-workshop">
+								<button onClick={this.resetCommunistInfo}>重置</button>
+							</div>
+						</td>
 						<td style={this.state.uploadresultStyle['uploadcommunistinfo']}>{this.state.uploadresult['uploadcommunistinfo']}</td>
 					</tr>
 					<tr>
-						<td>导入监察对象信息(<a href="#" onClick={this.resetInspectPersonInfo}>重置</a>):</td>
+						<td>导入监察对象信息:</td>
 						<td><input type="file" name="file" ref="uploadinspectpersoninfo" onChange={this.handleInspectPersonInfoFile}/></td>
+						<td>
+							<div className="webdesigntuts-workshop">
+								<button onClick={this.resetInspectPersonInfo}>重置</button>
+							</div>
+						</td>
 						<td style={this.state.uploadresultStyle['uploadinspectpersoninfo']}>{this.state.uploadresult['uploadinspectpersoninfo']}</td>
 					</tr>
 					<tr>
-						<td>导入处分人员信息(<a href="#" onClick={this.resetLawcaseInfo}>重置</a>):</td>
+						<td>导入处分人员信息:</td>
 						<td><input type="file" name="file"ref="uploadlawcaseinfo" onChange={this.handleLawcaseInfoFile}/></td>
+						<td>
+							<div className="webdesigntuts-workshop">
+								<button onClick={this.resetLawcaseInfo}>重置</button>
+							</div>
+						</td>
 						<td style={this.state.uploadresultStyle['uploadlawcaseinfo']}>{this.state.uploadresult['uploadlawcaseinfo']}</td>
 					</tr>
 				</table>

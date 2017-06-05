@@ -18,7 +18,7 @@ class MultiIdNumbersSearchInspectPersonInfoDisplay extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {inspectPersonInfoes: [], page: 1, pageSize: 6, links: {}};
+		this.state = {inspectPersonInfoes: [], page: 1, pageSize: 10, links: {}};
 		this.onNavigate = this.onNavigate.bind(this);
 	}
 

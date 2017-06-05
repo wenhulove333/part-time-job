@@ -18,7 +18,7 @@ class MultiNamesSearchInspectPersonInfoDisplay extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {inspectPersonInfoes: [], page: 1, pageSize: 6, links: {}};
+		this.state = {inspectPersonInfoes: [], page: 1, pageSize: 10, links: {}};
 		this.onNavigate = this.onNavigate.bind(this);
 	}
 
@@ -77,7 +77,7 @@ class MultiNamesSearchInspectPersonInfoDisplay extends React.Component {
 		if (nextProps.names.length != 0) {
 			this.loadFromServer(nextProps.names, this.state.pageSize);
 		} else {
-			this.setState({inspectPersonInfoes: [], page: 1, pageSize: 6, links: {}});
+			this.setState({inspectPersonInfoes: [], page: 1, pageSize: this.state.pageSize, links: {}});
 		}
 	}
 	

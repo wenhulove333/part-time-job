@@ -18,7 +18,7 @@ class MultiNamesSearchLawcaseInfoDisplay extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {lawcaseInfoes: [], page: 1, pageSize: 6, links: {}};
+		this.state = {lawcaseInfoes: [], page: 1, pageSize: 10, links: {}};
 		this.onNavigate = this.onNavigate.bind(this);
 	}
 

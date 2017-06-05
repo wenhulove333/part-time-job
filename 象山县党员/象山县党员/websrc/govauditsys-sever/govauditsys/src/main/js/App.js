@@ -18,6 +18,7 @@ const SysUserDisplay = require('./system-user-mgmt');
 const CommunistInfoAndInspectPersonInfoComparison = require('./communist-info-and-inpsect-person-info-comparison');
 const AdminOps = require('./admin-ops');
 const LawcaseInfoStatisticsAnalysis = require('./lawcase-info-statistics-analysis');
+const UserInfoDisplay = require('./user-info-mgmt');
 
 const DatePickerDemo = require('./date-picker');
 
@@ -108,6 +109,7 @@ class Entry extends React.Component {
 						<Tab activeTabClassName="ss_tab_selected">处分人员信息查询</Tab>
 						<Tab activeTabClassName="ss_tab_selected">信息比对</Tab>
 						<Tab activeTabClassName="ss_tab_selected">统计分析</Tab>
+						<Tab activeTabClassName="ss_tab_selected">用户信息</Tab>
 					</TabList>
 		
 					<TabPanel>
@@ -124,6 +126,9 @@ class Entry extends React.Component {
 					</TabPanel>
 					<TabPanel>
 						<LawcaseInfoStatisticsAnalysis />
+					</TabPanel>	
+					<TabPanel>
+						<UserInfoDisplay />
 					</TabPanel>	
 				</Tabs>
 			);
@@ -173,7 +178,7 @@ class Header extends React.Component {
 		return (
 			<div className="statusheader">
 		    	<div className="systemflag">
-		    		<span>象山县党员和监察对象查询和比对系统</span>
+		    		<span>象山县党员和监察对象查询比对系统</span>
 		    	</div>
 		    	<div className="headerlogin">
 			        <span>您好,来自</span><span>{this.state.from}</span><span>的</span><span>{this.state.position}</span><span>{this.state.userName}</span><span>.</span>        <span></span>

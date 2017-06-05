@@ -18,7 +18,7 @@ class MultiIdNumbersSearchCommunistInfoDisplay extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {communistInfoes: [], page: 1, pageSize: 6, links: {}};
+		this.state = {communistInfoes: [], page: 1, pageSize: 10, links: {}};
 		this.onNavigate = this.onNavigate.bind(this);
 	}
 
@@ -70,7 +70,7 @@ class MultiIdNumbersSearchCommunistInfoDisplay extends React.Component {
 		if (nextProps.idNumbers.length != 0) {
 			this.loadFromServer(nextProps.idNumbers, this.state.pageSize);
 		} else {
-			this.setState({communistInfoes: [], page: 1, pageSize: 6, links: {}});
+			this.setState({communistInfoes: [], page: 1, pageSize: this.state.pageSize, links: {}});
 		}
 	}
 	
@@ -78,7 +78,7 @@ class MultiIdNumbersSearchCommunistInfoDisplay extends React.Component {
 		if (this.props.idNumbers.length != 0) {
 			this.loadFromServer(this.props.idNumbers, this.state.pageSize);
 		} else {
-			this.setState({communistInfoes: [], page: 1, pageSize: 6, links: {}});
+			this.setState({communistInfoes: [], page: 1, pageSize: this.state.pageSize, links: {}});
 		}
 	}
 

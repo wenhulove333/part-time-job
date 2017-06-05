@@ -124,6 +124,11 @@ public class ExcelReader {
             	content.add(idNumer);
             }
         }
+        
+        if (content.size() > 3000) {
+        	throw new ExcelImportException("由于查询速度和系统的限制，比对人员数量不允许超过1500。");
+        }
+        
         return content;
     }
     
