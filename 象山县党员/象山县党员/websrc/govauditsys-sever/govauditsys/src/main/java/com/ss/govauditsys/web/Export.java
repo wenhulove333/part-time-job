@@ -99,16 +99,16 @@ public class Export {
 		
 		if (payload.size() > 0) {
 			subExpression = lawcaseInfo.respondentName.contains(payload.get(0));
-			if (!payload.get(1).equals("")) {
-				subExpression = subExpression.and(lawcaseInfo.strFmtBirthDate.contains(payload.get(1).substring(6, 12)));
-			}
+//			if (!payload.get(1).equals("")) {
+//				subExpression = subExpression.and(lawcaseInfo.strFmtBirthDate.contains(payload.get(1).substring(6, 12)));
+//			}
 			expression = subExpression;
 
 			for (int index = 2; index < payload.size(); index = index + 2) {
 				subExpression = lawcaseInfo.respondentName.contains(payload.get(index));
-				if (!payload.get(index + 1).equals("")) {
-					subExpression = subExpression.and(lawcaseInfo.strFmtBirthDate.contains(payload.get(index + 1).substring(6, 12)));
-				}
+//				if (!payload.get(index + 1).equals("")) {
+//					subExpression = subExpression.and(lawcaseInfo.strFmtBirthDate.contains(payload.get(index + 1).substring(6, 12)));
+//				}
 				
 				expression = expression.or(subExpression);
 			}

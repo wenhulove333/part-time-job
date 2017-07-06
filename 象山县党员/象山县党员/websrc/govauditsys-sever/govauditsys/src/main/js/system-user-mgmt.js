@@ -427,6 +427,11 @@ class CreateDialog extends React.Component {
 		sysUser['workPlace'] = ReactDOM.findDOMNode(this.refs['workPlace']).value.trim();
 		sysUser['position'] = ReactDOM.findDOMNode(this.refs['position']).value.trim();
 		sysUser['roles'] = [ReactDOM.findDOMNode(this.refs['roles']).value.trim()];
+		ReactDOM.findDOMNode(this.refs['accountName']).value = '';
+		ReactDOM.findDOMNode(this.refs['name']).value = '';
+		ReactDOM.findDOMNode(this.refs['password']).value = '';
+		ReactDOM.findDOMNode(this.refs['workPlace']).value = '';
+		ReactDOM.findDOMNode(this.refs['position']).value = '';
 		this.props.onCreate(sysUser);
 		window.location = "#";
 	}
@@ -473,11 +478,15 @@ class UpdateDialog extends React.Component {
 	handleSubmit(e) {
 		e.preventDefault();
 		var updatedSysUser = {};
-		updatedSysUser['accountName'] = this.props.sysUser.entity['accountName'];
-		updatedSysUser['name'] = this.props.sysUser.entity['name'];
-		updatedSysUser['password'] = ReactDOM.findDOMNode(this.refs['password']).value.trim();
-		updatedSysUser['workPlace'] = this.props.sysUser.entity['workPlace'];
-		updatedSysUser['position'] = this.props.sysUser.entity['position'];
+		updatedSysUser['accountName'] = ReactDOM.findDOMNode(this.refs['accountName']).value.trim();
+		updatedSysUser['name'] = ReactDOM.findDOMNode(this.refs['name']).value.trim();
+		if (ReactDOM.findDOMNode(this.refs['password']).value.trim() !== "") {
+			updatedSysUser['password'] = ReactDOM.findDOMNode(this.refs['password']).value.trim();
+		} else {
+			updatedSysUser['password'] = 'cafecafemagicmagic' + this.props.sysUser.entity['password'];
+		}
+		updatedSysUser['workPlace'] = ReactDOM.findDOMNode(this.refs['workPlace']).value.trim();
+		updatedSysUser['position'] = ReactDOM.findDOMNode(this.refs['position']).value.trim();
 		updatedSysUser['roles'] = [ReactDOM.findDOMNode(this.refs['roles']).value.trim()];
 		this.props.onUpdate(this.props.sysUser, updatedSysUser);
 		window.location = "#";
@@ -503,7 +512,11 @@ class UpdateDialog extends React.Component {
 						<h2>修改用户信息</h2>
 
 						<form>
+							<p><input type="text" placeholder="请输入账户名" ref="accountName" className="field" defaultValue={this.props.sysUser.entity['accountName']} /></p>
+							<p><input type="text" placeholder="请输入用户名" ref="name" className="field" defaultValue={this.props.sysUser.entity['name']} /></p>
 							<p><input type="password" placeholder="请输入密码" ref="password" className="field" /></p>
+							<p><input type="text" placeholder="请输入用户所在地" ref="workPlace" className="field" defaultValue={this.props.sysUser.entity['workPlace']} /></p>
+							<p><input type="text" placeholder="请输入用户职务" ref="position" className="field" defaultValue={this.props.sysUser.entity['position']} /></p>
 							<p><select ref="roles" value={this.state.value} onChange={this.handleChange}>
 								<option value ="普通用户">普通用户</option>
 								<option value ="管理员">管理员</option>

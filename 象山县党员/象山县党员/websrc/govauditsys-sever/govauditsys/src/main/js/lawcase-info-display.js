@@ -395,7 +395,6 @@ class LawcaseInfoList extends React.Component {
 					<thead>
 						<tr>
 							<th>被调查人</th>
-							<th>出生年月</th>
 							<th>入党日期</th>
 							<th>工作单位及职务</th>
 							<th>立案机关</th>
@@ -438,7 +437,7 @@ class LawcaseInfo extends React.Component {
 	}
 
 	render() {
-		var birthDate = new Date(this.props.lawcaseInfo.entity.birthDate.replace(/\+0000/, "Z"));
+		//var birthDate = new Date(this.props.lawcaseInfo.entity.birthDate.replace(/\+0000/, "Z"));
 		var joinDate = new Date(this.props.lawcaseInfo.entity.joinDate.replace(/\+0000/, "Z"));
 		var caseFilingDate = new Date(this.props.lawcaseInfo.entity.caseFilingDate.replace(/\+0000/, "Z"));
 		var caseCloseDate = new Date(this.props.lawcaseInfo.entity.caseCloseDate.replace(/\+0000/, "Z"));
@@ -446,7 +445,6 @@ class LawcaseInfo extends React.Component {
 		return (
 			<tr>
 				<td>{this.props.lawcaseInfo.entity.respondentName}</td>
-				<td>{this.convertDateAsSimpleDisplayTime(birthDate)}</td>
 				<td>{this.convertDateAsSimpleDisplayTime(joinDate)}</td>
 				<td>{this.props.lawcaseInfo.entity.workPlaceAndPosition}</td>
 				<td>{this.props.lawcaseInfo.entity.filingOffice}</td>
@@ -481,7 +479,6 @@ class UpdateDialog extends React.Component {
 		e.preventDefault();
 		var updatedLawcaseInfo = {};
 		updatedLawcaseInfo['respondentName'] = ReactDOM.findDOMNode(this.refs['respondentName']).value.trim();
-		updatedLawcaseInfo['birthDate'] = ReactDOM.findDOMNode(this.refs['birthDate']).value.trim();
 		updatedLawcaseInfo['joinDate'] = ReactDOM.findDOMNode(this.refs['joinDate']).value.trim();
 		updatedLawcaseInfo['workPlaceAndPosition'] = ReactDOM.findDOMNode(this.refs['workPlaceAndPosition']).value.trim();
 		updatedLawcaseInfo['filingOffice'] = ReactDOM.findDOMNode(this.refs['filingOffice']).value.trim();
@@ -497,7 +494,7 @@ class UpdateDialog extends React.Component {
 		var urlArr = this.props.lawcaseInfo.entity._links.self.href.split('/');
 		var lawcaseInfoId = urlArr[urlArr.length - 1];
 		
-		var birthDate = new Date(this.props.lawcaseInfo.entity.birthDate.replace(/\+0000/, "Z"));
+		//var birthDate = new Date(this.props.lawcaseInfo.entity.birthDate.replace(/\+0000/, "Z"));
 		var joinDate = new Date(this.props.lawcaseInfo.entity.joinDate.replace(/\+0000/, "Z"));
 		var caseFilingDate = new Date(this.props.lawcaseInfo.entity.caseFilingDate.replace(/\+0000/, "Z"));
 		var caseCloseDate = new Date(this.props.lawcaseInfo.entity.caseCloseDate.replace(/\+0000/, "Z"));
@@ -514,7 +511,6 @@ class UpdateDialog extends React.Component {
 
 						<form>
 							<p><input type="text" placeholder="请输入被调查人" defaultValue={this.props.lawcaseInfo.entity['respondentName']} ref="respondentName" className="field" /></p>
-							<p><input type="text" placeholder="请输入出生年月" defaultValue={this.convertDateAsSimpleDisplayTime(birthDate)} ref="birthDate" className="field" /></p>
 							<p><input type="text" placeholder="请输入入党日期" defaultValue={this.convertDateAsSimpleDisplayTime(joinDate)} ref="joinDate" className="field" /></p>
 							<p><input type="text" placeholder="请输入工作单位及职务" defaultValue={this.props.lawcaseInfo.entity['workPlaceAndPosition']} ref="workPlaceAndPosition" className="field" /></p>
 							<p><input type="text" placeholder="请输入立案机关" defaultValue={this.props.lawcaseInfo.entity['filingOffice']} ref="filingOffice" className="field" /></p>

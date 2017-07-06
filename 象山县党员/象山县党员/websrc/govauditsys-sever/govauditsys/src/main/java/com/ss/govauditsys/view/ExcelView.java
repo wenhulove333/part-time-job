@@ -86,14 +86,14 @@ public class ExcelView extends AbstractExcelView {
 		
 		HSSFRow lawcaseInfoHeader = lawcaseInfoSheet.createRow(0);
 		lawcaseInfoHeader.createCell(0).setCellValue("被调查人");
-		lawcaseInfoHeader.createCell(1).setCellValue("出生年月");
-		lawcaseInfoHeader.createCell(2).setCellValue("入党日期");
-		lawcaseInfoHeader.createCell(3).setCellValue("工作单位及职务");
-		lawcaseInfoHeader.createCell(4).setCellValue("立案机关");
-		lawcaseInfoHeader.createCell(5).setCellValue("立案时间");
-		lawcaseInfoHeader.createCell(6).setCellValue("结案时间");
-		lawcaseInfoHeader.createCell(7).setCellValue("党纪处分");
-		lawcaseInfoHeader.createCell(8).setCellValue("政纪处分");
+		//lawcaseInfoHeader.createCell(1).setCellValue("出生年月");
+		lawcaseInfoHeader.createCell(1).setCellValue("入党日期");
+		lawcaseInfoHeader.createCell(2).setCellValue("工作单位及职务");
+		lawcaseInfoHeader.createCell(3).setCellValue("立案机关");
+		lawcaseInfoHeader.createCell(4).setCellValue("立案时间");
+		lawcaseInfoHeader.createCell(5).setCellValue("结案时间");
+		lawcaseInfoHeader.createCell(6).setCellValue("党纪处分");
+		lawcaseInfoHeader.createCell(7).setCellValue("政纪处分");
 		
 		rowCount = 1;
 		
@@ -102,14 +102,14 @@ public class ExcelView extends AbstractExcelView {
 		for(LawcaseInfo lawcaseInfo : lawcaseInfoes) {
 			HSSFRow lawcaseInfoRow = lawcaseInfoSheet.createRow(rowCount++);
 			lawcaseInfoRow.createCell(0).setCellValue(lawcaseInfo.getRespondentName());
-			lawcaseInfoRow.createCell(1).setCellValue(simpleDateFormat.format(lawcaseInfo.getBirthDate().getTime()));
-			lawcaseInfoRow.createCell(2).setCellValue(simpleDateFormat.format(lawcaseInfo.getJoinDate().getTime()));
-			lawcaseInfoRow.createCell(3).setCellValue(lawcaseInfo.getWorkPlaceAndPosition());
-			lawcaseInfoRow.createCell(4).setCellValue(lawcaseInfo.getFilingOffice());
-			lawcaseInfoRow.createCell(5).setCellValue(simpleDateFormat.format(lawcaseInfo.getCaseFilingDate().getTime()));
-			lawcaseInfoRow.createCell(6).setCellValue(simpleDateFormat.format(lawcaseInfo.getCaseCloseDate().getTime()));
-			lawcaseInfoRow.createCell(7).setCellValue(lawcaseInfo.getPartyDisciplinePunishment());
-			lawcaseInfoRow.createCell(8).setCellValue(lawcaseInfo.getPoliticalDisciplinePunishment());
+			//lawcaseInfoRow.createCell(1).setCellValue(simpleDateFormat.format(lawcaseInfo.getBirthDate().getTime()));
+			lawcaseInfoRow.createCell(1).setCellValue(simpleDateFormat.format(lawcaseInfo.getJoinDate().getTime()));
+			lawcaseInfoRow.createCell(2).setCellValue(lawcaseInfo.getWorkPlaceAndPosition());
+			lawcaseInfoRow.createCell(3).setCellValue(lawcaseInfo.getFilingOffice());
+			lawcaseInfoRow.createCell(4).setCellValue(simpleDateFormat.format(lawcaseInfo.getCaseFilingDate().getTime()));
+			lawcaseInfoRow.createCell(5).setCellValue(simpleDateFormat.format(lawcaseInfo.getCaseCloseDate().getTime()));
+			lawcaseInfoRow.createCell(6).setCellValue(lawcaseInfo.getPartyDisciplinePunishment());
+			lawcaseInfoRow.createCell(7).setCellValue(lawcaseInfo.getPoliticalDisciplinePunishment());
 		}
 		
 	}

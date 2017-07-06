@@ -178,7 +178,6 @@ class LawcaseInfoList extends React.Component {
 					<thead>
 						<tr>
 							<th>被调查人</th>
-							<th>出生年月</th>
 							<th>入党日期</th>
 							<th>工作单位及职务</th>
 							<th>立案机关</th>
@@ -215,7 +214,7 @@ class LawcaseInfo extends React.Component {
 	}
 
 	render() {
-		var birthDate = new Date(this.props.lawcaseInfo.birthDate.replace(/\+0000/, "Z"));
+		//var birthDate = new Date(this.props.lawcaseInfo.birthDate.replace(/\+0000/, "Z"));
 		var joinDate = new Date(this.props.lawcaseInfo.joinDate.replace(/\+0000/, "Z"));
 		var caseFilingDate = new Date(this.props.lawcaseInfo.caseFilingDate.replace(/\+0000/, "Z"));
 		var caseCloseDate = new Date(this.props.lawcaseInfo.caseCloseDate.replace(/\+0000/, "Z"));
@@ -223,7 +222,6 @@ class LawcaseInfo extends React.Component {
 		return (
 			<tr>
 				<td>{this.props.lawcaseInfo.respondentName}</td>
-				<td>{this.convertDateAsSimpleDisplayTime(birthDate)}</td>
 				<td>{this.convertDateAsSimpleDisplayTime(joinDate)}</td>
 				<td>{this.props.lawcaseInfo.workPlaceAndPosition}</td>
 				<td>{this.props.lawcaseInfo.filingOffice}</td>
