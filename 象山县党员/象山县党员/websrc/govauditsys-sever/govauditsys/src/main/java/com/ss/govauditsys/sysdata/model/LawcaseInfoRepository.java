@@ -41,11 +41,11 @@ public interface LawcaseInfoRepository  extends PagingAndSortingRepository<Lawca
 
 	@Transactional
 	@Modifying(clearAutomatically = true)
-	@Query("update LawcaseInfo lawcaseInfo set lawcaseInfo.respondentName = ?1, lawcaseInfo.birthDate = ?2, lawcaseInfo.joinDate = ?3, "
+	@Query("update LawcaseInfo lawcaseInfo set lawcaseInfo.respondentName = ?1, lawcaseInfo.joinDate = ?3, "
 			+ "lawcaseInfo.workPlaceAndPosition = ?4, lawcaseInfo.caseFilingDate = ?5, lawcaseInfo.caseCloseDate = ?6, lawcaseInfo.partyDisciplinePunishment = ?7, "
 			+ "lawcaseInfo.politicalDisciplinePunishment = ?8 where lawcaseInfo.id = ?9")
 	int setLawcaseInfoFor(
-		String respondentName, String birthDate, String joinDate, String workPlaceAndPosition,
+		String respondentName, String joinDate, String workPlaceAndPosition,
 		String caseFilingDate, String caseCloseDate, String partyDisciplinePunishment, String politicalDisciplinePunishment, long id
 	);
 

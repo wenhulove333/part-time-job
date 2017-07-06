@@ -14,8 +14,8 @@ import lombok.Data;
 public class LawcaseInfo {
 	private @Id @GeneratedValue Long id;
 	private String respondentName;
-	private Calendar birthDate;
-	private String strFmtBirthDate;
+	//private Calendar birthDate;
+	//private String strFmtBirthDate;
 	private Calendar joinDate;
 	private String workPlaceAndPosition;
 	private String filingOffice;
@@ -29,20 +29,20 @@ public class LawcaseInfo {
 	public void setRespondentName(String respondentName) {
 		this.respondentName = respondentName;
 	}
-	public Calendar getBirthDate() {
-		return birthDate;
-	}
-	public void setBirthDate(Calendar birthDate) {
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
-		setStrFmtBirthDate(simpleDateFormat.format(birthDate.getTime()));
-		this.birthDate = birthDate;
-	}
-	public String getStrFmtBirthDate() {
-		return strFmtBirthDate;
-	}
-	public void setStrFmtBirthDate(String strFmtBirthDate) {
-		this.strFmtBirthDate = strFmtBirthDate;
-	}
+//	public Calendar getBirthDate() {
+//		return birthDate;
+//	}
+//	public void setBirthDate(Calendar birthDate) {
+//		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+//		setStrFmtBirthDate(simpleDateFormat.format(birthDate.getTime()));
+//		this.birthDate = birthDate;
+//	}
+//	public String getStrFmtBirthDate() {
+//		return strFmtBirthDate;
+//	}
+//	public void setStrFmtBirthDate(String strFmtBirthDate) {
+//		this.strFmtBirthDate = strFmtBirthDate;
+//	}
 	public Calendar getJoinDate() {
 		return joinDate;
 	}

@@ -230,19 +230,22 @@ public class ExcelReader {
             lawcaseInfo.setRespondentName(
         		isOldFormat ? getCellValueByIndex(sheet.getRow(i), 0) : getCellValueByIndex(xsheet.getRow(i), 0)
             );
-            lawcaseInfo.setBirthDate(new StringToCalendar().convertAsSpeicificFmt(
+//            lawcaseInfo.setBirthDate(new StringToCalendar().convertAsSpeicificFmt(
+//            	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 1) : getCellValueByIndex(xsheet.getRow(i), 1),
+//            	"yyyy.MM.dd"
+//            ));
+//            String birthDate = isOldFormat ? getCellValueByIndex(sheet.getRow(i), 1) : getCellValueByIndex(xsheet.getRow(i), 1);
+//            birthDate = birthDate.replace(".", "");
+//            birthDate = birthDate.replace("-", "");
+//            lawcaseInfo.setStrFmtBirthDate(birthDate);
+            lawcaseInfo.setJoinDate(new StringToCalendar().convertAsSpeicificFmt(
             	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 1) : getCellValueByIndex(xsheet.getRow(i), 1),
             	"yyyy.MM.dd"
             ));
-            String birthDate = isOldFormat ? getCellValueByIndex(sheet.getRow(i), 1) : getCellValueByIndex(xsheet.getRow(i), 1);
-            birthDate = birthDate.replace(".", "");
-            birthDate = birthDate.replace("-", "");
-            lawcaseInfo.setStrFmtBirthDate(birthDate);
-            lawcaseInfo.setJoinDate(new StringToCalendar().convertAsSpeicificFmt(
-            	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 2) : getCellValueByIndex(xsheet.getRow(i), 2),
-            	"yyyy.MM.dd"
-            ));
             lawcaseInfo.setWorkPlaceAndPosition(
+            	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 2) : getCellValueByIndex(xsheet.getRow(i), 2)
+            );
+            lawcaseInfo.setFilingOffice(
             	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 3) : getCellValueByIndex(xsheet.getRow(i), 3)
             );
             lawcaseInfo.setCaseFilingDate(new StringToCalendar().convertAsSpeicificFmt(
