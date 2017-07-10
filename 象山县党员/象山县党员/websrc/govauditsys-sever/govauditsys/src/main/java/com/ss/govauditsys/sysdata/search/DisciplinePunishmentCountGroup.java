@@ -1,6 +1,6 @@
 package com.ss.govauditsys.sysdata.search;
 
-public class PartyDisciplinePunishmentCountGroup {
+public class DisciplinePunishmentCountGroup {
 	private String x;
 	private Long y;
 	
@@ -28,7 +28,7 @@ public class PartyDisciplinePunishmentCountGroup {
 
 
 
-	public PartyDisciplinePunishmentCountGroup(String x, Long y) {
+	public DisciplinePunishmentCountGroup(String x, Long y) {
 		super();
 		this.x = x;
 		this.y = y;

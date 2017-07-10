@@ -311,6 +311,9 @@ class CommunistInfoList extends React.Component {
 					<tbody>
 						{communistInfoes}
 					</tbody>
+					<tfoot>
+						<span>总计{this.props.page.totalElements}条记录</span>
+					</tfoot>
 				</table>
 				<div>
 					{pagination}

@@ -32,6 +32,7 @@ class LawcaseInfoDisplay extends React.Component {
 		this.onUpdate = this.onUpdate.bind(this);
 		this.loadPartyDisciplinePunishmentFromServer = this.loadPartyDisciplinePunishmentFromServer.bind(this);
 		this.handleChange = this.handleChange.bind(this);
+		this.handlePunishmentClassChange = this.handlePunishmentClassChange.bind(this);
 	}
 	
 	handleSelectStartTime(startTime) {
@@ -199,7 +200,7 @@ class LawcaseInfoDisplay extends React.Component {
 		this.getlawcaseInfoesContaining(
 			document.getElementById("name").value,
 			document.getElementById("filingOffice").value,
-			document.getElementById("punishmentContent").value,
+			document.getElementById("selectDisciplinePunishmentGroupDefault").selectedOptions[0].value,
 			startTime + ' 00:00:00',
 			endTime + ' 23:59:59',
 			this.state.pageSize);
@@ -244,15 +245,39 @@ class LawcaseInfoDisplay extends React.Component {
 		document.getElementById("punishmentContent").value = event.target.value;
 	}
 	
+	handlePunishmentClassChange(event) {
+		document.getElementById("selectDisciplinePunishmentGroupDefault").innerHTML = '';
+		
+		if (event.target.value === "党纪") {
+			document.getElementById("selectDisciplinePunishmentGroupDefault").innerHTML = '<option value ="">全部</option><option value ="警告">警告</option><option value ="严重警告">严重警告</option><option value ="撤销党内职务">撤销党内职务</option><option value ="留党察看">留党察看</option><option value ="开除党籍">开除党籍</option>';
+		} else {
+			document.getElementById("selectDisciplinePunishmentGroupDefault").innerHTML = '<option value ="">全部</option><option value ="警告">警告</option><option value ="记过">记过</option><option value ="记大过">记大过</option><option value ="降级">降级</option><option value ="撤职">撤职</option><option value ="开除">开除</option>';
+		}
+	}
+	
 	render() {
 		var options = [<option value ="">全部</option>];
 		this.state.partyDisciplinePunishmentGroup.map(elem => {
 			options.push(<option value ={elem.x}>{elem.x}</option>);
 		});
-		var select = null;
-		if (options.length != 0) {
-			select = <select ref="selectPartyDisciplinePunishmentGroup" onChange={this.handleChange}>{options}</select>
-		}
+		
+		var punishmentClassSelect = (
+			<select ref="selectPunishmentClass" onChange={this.handlePunishmentClassChange}>
+				<option value ="党纪">党纪</option>
+				<option value ="政纪">政纪</option>
+			</select>
+		);
+		
+		var punishmentSelectDefault = (
+			<select id="selectDisciplinePunishmentGroupDefault">
+				<option value ="">全部</option>
+				<option value ="警告">警告</option>
+				<option value ="严重警告">严重警告</option>
+				<option value ="撤销党内职务">撤销党内职务</option>
+				<option value ="留党察看">留党察看</option>
+				<option value ="开除党籍">开除党籍</option>
+			</select>
+		);
 		
 		return (
 			<div className="searchBarPlusDataDisplay">
@@ -260,8 +285,8 @@ class LawcaseInfoDisplay extends React.Component {
 				    <input type="search" id="name" placeholder="请输入查询姓名"></input>
 				    <input type="search" id="filingOffice" placeholder="请输入立案机关"></input>
 				    <div style={{display: "inline-block", float: "left"}}>
-				    	<input type="search" id="punishmentContent" placeholder="请输入处分类别"></input>
-				    	{select}
+				    	{punishmentClassSelect}
+				    	{punishmentSelectDefault}
 			    	</div>
 				    <DatePicker
 						dateFormat="YYYY-MM-DD"
@@ -408,6 +433,9 @@ class LawcaseInfoList extends React.Component {
 					<tbody>
 						{lawcaseInfoes}
 					</tbody>
+					<tfoot>
+						<span>总计{this.props.page.totalElements}条记录</span>
+					</tfoot>
 				</table>
 				<div>
 					{pagination}
