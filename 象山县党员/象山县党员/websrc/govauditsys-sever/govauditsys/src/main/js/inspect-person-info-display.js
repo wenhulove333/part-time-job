@@ -289,6 +289,9 @@ class InspectPersonInfoList extends React.Component {
 					<tbody>
 						{inspectPersonInfoes}
 					</tbody>
+					<tfoot>
+						<span>总计{this.props.page.totalElements}条记录</span>
+					</tfoot>
 				</table>
 				<div>
 					{pagination}

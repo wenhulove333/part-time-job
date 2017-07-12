@@ -12,7 +12,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ss.govauditsys.sysdata.search.PartyDisciplinePunishmentCountGroup;
+import com.ss.govauditsys.sysdata.search.DisciplinePunishmentCountGroup;
 
 public interface LawcaseInfoRepository  extends PagingAndSortingRepository<LawcaseInfo, Long>, QueryDslPredicateExecutor<LawcaseInfo>  {
 	@Override
@@ -29,7 +29,7 @@ public interface LawcaseInfoRepository  extends PagingAndSortingRepository<Lawca
 	@Query("select lawcaseInfo from LawcaseInfo lawcaseInfo "
 			+ "where lawcaseInfo.respondentName like %?1% and lawcaseInfo.filingOffice like %?2% and "
 			+ "(lawcaseInfo.partyDisciplinePunishment like %?3% or lawcaseInfo.politicalDisciplinePunishment like %?3%) "
-			+ "and lawcaseInfo.caseFilingDate >= ?4 and lawcaseInfo.caseFilingDate <= ?5 ")
+			+ "and lawcaseInfo.caseCloseDate >= ?4 and lawcaseInfo.caseCloseDate <= ?5 ")
 	Page<LawcaseInfo> findByRespondentNameContaining(
 		@Param("respondentName") String respondentName,
 		@Param("filingOffice") String filingOffice,
@@ -49,15 +49,23 @@ public interface LawcaseInfoRepository  extends PagingAndSortingRepository<Lawca
 		String caseFilingDate, String caseCloseDate, String partyDisciplinePunishment, String politicalDisciplinePunishment, long id
 	);
 
-	@Query("select new com.ss.govauditsys.sysdata.search.PartyDisciplinePunishmentCountGroup(lawcaseInfo.partyDisciplinePunishment, count(lawcaseInfo.partyDisciplinePunishment)) "
-			+ "from LawcaseInfo lawcaseInfo where lawcaseInfo.caseFilingDate >= ?1 and lawcaseInfo.caseFilingDate <= ?2 "
-			+ "group by lawcaseInfo.partyDisciplinePunishment")
-	List<PartyDisciplinePunishmentCountGroup> findPartyDisciplinePunishmentCountGroupByPeriod(
+	@Query("select new com.ss.govauditsys.sysdata.search.DisciplinePunishmentCountGroup(lawcaseInfo.partyDisciplinePunishment, count(lawcaseInfo.partyDisciplinePunishment)) "
+			+ "from LawcaseInfo lawcaseInfo where lawcaseInfo.caseCloseDate >= ?1 and lawcaseInfo.caseCloseDate <= ?2 "
+			+ "and lawcaseInfo.partyDisciplinePunishment <> '' group by lawcaseInfo.partyDisciplinePunishment")
+	List<DisciplinePunishmentCountGroup> findPartyDisciplinePunishmentCountGroupByPeriod(
 		@Param("startTime") Calendar startTime,
 		@Param("endTime") Calendar endTime
 	);
 	
-	@Query("select new com.ss.govauditsys.sysdata.search.PartyDisciplinePunishmentCountGroup(lawcaseInfo.partyDisciplinePunishment, count(lawcaseInfo.partyDisciplinePunishment)) "
+	@Query("select new com.ss.govauditsys.sysdata.search.DisciplinePunishmentCountGroup(lawcaseInfo.politicalDisciplinePunishment, count(lawcaseInfo.politicalDisciplinePunishment)) "
+			+ "from LawcaseInfo lawcaseInfo where lawcaseInfo.caseCloseDate >= ?1 and lawcaseInfo.caseCloseDate <= ?2 "
+			+ "and lawcaseInfo.politicalDisciplinePunishment <> '' group by lawcaseInfo.politicalDisciplinePunishment")
+	List<DisciplinePunishmentCountGroup> findPoliticalDisciplinePunishmentCountGroupByPeriod(
+		@Param("startTime") Calendar startTime,
+		@Param("endTime") Calendar endTime
+	);
+	
+	@Query("select new com.ss.govauditsys.sysdata.search.DisciplinePunishmentCountGroup(lawcaseInfo.partyDisciplinePunishment, count(lawcaseInfo.partyDisciplinePunishment)) "
 			+ "from LawcaseInfo lawcaseInfo group by lawcaseInfo.partyDisciplinePunishment")
-	List<PartyDisciplinePunishmentCountGroup> findPartyDisciplinePunishmentCountGroup();
+	List<DisciplinePunishmentCountGroup> findPartyDisciplinePunishmentCountGroup();
 }

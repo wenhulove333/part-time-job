@@ -19,7 +19,7 @@ import com.ss.govauditsys.converter.StringToCalendar;
 import com.ss.govauditsys.sysdata.model.CommunistInfo;
 import com.ss.govauditsys.sysdata.model.LawcaseInfoRepository;
 import com.ss.govauditsys.sysdata.model.QCommunistInfo;
-import com.ss.govauditsys.sysdata.search.PartyDisciplinePunishmentCountGroup;
+import com.ss.govauditsys.sysdata.search.DisciplinePunishmentCountGroup;
 
 @RestController
 public class PartyDisciplinePunishmentCountGroupSearchController {
@@ -31,8 +31,8 @@ public class PartyDisciplinePunishmentCountGroupSearchController {
 		method = RequestMethod.GET
 	)
 	@ResponseBody
-	public List<PartyDisciplinePunishmentCountGroup> getPartyDisciplinePunishmentGroupsByYear(@RequestParam("year") String year) {
-		List<PartyDisciplinePunishmentCountGroup> partyDisciplinePunishmentCountGroups = null;
+	public List<DisciplinePunishmentCountGroup> getPartyDisciplinePunishmentGroupsByYear(@RequestParam("year") String year) {
+		List<DisciplinePunishmentCountGroup> partyDisciplinePunishmentCountGroups = null;
 		
 		partyDisciplinePunishmentCountGroups = lawcaseInfoRepository.findPartyDisciplinePunishmentCountGroupByPeriod(
 			new StringToCalendar().convert(year + "-01-01 00:00:00"),
@@ -43,12 +43,28 @@ public class PartyDisciplinePunishmentCountGroupSearchController {
 	}
 	
 	@RequestMapping(
+			value = "/lawcaseinfo/getpoliticaldisciplinepunishmentcountgroupbyyear",
+			method = RequestMethod.GET
+		)
+		@ResponseBody
+		public List<DisciplinePunishmentCountGroup> getPoliticalDisciplinePunishmentGroupsByYear(@RequestParam("year") String year) {
+			List<DisciplinePunishmentCountGroup> partyDisciplinePunishmentCountGroups = null;
+			
+			partyDisciplinePunishmentCountGroups = lawcaseInfoRepository.findPoliticalDisciplinePunishmentCountGroupByPeriod(
+				new StringToCalendar().convert(year + "-01-01 00:00:00"),
+				new StringToCalendar().convert(year + "-12-31 23:59:59")
+			);
+			
+			return partyDisciplinePunishmentCountGroups;
+		}
+	
+	@RequestMapping(
 			value = "/lawcaseinfo/getpartydisciplinepunishmentcountgroup",
 			method = RequestMethod.GET
 		)
 		@ResponseBody
-		public List<PartyDisciplinePunishmentCountGroup> getPartyDisciplinePunishmentGroups() {
-			List<PartyDisciplinePunishmentCountGroup> partyDisciplinePunishmentCountGroups = null;
+		public List<DisciplinePunishmentCountGroup> getPartyDisciplinePunishmentGroups() {
+			List<DisciplinePunishmentCountGroup> partyDisciplinePunishmentCountGroups = null;
 			
 			partyDisciplinePunishmentCountGroups = lawcaseInfoRepository.findPartyDisciplinePunishmentCountGroup();
 			

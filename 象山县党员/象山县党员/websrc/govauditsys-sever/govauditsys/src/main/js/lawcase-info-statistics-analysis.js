@@ -32,7 +32,9 @@ class BarChartAnalysis extends React.Component {
 		};
 		
 		for(var key in this.props.data) {
-			dataSrcs.push([{label: key, values: this.props.data[key]}]);
+			if (key !== "") {
+				dataSrcs.push([{label: key, values: this.props.data[key]}]);
+			}
 		} 
 		
 		var barCharts = <div style={divStyle}><span>没有获取到任何数据！！！</span></div>;
@@ -46,7 +48,8 @@ class BarChartAnalysis extends React.Component {
 				        width={400}
 				        height={300}
 						tooltipHtml={tooltip}
-				        margin={{top: 10, bottom: 50, left: 50, right: 10}}/>
+						xAxis={{tickDirection: 'diagonal'}}
+				        margin={{top: 10, bottom: 100, left: 50, right: 10}}/>
 				</div>
 			);
 		}
@@ -74,7 +77,9 @@ class PieChartAnalysis extends React.Component {
 		var dataSrcs = [];
 		
 		for(var key in this.props.data) {
-			dataSrcs.push({label: key, values: this.props.data[key]});
+			if (key !== "") {
+				dataSrcs.push({label: key, values: this.props.data[key]});
+			}
 		}
 		
 		var tooltip = function(x, y) {
@@ -178,13 +183,18 @@ class LawcaseInfoStatisticsAnalysis extends React.Component {
 		this.handleChange = this.handleChange.bind(this);
 	}
 	
-	loadFromServer(years) {
+	loadFromServer(years, punishmentClass) {
 		var dataSrc = {};
+		var defaultPath = "/lawcaseinfo/getpartydisciplinepunishmentcountgroupbyyear";
 
+		if (punishmentClass === "政纪") {
+			defaultPath = "/lawcaseinfo/getpoliticaldisciplinepunishmentcountgroupbyyear";
+		}
+		
 		Promise.all(years.map(year => new Promise(function(resolve, reject) {
 			client({
 				method: 'GET',
-				path: '/lawcaseinfo/getpartydisciplinepunishmentcountgroupbyyear',
+				path: defaultPath,
 				params: {year: year},
 			}).done(response => {
 				if (!Array.isArray(response.entity)) {
@@ -208,13 +218,19 @@ class LawcaseInfoStatisticsAnalysis extends React.Component {
 		});
 	}
 	
-	loadFromServerBySelectedYear(years) {
+	loadFromServerBySelectedYear(years, punishmentClass) {
 		var dataSrc = {};
+		
+		var defaultPath = "/lawcaseinfo/getpartydisciplinepunishmentcountgroupbyyear";
+
+		if (punishmentClass === "政纪") {
+			defaultPath = "/lawcaseinfo/getpoliticaldisciplinepunishmentcountgroupbyyear";
+		}
 
 		Promise.all(years.map(year => new Promise(function(resolve, reject) {
 			client({
 				method: 'GET',
-				path: '/lawcaseinfo/getpartydisciplinepunishmentcountgroupbyyear',
+				path: defaultPath,
 				params: {year: year},
 			}).done(response => {
 				if (!Array.isArray(response.entity)) {
@@ -245,14 +261,14 @@ class LawcaseInfoStatisticsAnalysis extends React.Component {
 	}
 	
 	handleChange(event) {
-		if (event.target.value == "全部") {
+		if (document.getElementById("selectYear").selectedOptions[0].value == "全部") {
 			var myDate = new Date();
 			var currentYear = myDate.getFullYear();
 			var years = [];
 			for (var i = 1949; i <= currentYear; i++) {years.push(i)};
-			this.loadFromServerBySelectedYear(years);
+			this.loadFromServerBySelectedYear(years, document.getElementById("selectPunishmentClass").selectedOptions[0].value);
 		} else {
-			this.loadFromServerBySelectedYear([event.target.value]);
+			this.loadFromServerBySelectedYear([document.getElementById("selectYear").selectedOptions[0].value], document.getElementById("selectPunishmentClass").selectedOptions[0].value);
 		}
 	}
 	
@@ -268,8 +284,15 @@ class LawcaseInfoStatisticsAnalysis extends React.Component {
 				<div style={divStyle}>
 					<label>
 					请选择要统计分析的年份：
-					<select ref="selectYear" value={this.state.value} onChange={this.handleChange}>
+					<select id="selectYear" value={this.state.value} onChange={this.handleChange}>
 						{this.state.options}
+					</select>
+					</label>
+					<label>
+					请选择要统计的处分类型：
+					<select id="selectPunishmentClass" value={this.state.value} onChange={this.handleChange}>
+						<option value ="党纪">党纪</option>
+						<option value ="政纪">政纪</option>
 					</select>
 					</label>
 				</div>
