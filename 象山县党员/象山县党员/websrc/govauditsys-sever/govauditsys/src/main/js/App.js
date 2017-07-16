@@ -9,7 +9,6 @@ const Tabs = ReactTabs.Tabs;
 const TabList = ReactTabs.TabList;
 const TabPanel = ReactTabs.TabPanel;
 const CommunistInfoDisplay = require('./communist-info-display');
-const CommunistInfoLimitedDisplay = require('./communist-info-limited-display');
 const InspectPersonInfoDisplay = require('./inspect-person-info-display');
 const InspectPersonInfoLimitedDisplay = require('./inspect-person-info-limited-display');
 const LawcaseInfoDisplay = require('./lawcase-info-display');
@@ -25,7 +24,7 @@ const DatePickerDemo = require('./date-picker');
 class Entry extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {role: '普通用户'};
+		this.state = {role: '普通用户', accountName: 'unknown'};
 	}
 	
 	handleSelect(index, last) {
@@ -47,7 +46,8 @@ class Entry extends React.Component {
 				return response;
 			}).done(result => {
 				this.setState({
-					role: result.entity.roles[0]
+					role: result.entity.roles[0],
+					accountName: result.entity.accountName
 				});
 			});
 		});
@@ -75,7 +75,7 @@ class Entry extends React.Component {
 					</TabList>
 		
 					<TabPanel>
-						<CommunistInfoDisplay />
+						<CommunistInfoDisplay accountName={this.state.accountName} role={this.state.role} />
 					</TabPanel>
 					<TabPanel>
 						<InspectPersonInfoDisplay />
@@ -113,7 +113,7 @@ class Entry extends React.Component {
 					</TabList>
 		
 					<TabPanel>
-						<CommunistInfoLimitedDisplay />
+						<CommunistInfoDisplay accountName={this.state.accountName} role={this.state.role} />
 					</TabPanel>
 					<TabPanel>
 						<InspectPersonInfoLimitedDisplay />

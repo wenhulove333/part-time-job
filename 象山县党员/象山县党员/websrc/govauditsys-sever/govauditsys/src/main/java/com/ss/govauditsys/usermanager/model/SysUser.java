@@ -1,5 +1,6 @@
 package com.ss.govauditsys.usermanager.model;
 
+import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -71,18 +72,27 @@ public class SysUser {
 	}
 	
 	public SysUser(String name, String password, String[] roles, String accountName, String workPlace,
-			String position) {
+			String position, String disciplineInspectionDepartment, Integer communistInfoFrontEndShowStatus,
+			Integer inspectPersonInfoFrontEndShowStatus, Integer lawcaseInfoFrontEndShowStatus) {
 		this.name = name;
 		this.setPassword(password);
 		this.roles = roles;
 		this.accountName = accountName;
 		this.workPlace = workPlace;
 		this.position = position;
+		this.disciplineInspectionDepartment = disciplineInspectionDepartment;
+		this.communistInfoFrontEndShowStatus = communistInfoFrontEndShowStatus;
+		this.inspectPersonInfoFrontEndShowStatus = inspectPersonInfoFrontEndShowStatus;
+		this.lawcaseInfoFrontEndShowStatus = lawcaseInfoFrontEndShowStatus;
 	}
 
 	private String accountName;
 	private String workPlace;
 	private String position;
+	private String disciplineInspectionDepartment;
+	private Integer communistInfoFrontEndShowStatus;
+	private Integer inspectPersonInfoFrontEndShowStatus;
+	private Integer lawcaseInfoFrontEndShowStatus;
 
 	public String getAccountName() {
 		return accountName;
@@ -107,4 +117,37 @@ public class SysUser {
 	public void setPosition(String position) {
 		this.position = position;
 	}
+
+	public String getDisciplineInspectionDepartment() {
+		return disciplineInspectionDepartment;
+	}
+
+	public void setDisciplineInspectionDepartment(String disciplineInspectionDepartment) {
+		this.disciplineInspectionDepartment = disciplineInspectionDepartment;
+	}
+
+	public Integer getCommunistInfoFrontEndShowStatus() {
+		return communistInfoFrontEndShowStatus;
+	}
+
+	public void setCommunistInfoFrontEndShowStatus(Integer communistInfoFrontEndShowStatus) {
+		this.communistInfoFrontEndShowStatus = communistInfoFrontEndShowStatus;
+	}
+
+	public Integer getInspectPersonInfoFrontEndShowStatus() {
+		return inspectPersonInfoFrontEndShowStatus;
+	}
+
+	public void setInspectPersonInfoFrontEndShowStatus(Integer inspectPersonInfoFrontEndShowStatus) {
+		this.inspectPersonInfoFrontEndShowStatus = inspectPersonInfoFrontEndShowStatus;
+	}
+
+	public Integer getLawcaseInfoFrontEndShowStatus() {
+		return lawcaseInfoFrontEndShowStatus;
+	}
+
+	public void setLawcaseInfoFrontEndShowStatus(Integer lawcaseInfoFrontEndShowStatus) {
+		this.lawcaseInfoFrontEndShowStatus = lawcaseInfoFrontEndShowStatus;
+	}
+	
 }

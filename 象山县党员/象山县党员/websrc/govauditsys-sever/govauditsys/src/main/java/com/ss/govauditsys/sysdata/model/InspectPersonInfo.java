@@ -15,6 +15,7 @@ public class InspectPersonInfo {
 	private String gender;
 	private String education;
 	private String workPlace;
+	private String disciplinaryInspection;
 	public String getName() {
 		return name;
 	}
@@ -44,6 +45,12 @@ public class InspectPersonInfo {
 	}
 	public void setWorkPlace(String workPlace) {
 		this.workPlace = workPlace;
+	}
+	public String getDisciplinaryInspection() {
+		return disciplinaryInspection;
+	}
+	public void setDisciplinaryInspection(String disciplineInspectionDepartment) {
+		this.disciplinaryInspection = disciplineInspectionDepartment;
 	}
 	public Long getId() {
 		return id;
