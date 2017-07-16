@@ -20,6 +20,7 @@ public class CommunistInfo {
 	private String nativePlace;
 	private String nation;
 	private String individualStatus;
+	private String disciplinaryInspection;
 	public String getName() {
 		return name;
 	}
@@ -79,6 +80,12 @@ public class CommunistInfo {
 	}
 	public void setIndividualStatus(String individualStatus) {
 		this.individualStatus = individualStatus;
+	}
+	public String getDisciplinaryInspection() {
+		return disciplinaryInspection;
+	}
+	public void setDisciplinaryInspection(String disciplinaryInspection) {
+		this.disciplinaryInspection = disciplinaryInspection;
 	}
 	public Long getId() {
 		return id;

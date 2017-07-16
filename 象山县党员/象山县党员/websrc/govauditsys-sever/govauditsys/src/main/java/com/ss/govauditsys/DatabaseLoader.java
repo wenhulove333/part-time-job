@@ -42,14 +42,26 @@ public class DatabaseLoader implements CommandLineRunner {
 	@Override
 	public void run(String... strings) throws Exception {
 		if (sysUserRepository.findByAccountName("administrator") == null) {
-			new SysUser("wenhu", "123456", "commonuser");
 			sysUserRepository.save(new SysUser(
 				"系统管理员",
 				"123456",
 				new String[]{"管理员"},
 				"administrator",
 				"后台系统",
-				"内置账户"));
+				"内置账户",
+				"县纪委",
+				2047, 63, 511));
+		}
+		if (sysUserRepository.findByAccountName("wenhuzha") == null) {
+			sysUserRepository.save(new SysUser(
+				"普通用户",
+				"123456",
+				new String[]{"普通用户"},
+				"wenhuzha",
+				"后台系统",
+				"内置账户",
+				"县纪委",
+				2045, 63, 511));
 		}
 	}
 }

@@ -23,6 +23,7 @@ public class LawcaseInfo {
 	private Calendar caseCloseDate;
 	private String partyDisciplinePunishment;
 	private String politicalDisciplinePunishment;
+	private String disciplinaryInspection;
 	public String getRespondentName() {
 		return respondentName;
 	}
@@ -84,6 +85,12 @@ public class LawcaseInfo {
 	}
 	public void setPoliticalDisciplinePunishment(String politicalDisciplinePunishment) {
 		this.politicalDisciplinePunishment = politicalDisciplinePunishment;
+	}
+	public String getDisciplinaryInspection() {
+		return disciplinaryInspection;
+	}
+	public void setDisciplinaryInspection(String disciplineInspectionDepartment) {
+		this.disciplinaryInspection = disciplineInspectionDepartment;
 	}
 	public Long getId() {
 		return id;

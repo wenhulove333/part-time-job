@@ -176,6 +176,9 @@ public class ExcelReader {
         	communistInfo.setIndividualStatus(
                	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 9) : getCellValueByIndex(xsheet.getRow(i), 9)
             );
+        	communistInfo.setDisciplinaryInspection(
+                isOldFormat ? getCellValueByIndex(sheet.getRow(i), 10) : getCellValueByIndex(xsheet.getRow(i), 9)
+            );
             
             communistInfoes.add(communistInfo);
         }
