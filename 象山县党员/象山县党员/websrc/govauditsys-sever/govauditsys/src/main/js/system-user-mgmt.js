@@ -320,6 +320,7 @@ class SysUserList extends React.Component {
 							<th>用户所在地</th>
 							<th>用户职务</th>
 							<th>角色</th>
+							<th>纪检部门</th>
 							<th> </th>
 							<th> </th>
 						</tr>
@@ -341,7 +342,8 @@ class SysUser extends React.Component {
 	constructor(props) {
 		super(props);
 		this.handleDelete = this.handleDelete.bind(this);
-		this.state = {accountName: '未知生物'};
+		this.loadColumnsFromServer = this.loadColumnsFromServer.bind(this);
+		this.state = {accountName: '未知生物', communistInfoColumns: [], inspectpersoninfoColumns: [], lawcaseinfoColumns: []};
 	}
 	
 	getAccountName() {
@@ -365,8 +367,71 @@ class SysUser extends React.Component {
 		});
 	}
 	
+	loadColumnsFromServer(accountName) {
+		var communistInfoColumns = [];
+		var inspectpersoninfoColumns = [];
+		var lawcaseinfoColumns = [];
+		
+		Promise.all([new Promise(function(resolve, reject) {
+			client({
+				method: 'GET',
+				path: '/columnshowstatus',
+				params: {accountName: accountName, infoType: "communist"}
+			}).done(response => {
+				if (!Array.isArray(response.entity)) {
+					reject('Exception');
+				} else {
+					communistInfoColumns = response.entity;
+					resolve('Success');
+				}
+			});
+		}),
+		new Promise(function(resolve, reject) {
+			client({
+				method: 'GET',
+				path: '/columnshowstatus',
+				params: {accountName: accountName, infoType: "inspectpersoninfo"}
+			}).done(response => {
+				if (!Array.isArray(response.entity)) {
+					reject('Exception');
+				} else {
+					inspectpersoninfoColumns = response.entity;
+					resolve('Success');
+				}
+			});
+		}),
+		new Promise(function(resolve, reject) {
+			client({
+				method: 'GET',
+				path: '/columnshowstatus',
+				params: {accountName: accountName, infoType: "lawcaseinfo"}
+			}).done(response => {
+				if (!Array.isArray(response.entity)) {
+					reject('Exception');
+				} else {
+					lawcaseinfoColumns = response.entity;
+					resolve('Success');
+				}
+			});
+		})]).then(() => {
+			var state = this.state;
+			state.communistInfoColumns = communistInfoColumns;
+			state.inspectpersoninfoColumns = inspectpersoninfoColumns;
+			state.lawcaseinfoColumns = lawcaseinfoColumns;
+			this.setState(state);
+		}).catch(() => {
+			var state = this.state;
+			this.setState(state);
+		});
+	}
+	
 	componentDidMount() {
 		this.getAccountName();
+		this.loadColumnsFromServer(this.props.sysUser.entity.accountName);
+	}
+	
+	componentWillReceiveProps(nextProps) {
+		this.loadColumnsFromServer(this.props.sysUser.entity.accountName);
 	}
 
 	handleDelete() {
@@ -386,8 +451,12 @@ class SysUser extends React.Component {
 					<td>{this.props.sysUser.entity.workPlace}</td>
 					<td>{this.props.sysUser.entity.position}</td>
 					<td>{this.props.sysUser.entity.roles}</td>
+					<td>{this.props.sysUser.entity.disciplineInspectionDepartment}</td>
 				    <td>
-					    <UpdateDialog sysUser={this.props.sysUser} onUpdate={this.props.onUpdate} />
+					    <UpdateDialog sysUser={this.props.sysUser} onUpdate={this.props.onUpdate} 
+					    		communistInfoColumns={this.state.communistInfoColumns} 
+					    		inspectpersoninfoColumns={this.state.inspectpersoninfoColumns} 
+					    		lawcaseinfoColumns={this.state.lawcaseinfoColumns} />
 					</td>
 				</tr>
 			)
@@ -399,8 +468,12 @@ class SysUser extends React.Component {
 					<td>{this.props.sysUser.entity.workPlace}</td>
 					<td>{this.props.sysUser.entity.position}</td>
 					<td>{this.props.sysUser.entity.roles}</td>
+					<td>{this.props.sysUser.entity.disciplineInspectionDepartment}</td>
 					<td>
-					    <UpdateDialog sysUser={this.props.sysUser} onUpdate={this.props.onUpdate} />
+					    <UpdateDialog sysUser={this.props.sysUser} onUpdate={this.props.onUpdate} 
+							    communistInfoColumns={this.state.communistInfoColumns} 
+					    		inspectpersoninfoColumns={this.state.inspectpersoninfoColumns} 
+					    		lawcaseinfoColumns={this.state.lawcaseinfoColumns} />
 					</td>
 					<td>
 						<button onClick={this.handleDelete}>删除用户</button>
@@ -416,27 +489,126 @@ class CreateDialog extends React.Component {
 	constructor(props) {
 		super(props);
 		this.handleSubmit = this.handleSubmit.bind(this);
+		this.state = {disciplinaryInspectionsOptions: []};
+	}
+	
+	componentDidMount() {
+		client({
+			method: 'GET',
+			path: '/unionops/getdisciplinaryinspections'
+		}).done(response => {
+			var state = this.state;
+			
+			response.entity.map(item => {
+				state.disciplinaryInspectionsOptions.push(<option value ={item}>{item}</option>);
+			});
+			
+			this.setState(state);
+		});
 	}
 
 	handleSubmit(e) {
 		e.preventDefault();
 		var sysUser = {};
+		var i = 0;
 		sysUser['accountName'] = ReactDOM.findDOMNode(this.refs['accountName']).value.trim();
 		sysUser['name'] = ReactDOM.findDOMNode(this.refs['name']).value.trim();
 		sysUser['password'] = ReactDOM.findDOMNode(this.refs['password']).value.trim();
 		sysUser['workPlace'] = ReactDOM.findDOMNode(this.refs['workPlace']).value.trim();
 		sysUser['position'] = ReactDOM.findDOMNode(this.refs['position']).value.trim();
 		sysUser['roles'] = [ReactDOM.findDOMNode(this.refs['roles']).value.trim()];
+		var communistInfoColumnCheckBoxes = document.getElementsByName("communistinfo");
+		sysUser['communistInfoFrontEndShowStatus'] = 0;
+		for (i = 0; i < communistInfoColumnCheckBoxes.length; i++) {                    
+            if (communistInfoColumnCheckBoxes[i].checked) {                        
+            	sysUser['communistInfoFrontEndShowStatus'] += (1 << i);
+            }                
+        }
+		var inspectPersonInfoColumnCheckBoxes = document.getElementsByName("inspectpersoninfo");
+		sysUser['inspectPersonInfoFrontEndShowStatus'] = 0;
+		for (i = 0; i < inspectPersonInfoColumnCheckBoxes.length; i++) {                    
+            if (inspectPersonInfoColumnCheckBoxes[i].checked) {                        
+            	sysUser['inspectPersonInfoFrontEndShowStatus'] += (1 << i);
+            }                
+        }
+		var lawcaseInfoColumnCheckBoxes = document.getElementsByName("lawcaseInfo");
+		sysUser['lawcaseInfoFrontEndShowStatus'] = 0;
+		for (i = 0; i < lawcaseInfoColumnCheckBoxes.length; i++) {                    
+            if (lawcaseInfoColumnCheckBoxes[i].checked) {                        
+            	sysUser['lawcaseInfoFrontEndShowStatus'] += (1 << i);
+            }                
+        }
+		sysUser['disciplineInspectionDepartment'] = ReactDOM.findDOMNode(this.refs['disciplineInspectionDepartment']).value.trim();
 		ReactDOM.findDOMNode(this.refs['accountName']).value = '';
 		ReactDOM.findDOMNode(this.refs['name']).value = '';
 		ReactDOM.findDOMNode(this.refs['password']).value = '';
 		ReactDOM.findDOMNode(this.refs['workPlace']).value = '';
 		ReactDOM.findDOMNode(this.refs['position']).value = '';
+		for (i = 0; i < communistInfoColumnCheckBoxes.length; i++) {                    
+			communistInfoColumnCheckBoxes[i].checked = true;                
+        }
+		for (i = 0; i < inspectPersonInfoColumnCheckBoxes.length; i++) {                    
+			inspectPersonInfoColumnCheckBoxes[i].checked = true;       
+        }
+		for (i = 0; i < lawcaseInfoColumnCheckBoxes.length; i++) {                    
+            lawcaseInfoColumnCheckBoxes[i].checked = true;        
+        }
 		this.props.onCreate(sysUser);
 		window.location = "#";
 	}
 
 	render() {
+		var communistInfoColumnsSelect = (
+			<p>
+			    <span>党员信息库显示条目</span><br/>
+			    <div className="columns_selects_block">
+			    <input type="checkbox" name="communistinfo" value="党员姓名" defaultChecked="checked" /><span>党员姓名</span>
+			    <input type="checkbox" name="communistinfo" value="身份证号" defaultChecked="checked" /><span>身份证号</span>
+			    <input type="checkbox" name="communistinfo" value="性别" defaultChecked="checked" /><span>性别</span>
+			    <input type="checkbox" name="communistinfo" value="入党日期" defaultChecked="checked" /><span>入党日期</span>	
+			    <input type="checkbox" name="communistinfo" value="学历" defaultChecked="checked" /><span>学历</span>
+		    	<input type="checkbox" name="communistinfo" value="党支部" defaultChecked="checked" /><span>党支部</span>
+			    <input type="checkbox" name="communistinfo" value="上级组织" defaultChecked="checked" /><span>上级组织</span>
+			    <input type="checkbox" name="communistinfo" value="籍贯" defaultChecked="checked" /><span>籍贯</span>
+			    <input type="checkbox" name="communistinfo" value="民族" defaultChecked="checked" /><span>民族</span>
+			    <input type="checkbox" name="communistinfo" value="个人身份" defaultChecked="checked" /><span>个人身份</span>
+			    <input type="checkbox" name="communistinfo" value="纪检部门" defaultChecked="checked" /><span>纪检部门</span>
+			    </div>
+			</p>
+		);
+		
+		var inspectPersonInfoColumnsSelect = (
+			<p>
+			    <span>监察对象库显示条目</span><br/>
+			    <div className="columns_selects_block">
+			    <input type="checkbox" name="inspectpersoninfo" value="姓名" defaultChecked="checked" /><span>姓名</span>
+			    <input type="checkbox" name="inspectpersoninfo" value="身份证号" defaultChecked="checked" /><span>身份证号</span>
+			    <input type="checkbox" name="inspectpersoninfo" value="性别" defaultChecked="checked" /><span>性别</span>
+			    <input type="checkbox" name="inspectpersoninfo" value="学历" defaultChecked="checked" /><span>学历</span>	
+			    <input type="checkbox" name="inspectpersoninfo" value="工作单位" defaultChecked="checked" /><span>工作单位</span>
+		    	<input type="checkbox" name="inspectpersoninfo" value="纪检部门" defaultChecked="checked" /><span>纪检部门</span>
+			    <input type="checkbox" name="inspectpersoninfo" value="上级组织" defaultChecked="checked" /><span>上级组织</span>
+			    </div>
+			</p>
+		);
+		
+		var lawcaseInfoColumnsSelect = (
+			<p>
+			    <span>处分人员信息库显示条目</span><br/>
+			    <div className="columns_selects_block">
+			    <input type="checkbox" name="lawcaseInfo" value="被调查人" defaultChecked="checked" /><span>被调查人</span>
+			    <input type="checkbox" name="lawcaseInfo" value="入党日期" defaultChecked="checked" /><span>入党日期</span>
+			    <input type="checkbox" name="lawcaseInfo" value="工作单位及职务" defaultChecked="checked" /><span>工作单位及职务</span>
+			    <input type="checkbox" name="lawcaseInfo" value="立案机关" defaultChecked="checked" /><span>立案机关</span>	
+			    <input type="checkbox" name="lawcaseInfo" value="立案时间" defaultChecked="checked" /><span>立案时间</span>
+		    	<input type="checkbox" name="lawcaseInfo" value="结案时间" defaultChecked="checked" /><span>结案时间</span>
+			    <input type="checkbox" name="lawcaseInfo" value="党纪处分" defaultChecked="checked" /><span>党纪处分</span>
+			    <input type="checkbox" name="lawcaseInfo" value="政纪处分" defaultChecked="checked" /><span>政纪处分</span>
+			    <input type="checkbox" name="lawcaseInfo" value="纪检部门" defaultChecked="checked" /><span>纪检部门</span>
+			    </div>
+			</p>
+		);
+		
 		return (
 			<div className="createSysUserDialog">
 				<a href="#createSysUserDialog">创建系统用户</a>
@@ -453,6 +625,16 @@ class CreateDialog extends React.Component {
 							<p><input type="password" placeholder="请输入密码" ref="password" className="field" /></p>
 							<p><input type="text" placeholder="请输入用户所在地" ref="workPlace" className="field" /></p>
 							<p><input type="text" placeholder="请输入用户职务" ref="position" className="field" /></p>
+							{communistInfoColumnsSelect}
+							{inspectPersonInfoColumnsSelect}
+							{lawcaseInfoColumnsSelect}
+							<p>
+							    <span>所属纪检部门</span>
+							    <br/>
+							    <select ref="disciplineInspectionDepartment">
+									{this.state.disciplinaryInspectionsOptions}
+							    </select>
+						    </p>
 							<p><select ref="roles">
 							  <option value ="普通用户">普通用户</option>
 							  <option value ="管理员">管理员</option>
@@ -470,7 +652,13 @@ class UpdateDialog extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {value: '管理员'};
+		this.state = {
+			value: '管理员',
+			firstRender: true,
+			communistColumnsTitles: ["党员姓名", "身份证号", "性别", "入党日期", "学历", "党支部", "上级组织", "籍贯", "民族", "个人身份", "纪检部门"],
+			inpsectPersonInfoTitles: ["姓名", "身份证号", "性别", "学历", "工作单位", "纪检部门"],
+			lawcaseinfoTitles: ["被调查人", "入党日期", "工作单位及职务", "立案机关", "立案时间", "结案时间", "党纪处分", "政纪处分", "纪检部门"]
+		};
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.handleChange = this.handleChange.bind(this);
 	}
@@ -478,6 +666,7 @@ class UpdateDialog extends React.Component {
 	handleSubmit(e) {
 		e.preventDefault();
 		var updatedSysUser = {};
+		var i = 0;
 		updatedSysUser['accountName'] = ReactDOM.findDOMNode(this.refs['accountName']).value.trim();
 		updatedSysUser['name'] = ReactDOM.findDOMNode(this.refs['name']).value.trim();
 		if (ReactDOM.findDOMNode(this.refs['password']).value.trim() !== "") {
@@ -488,19 +677,177 @@ class UpdateDialog extends React.Component {
 		updatedSysUser['workPlace'] = ReactDOM.findDOMNode(this.refs['workPlace']).value.trim();
 		updatedSysUser['position'] = ReactDOM.findDOMNode(this.refs['position']).value.trim();
 		updatedSysUser['roles'] = [ReactDOM.findDOMNode(this.refs['roles']).value.trim()];
+		
+		var communistInfoColumnCheckBoxes = document.getElementsByName("communistinfo" + this.props.sysUser.entity['accountName']);
+		updatedSysUser['communistInfoFrontEndShowStatus'] = 0;
+		for (i = 0; i < communistInfoColumnCheckBoxes.length; i++) {                    
+            if (communistInfoColumnCheckBoxes[i].checked) {                        
+            	updatedSysUser['communistInfoFrontEndShowStatus'] += (1 << i);
+            }                
+        }
+		var inspectPersonInfoColumnCheckBoxes = document.getElementsByName("inspectpersoninfo" + this.props.sysUser.entity['accountName']);
+		updatedSysUser['inspectPersonInfoFrontEndShowStatus'] = 0;
+		for (i = 0; i < inspectPersonInfoColumnCheckBoxes.length; i++) {                    
+            if (inspectPersonInfoColumnCheckBoxes[i].checked) {                        
+            	updatedSysUser['inspectPersonInfoFrontEndShowStatus'] += (1 << i);
+            }                
+        }
+		var lawcaseInfoColumnCheckBoxes = document.getElementsByName("lawcaseInfo" + this.props.sysUser.entity['accountName']);
+		updatedSysUser['lawcaseInfoFrontEndShowStatus'] = 0;
+		for (i = 0; i < lawcaseInfoColumnCheckBoxes.length; i++) {                    
+            if (lawcaseInfoColumnCheckBoxes[i].checked) {                        
+            	updatedSysUser['lawcaseInfoFrontEndShowStatus'] += (1 << i);
+            }                
+        }
+		
+		updatedSysUser['disciplineInspectionDepartment'] = ReactDOM.findDOMNode(this.refs['disciplineInspectionDepartment']).value.trim();
 		this.props.onUpdate(this.props.sysUser, updatedSysUser);
 		window.location = "#";
 	}
 	
 	componentDidMount() {
+		client({
+			method: 'GET',
+			path: '/unionops/getdisciplinaryinspections'
+		}).done(response => {
+			var disciplinaryInspectionsOptions = '';
+			
+			response.entity.map(item => {
+				disciplinaryInspectionsOptions += '<option value ="' + item + '">' + item + "</option>";
+			});
+			
+			ReactDOM.findDOMNode(this.refs['disciplineInspectionDepartment']).innerHTML = '';
+			ReactDOM.findDOMNode(this.refs['disciplineInspectionDepartment']).innerHTML = disciplinaryInspectionsOptions;
+		});
 		this.setState({value: this.props.sysUser.entity['roles'][0]});
+		this.state.firstRender = false;
+	}
+	
+	shouldComponentUpdate(nextProps, nextState) {
+		var columnTitles1 = this.state.communistColumnsTitles;
+		var columnTitles2 = this.state.inpsectPersonInfoTitles;
+		var columnTitles3 = this.state.lawcaseinfoTitles;
+		var showTitles1 = nextProps.communistInfoColumns.map(column => column[1]);
+		var showTitles2 = nextProps.inspectpersoninfoColumns.map(column => column[1]);
+		var showTitles3 = nextProps.lawcaseinfoColumns.map(column => column[1]);
+		
+		columnTitles1.map(title => {
+			var communistInfoColumnCheckBoxes = document.getElementsByName("communistinfo" + this.props.sysUser.entity['accountName']);
+			var i = 0;
+			for (i = 0; i < communistInfoColumnCheckBoxes.length; i++) {                    
+	            if (communistInfoColumnCheckBoxes[i].value === title) {       
+	            	if (showTitles1.includes(title)) {
+	            		communistInfoColumnCheckBoxes[i].checked = true;
+	            	} else {
+	            		communistInfoColumnCheckBoxes[i].checked = false;
+	            	}
+	            	
+	            }                
+	        }
+	    });
+		
+		columnTitles2.map(title => {
+			var inspectpersoninfoColumnCheckBoxes = document.getElementsByName("inspectpersoninfo" + this.props.sysUser.entity['accountName']);
+			var i = 0;
+			for (i = 0; i < inspectpersoninfoColumnCheckBoxes.length; i++) {                    
+	            if (inspectpersoninfoColumnCheckBoxes[i].value === title) {       
+	            	if (showTitles2.includes(title)) {
+	            		inspectpersoninfoColumnCheckBoxes[i].checked = true;
+	            	} else {
+	            		inspectpersoninfoColumnCheckBoxes[i].checked = false;
+	            	}
+	            	
+	            }                
+	        }
+	    });
+		
+		columnTitles3.map(title => {
+			var lawcaseInfoColumnCheckBoxes = document.getElementsByName("lawcaseInfo" + this.props.sysUser.entity['accountName']);
+			var i = 0;
+			for (i = 0; i < lawcaseInfoColumnCheckBoxes.length; i++) {                    
+	            if (lawcaseInfoColumnCheckBoxes[i].value === title) {       
+	            	if (showTitles3.includes(title)) {
+	            		lawcaseInfoColumnCheckBoxes[i].checked = true;
+	            	} else {
+	            		lawcaseInfoColumnCheckBoxes[i].checked = false;
+	            	}
+	            	
+	            }                
+	        }
+	    });
+		
+		return false;
 	}
 	
 	handleChange(event) {
 		this.setState({value: event.target.value});
 	}
+	
+	changeStateOfCheckBoxes(columnsSelect, columns) {
+		var checkBoxes = columnsSelect.getElementsByTagName("input");
+		var checkBoexesDict = {};
+		var index = 0;
+		for (index = 0; index < checkBoxes.length; index++) {
+			checkBoexesDict[checkBoxes[i].value] = checkBoxes[i];
+		}
+		columns.map(column => {
+			checkBoexesDict[column[1]].checked = true;
+		})
+	}
 
 	render() {
+		var columnTitles1 = this.state.communistColumnsTitles;
+		var columnTitles2 = this.state.inpsectPersonInfoTitles;
+		var columnTitles3 = this.state.lawcaseinfoTitles;
+		var showTitles1 = this.props.communistInfoColumns.map(column => column[1]);
+		var showTitles2 = this.props.inspectpersoninfoColumns.map(column => column[1]);
+		var showTitles3 = this.props.lawcaseinfoColumns.map(column => column[1]);
+
+		var communistInfoColumnsSelect = (
+			<p>
+			    <span>党员信息库显示条目</span><br/>
+			    <div className="columns_selects_block">
+			    {columnTitles1.map(title => {
+			    	if (showTitles1.includes(title)) {
+			    			return <span><input type="checkbox" name={"communistinfo"+this.props.sysUser.entity['accountName']} value={title} defaultChecked="checked" /><span>{title}</span></span>;
+			    	} else {
+			    		return <span><input type="checkbox" name={"communistinfo"+this.props.sysUser.entity['accountName']} value={title} /><span>{title}</span></span>;
+			    	}
+			    })}
+			    </div>
+			</p>
+		);
+		
+		var inspectPersonInfoColumnsSelect = (
+			<p>
+			    <span>监察对象库显示条目</span><br/>
+			    <div className="columns_selects_block">
+			    {columnTitles2.map(title => {
+			    	if (showTitles2.includes(title)) {
+			    			return <span><input type="checkbox" name={"inspectpersoninfo"+this.props.sysUser.entity['accountName']} value={title} defaultChecked="checked" /><span>{title}</span></span>;
+			    	} else {
+			    		return <span><input type="checkbox" name={"inspectpersoninfo"+this.props.sysUser.entity['accountName']} value={title} /><span>{title}</span></span>;
+			    	}
+			    })}
+			    </div>
+			</p>
+		);
+		
+		var lawcaseInfoColumnsSelect = (
+			<p>
+			    <span>处分人员信息库显示条目</span><br/>
+			    <div className="columns_selects_block">
+			    {columnTitles3.map(title => {
+			    	if (showTitles3.includes(title)) {
+			    			return <span><input type="checkbox" name={"lawcaseInfo"+this.props.sysUser.entity['accountName']} value={title} defaultChecked="checked" /><span>{title}</span></span>;
+			    	} else {
+			    		return <span><input type="checkbox" name={"lawcaseInfo"+this.props.sysUser.entity['accountName']} value={title} /><span>{title}</span></span>;
+			    	}
+			    })}
+			    </div>
+			</p>
+		);
+		
 		return (
 				<div className="updateSysUserDialog">
 				<a href={"#updateSysUserDialog"+this.props.sysUser.entity['accountName']}>修改用户信息</a>
@@ -517,6 +864,16 @@ class UpdateDialog extends React.Component {
 							<p><input type="password" placeholder="请输入密码" ref="password" className="field" /></p>
 							<p><input type="text" placeholder="请输入用户所在地" ref="workPlace" className="field" defaultValue={this.props.sysUser.entity['workPlace']} /></p>
 							<p><input type="text" placeholder="请输入用户职务" ref="position" className="field" defaultValue={this.props.sysUser.entity['position']} /></p>
+							{communistInfoColumnsSelect}
+							{inspectPersonInfoColumnsSelect}
+							{lawcaseInfoColumnsSelect}
+							<p>
+							    <span>所属纪检部门</span>
+							    <br/>
+							    <select ref="disciplineInspectionDepartment" defaultValue={this.props.sysUser.entity['disciplineInspectionDepartment']}>
+									<option value ="象山县纪委">象山县纪委</option>
+							    </select>
+							</p>	
 							<p><select ref="roles" value={this.state.value} onChange={this.handleChange}>
 								<option value ="普通用户">普通用户</option>
 								<option value ="管理员">管理员</option>

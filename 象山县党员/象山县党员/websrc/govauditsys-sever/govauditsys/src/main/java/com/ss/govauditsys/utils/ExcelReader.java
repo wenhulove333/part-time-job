@@ -214,6 +214,9 @@ public class ExcelReader {
             inspectPersonInfo.setWorkPlace(
         		isOldFormat ? getCellValueByIndex(sheet.getRow(i), 4) : getCellValueByIndex(xsheet.getRow(i), 4)
             );
+            inspectPersonInfo.setDisciplinaryInspection(
+            	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 5) : getCellValueByIndex(xsheet.getRow(i), 5)
+            );
             
             inspectPersonInfoes.add(inspectPersonInfo);
         }
@@ -265,6 +268,9 @@ public class ExcelReader {
             lawcaseInfo.setPoliticalDisciplinePunishment(
         		isOldFormat ? getCellValueByIndex(sheet.getRow(i), 7) : getCellValueByIndex(xsheet.getRow(i), 7)
     		);
+            lawcaseInfo.setDisciplinaryInspection(
+            	isOldFormat ? getCellValueByIndex(sheet.getRow(i), 8) : getCellValueByIndex(xsheet.getRow(i), 8)
+        	);
             
             lawcaseInfoes.add(lawcaseInfo);
         }

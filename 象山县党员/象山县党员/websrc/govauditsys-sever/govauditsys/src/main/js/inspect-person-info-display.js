@@ -21,36 +21,23 @@ class InspectPersonInfoDisplay extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {inspectPersonInfoes: [], attributes: [], page: 1, pageSize: 20, links: {}};
+		this.state = {inspectPersonInfoes: [], attributes: [], page: 1, pageSize: 20, links: {}, columns: []};
 		this.onNavigate = this.onNavigate.bind(this);
 		this.onSearch = this.onSearch.bind(this);
 		this.onUpdate = this.onUpdate.bind(this);
 	}
-
-	loadFromServer(pageSize) {
-		root = "/api";
-		children = "inspectPersonInfoes";
-		follow(client, root, [
-				{rel: children, params: {size: pageSize}}]
-		).then(inspectPersonInfoCollection => {
-			this.page = inspectPersonInfoCollection.entity.page;
-			this.links = inspectPersonInfoCollection.entity._links;
-			return inspectPersonInfoCollection.entity._embedded.inspectPersonInfoes.map(inspectPersonInfo =>
-					client({
-						method: 'GET',
-						path: inspectPersonInfo._links.self.href
-					})
-			);
-		}).then(inspectPersonInfoPromises => {
-			return when.all(inspectPersonInfoPromises);
-		}).done(inspectPersonInfoes => {
-			this.setState({
-				page: this.page,
-				inspectPersonInfoes: inspectPersonInfoes,
-				pageSize: pageSize,
-				links: this.links
-			});
+	
+	loadFromServer(accountName) {
+		client({
+			method: 'GET',
+			path: '/columnshowstatus',
+			params: {accountName: accountName, infoType: "inspectpersoninfo"}
+		}).then(response => {
+			return response;
+		}).done(result => {
+			this.setState({columns: result.entity});
 		});
+		
 	}
 	
 	getInspectPersonInfoesContaining(name, workPlace, pageSize) {
@@ -164,9 +151,13 @@ class InspectPersonInfoDisplay extends React.Component {
 
 	// tag::register-handlers[]
 	componentDidMount() {
-		//this.loadFromServer(this.state.pageSize);
+		this.loadFromServer(this.props.accountName);
 	}
 	// end::register-handlers[]
+	
+	componentWillReceiveProps(nextProps) {
+		this.loadFromServer(nextProps.accountName);
+	}
 
 	render() {
 		return (
@@ -182,7 +173,9 @@ class InspectPersonInfoDisplay extends React.Component {
 								  links={this.state.links}
 								  pageSize={this.state.pageSize}
 								  onNavigate={this.onNavigate}
-								  onUpdate={this.onUpdate}/>
+								  onUpdate={this.onUpdate}
+								  columns={this.state.columns}
+		              		      role={this.props.role}/>
 				</div>
 			</div>
 		)
@@ -232,10 +225,17 @@ class InspectPersonInfoList extends React.Component {
 	}
 
 	render() {
+		var inspectPersonInfoHead = this.props.columns.map(column => <th>{column[1]}</th>);
+		if (this.props.role === "管理员") {
+			inspectPersonInfoHead.push(<th></th>);
+		}
+		
 		var inspectPersonInfoes = this.props.inspectPersonInfoes.map(inspectPersonInfo =>
 			<InspectPersonInfo key={inspectPersonInfo.entity._links.self.href}
 					  inspectPersonInfo={inspectPersonInfo}
-					  onUpdate={this.props.onUpdate}/>
+					  onUpdate={this.props.onUpdate}
+			          columns={this.props.columns}
+	                  role={this.props.role}/>
 		);
 		
 		var navLinks = [];
@@ -278,12 +278,7 @@ class InspectPersonInfoList extends React.Component {
 				<table>
 					<thead>
 						<tr>
-							<th>姓名</th>
-							<th>身份证号</th>
-							<th>性别</th>
-							<th>学历</th>
-							<th>工作单位</th>
-							<th></th>
+							{inspectPersonInfoHead}
 						</tr>
 					</thead>
 					<tbody>
@@ -308,16 +303,14 @@ class InspectPersonInfo extends React.Component {
 	}
 	
 	render() {
+		var inspectPersonInfo = this.props.columns.map(column => <td>{this.props.inspectPersonInfo.entity[column[0]]}</td>);
+		if (this.props.role === "管理员") {
+			inspectPersonInfo.push(<td><UpdateDialog inspectPersonInfo={this.props.inspectPersonInfo} onUpdate={this.props.onUpdate} columns={this.props.columns} /></td>);
+		}
+		
 		return (
 			<tr>
-				<td>{this.props.inspectPersonInfo.entity.name}</td>
-				<td>{this.props.inspectPersonInfo.entity.idNumber}</td>
-				<td>{this.props.inspectPersonInfo.entity.gender}</td>
-				<td>{this.props.inspectPersonInfo.entity.education}</td>
-				<td>{this.props.inspectPersonInfo.entity.workPlace}</td>
-				<td>
-					<UpdateDialog inspectPersonInfo={this.props.inspectPersonInfo} onUpdate={this.props.onUpdate} />
-				</td>
+				{inspectPersonInfo}
 			</tr>
 		)
 	}
@@ -332,12 +325,10 @@ class UpdateDialog extends React.Component {
 	
 	handleSubmit(e) {
 		e.preventDefault();
-		var updatedInspectPersonInfo = {};
-		updatedInspectPersonInfo['name'] = ReactDOM.findDOMNode(this.refs['name']).value.trim();
-		updatedInspectPersonInfo['idNumber'] = ReactDOM.findDOMNode(this.refs['idNumber']).value.trim();
-		updatedInspectPersonInfo['gender'] = ReactDOM.findDOMNode(this.refs['gender']).value.trim();
-		updatedInspectPersonInfo['education'] = ReactDOM.findDOMNode(this.refs['education']).value.trim();
-		updatedInspectPersonInfo['workPlace'] = ReactDOM.findDOMNode(this.refs['workPlace']).value.trim();
+		var updatedInspectPersonInfo = this.props.inspectPersonInfo.entity;
+		this.props.columns.map(column => {
+			updatedInspectPersonInfo[column[0]] = ReactDOM.findDOMNode(this.refs[column[0]]).value.trim();
+		});
 		this.props.onUpdate(this.props.inspectPersonInfo, updatedInspectPersonInfo);
 		window.location = "#";
 	}
@@ -345,6 +336,7 @@ class UpdateDialog extends React.Component {
 	render() {
 		var urlArr = this.props.inspectPersonInfo.entity._links.self.href.split('/');
 		var inspectPersonInfoId = urlArr[urlArr.length - 1];
+		var inspectPersonInfoInputs = this.props.columns.map(column => <p><input type="text" placeholder={"请输入" + column[1]} defaultValue={this.props.inspectPersonInfo.entity[column[0]]} ref={column[0]} className="field" /></p>);
 		
 		return (
 				<div className="updateInspectPersonInfoDialog">
@@ -357,11 +349,7 @@ class UpdateDialog extends React.Component {
 						<h2>修改监察对象信息</h2>
 
 						<form>
-							<p><input type="text" placeholder="请输入姓名" defaultValue={this.props.inspectPersonInfo.entity['name']} ref="name" className="field" /></p>
-							<p><input type="text" placeholder="请输入身份证号" defaultValue={this.props.inspectPersonInfo.entity['idNumber']} ref="idNumber" className="field" /></p>
-							<p><input type="text" placeholder="请输入性别" defaultValue={this.props.inspectPersonInfo.entity['gender']} ref="gender" className="field" /></p>
-							<p><input type="text" placeholder="请输入学历" defaultValue={this.props.inspectPersonInfo.entity['education']} ref="education" className="field" /></p>
-							<p><input type="text" placeholder="请输入工作单位" defaultValue={this.props.inspectPersonInfo.entity['workPlace']} ref="workPlace" className="field" /></p>
+							{inspectPersonInfoInputs}
 							<button onClick={this.handleSubmit}>提交</button>
 						</form>
 					</div>

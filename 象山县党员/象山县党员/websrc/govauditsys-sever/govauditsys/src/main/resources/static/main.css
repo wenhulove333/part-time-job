@@ -130,6 +130,11 @@ td, th {
     background: -o-linear-gradient(#fff, #999);
 }
 
+.modalDialog span {
+	font-size: 10px;
+}
+
+
 .createSysUserDialog {
 	position: absolute;
 	right: 20px;
@@ -741,4 +746,8 @@ input[type="search"] {
 
 .ss_tab_selected {
     font-weight: bold;
+}
+.columns_selects_block {
+	border: 1px solid;
+    border-color: gray;
 }      

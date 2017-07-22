@@ -9,9 +9,6 @@ const follow = require('./follow'); // function to hop multiple links by "rel"12
 
 const MultiNamesSearchCommunistInfoDisplay = require('./multi-names-search-communist-info-display');
 const MultiNamesSearchInspectPersonInfoDisplay = require('./multi-names-search-inspect-person-info-display');
-const MultiNamesSearchLawcaseInfoDisplay = require('./multi-names-search-lawcase-info-display');
-const MultiIdNumbersSearchCommunistInfoDisplay = require('./multi-idnumbers-search-communist-info-display');
-const MultiIdNumbersSearchInspectPersonInfoDisplay = require('./multi-idnumbers-search-inspect-person-info-display');
 const MultiNamesPlusBirthdateSearchLawcaseInfoDisplay = require('./multi-names-plus-idnumbers-search-lawcase-info-display');
 
 const styles = {
@@ -182,13 +179,13 @@ class CommunistInfoAndInspectPersonInfoComparison extends React.Component {
 	
 	render() {
 		var communistInfoDisplay = <MultiNamesSearchCommunistInfoDisplay names={this.state.namesplusidnumbers}
-		showCommunistInfo={this.state.showCommunistInfo} />;
+		showCommunistInfo={this.state.showCommunistInfo} accountName={this.props.accountName} />;
 	
 		var inspectPersonInfoDisplay = <MultiNamesSearchInspectPersonInfoDisplay names={this.state.namesplusidnumbers}
-		showInspectPersonInfo={this.state.showInspectPersonInfo} />;
+		showInspectPersonInfo={this.state.showInspectPersonInfo} accountName={this.props.accountName} />;
 		
 		var lawcaseInfoDisplay = <MultiNamesPlusBirthdateSearchLawcaseInfoDisplay namesPlusBirthdate={this.state.namesplusbirthdate}
-		showLawcaseInfo={this.state.showLawcaseInfo} />;
+		showLawcaseInfo={this.state.showLawcaseInfo} accountName={this.props.accountName} />;
 		
 		return (
 			<div className="subModuleDataDisplay">

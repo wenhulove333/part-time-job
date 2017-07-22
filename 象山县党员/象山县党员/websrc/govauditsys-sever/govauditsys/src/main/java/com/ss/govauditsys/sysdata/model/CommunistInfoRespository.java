@@ -12,6 +12,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ss.govauditsys.sysdata.search.DisciplinePunishmentCountGroup;
+
 public interface CommunistInfoRespository extends PagingAndSortingRepository<CommunistInfo, Long>, QueryDslPredicateExecutor<CommunistInfo> {
 	@Override
 	CommunistInfo save(CommunistInfo communistInfo);
@@ -41,4 +43,8 @@ public interface CommunistInfoRespository extends PagingAndSortingRepository<Com
 		String education, String partyBranch, String superiorOrg, String nativePlace,
 		String nation, String individualStatus, long id
 	);
+	
+	@Query("select communistInfo.disciplinaryInspection "
+			+ "from CommunistInfo communistInfo group by communistInfo.disciplinaryInspection")
+	List<String> findDisciplinaryInspectionGroup();
 }

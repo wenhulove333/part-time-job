@@ -10,9 +10,7 @@ const TabList = ReactTabs.TabList;
 const TabPanel = ReactTabs.TabPanel;
 const CommunistInfoDisplay = require('./communist-info-display');
 const InspectPersonInfoDisplay = require('./inspect-person-info-display');
-const InspectPersonInfoLimitedDisplay = require('./inspect-person-info-limited-display');
 const LawcaseInfoDisplay = require('./lawcase-info-display');
-const LawcaseInfoLimitedDisplay = require('./lawcase-info-limited-display');
 const SysUserDisplay = require('./system-user-mgmt');
 const CommunistInfoAndInspectPersonInfoComparison = require('./communist-info-and-inpsect-person-info-comparison');
 const AdminOps = require('./admin-ops');
@@ -78,13 +76,13 @@ class Entry extends React.Component {
 						<CommunistInfoDisplay accountName={this.state.accountName} role={this.state.role} />
 					</TabPanel>
 					<TabPanel>
-						<InspectPersonInfoDisplay />
+						<InspectPersonInfoDisplay accountName={this.state.accountName} role={this.state.role} />
 					</TabPanel>
 					<TabPanel>
-						<LawcaseInfoDisplay />
+						<LawcaseInfoDisplay accountName={this.state.accountName} role={this.state.role} />
 					</TabPanel>
 					<TabPanel>
-						<CommunistInfoAndInspectPersonInfoComparison />
+						<CommunistInfoAndInspectPersonInfoComparison accountName={this.state.accountName} />
 					</TabPanel>
 					<TabPanel>
 						<LawcaseInfoStatisticsAnalysis />
@@ -116,13 +114,13 @@ class Entry extends React.Component {
 						<CommunistInfoDisplay accountName={this.state.accountName} role={this.state.role} />
 					</TabPanel>
 					<TabPanel>
-						<InspectPersonInfoLimitedDisplay />
+						<InspectPersonInfoDisplay accountName={this.state.accountName} role={this.state.role} />
 					</TabPanel>
 					<TabPanel>
-						<LawcaseInfoLimitedDisplay />
+						<LawcaseInfoDisplay accountName={this.state.accountName} role={this.state.role} />
 					</TabPanel>
 					<TabPanel>
-						<CommunistInfoAndInspectPersonInfoComparison />
+						<CommunistInfoAndInspectPersonInfoComparison accountName={this.state.accountName} />
 					</TabPanel>
 					<TabPanel>
 						<LawcaseInfoStatisticsAnalysis />

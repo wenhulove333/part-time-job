@@ -46,7 +46,7 @@ public class UserDetailsController {
 				}
 			}
 		} else if (infoType.equals("inspectpersoninfo")) {
-			Integer inspectPersonInfoFrontEndShowStatus = sysUser.getCommunistInfoFrontEndShowStatus();
+			Integer inspectPersonInfoFrontEndShowStatus = sysUser.getInspectPersonInfoFrontEndShowStatus();
 			
 			for (int bitPos = 0; bitPos < GlobalInfo.getGlobalInfo().inspectPersonInfoColumnMap.size(); bitPos++) {
 				if (1 == ((inspectPersonInfoFrontEndShowStatus >> bitPos) & 1)) {
@@ -54,7 +54,7 @@ public class UserDetailsController {
 				}
 			}
 		} else {
-			Integer lawcaseInfoFrontEndShowStatus = sysUser.getCommunistInfoFrontEndShowStatus();
+			Integer lawcaseInfoFrontEndShowStatus = sysUser.getLawcaseInfoFrontEndShowStatus();
 			
 			for (int bitPos = 0; bitPos < GlobalInfo.getGlobalInfo().lawcaseInfoColumnMap.size(); bitPos++) {
 				if (1 == ((lawcaseInfoFrontEndShowStatus >> bitPos) & 1)) {

@@ -18,7 +18,7 @@ class MultiNamesPlusBirthdateSearchLawcaseInfoDisplay extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {lawcaseInfoes: [], page: 1, pageSize: 10, links: {}};
+		this.state = {lawcaseInfoes: [], page: 1, pageSize: 10, links: {}, columns: []};
 		this.onNavigate = this.onNavigate.bind(this);
 	}
 
@@ -45,6 +45,18 @@ class MultiNamesPlusBirthdateSearchLawcaseInfoDisplay extends React.Component {
 					links: response.entity._links
 				});
 			}
+		});
+	}
+	
+	loadColumnsFromServer(accountName) {
+		client({
+			method: 'GET',
+			path: '/columnshowstatus',
+			params: {accountName: accountName, infoType: "lawcaseinfo"}
+		}).then(response => {
+			return response;
+		}).done(result => {
+			this.setState({columns: result.entity});
 		});
 	}
 
@@ -79,12 +91,16 @@ class MultiNamesPlusBirthdateSearchLawcaseInfoDisplay extends React.Component {
 		} else {
 			this.setState({lawcaseInfoes: [], page: 1, pageSize: this.state.pageSize, links: {}});
 		}
+		
+		this.loadColumnsFromServer(nextProps.accountName);
 	}
 	
 	componentDidMount() {
 		if (this.props.namesPlusBirthdate.length != 0) {
 			this.loadFromServer(this.props.namesPlusBirthdate, this.state.pageSize);
 		}
+		
+		this.loadColumnsFromServer(this.props.accountName);
 	}
 
 	render() {
@@ -99,7 +115,8 @@ class MultiNamesPlusBirthdateSearchLawcaseInfoDisplay extends React.Component {
 								  lawcaseInfoes={this.state.lawcaseInfoes}
 								  links={this.state.links}
 								  pageSize={this.state.pageSize}
-								  onNavigate={this.onNavigate}/>
+								  onNavigate={this.onNavigate}
+					              columns={this.state.columns}/>
 				</div>
 			</div>
 		)
@@ -150,8 +167,10 @@ class LawcaseInfoList extends React.Component {
 
 	render() {
 		var lawcaseInfoes = this.props.lawcaseInfoes.map(lawcaseInfo =>
-			<LawcaseInfo lawcaseInfo={lawcaseInfo}/>
+			<LawcaseInfo lawcaseInfo={lawcaseInfo} columns={this.props.columns}/>
 		);
+		
+		var lawcaseInfoHead = this.props.columns.map(column => <th>{column[1]}</th>);
 
 		var navLinks = [];
 		if ("first" in this.props.links) {
@@ -193,14 +212,7 @@ class LawcaseInfoList extends React.Component {
 				<table>
 					<thead>
 						<tr>
-							<th>被调查人</th>
-							<th>入党日期</th>
-							<th>工作单位及职务</th>
-							<th>立案机关</th>
-							<th>立案时间</th>
-							<th>结案时间</th>
-							<th>党纪处分</th>
-							<th>政纪处分</th>
+							{lawcaseInfoHead}
 						</tr>
 					</thead>
 					<tbody>
@@ -230,21 +242,18 @@ class LawcaseInfo extends React.Component {
 	}
 
 	render() {
-		//var birthDate = new Date(this.props.lawcaseInfo.birthDate.replace(/\+0000/, "Z"));
-		var joinDate = new Date(this.props.lawcaseInfo.joinDate.replace(/\+0000/, "Z"));
-		var caseFilingDate = new Date(this.props.lawcaseInfo.caseFilingDate.replace(/\+0000/, "Z"));
-		var caseCloseDate = new Date(this.props.lawcaseInfo.caseCloseDate.replace(/\+0000/, "Z"));
+		var lawcaseInfo = this.props.columns.map(column => {
+			if (['joinDate', 'caseFilingDate', 'caseCloseDate'].includes(column[0])) {
+				var dateStr = new Date(this.props.lawcaseInfo[column[0]].replace(/\+0000/, "Z"));
+				return <td>{this.convertDateAsSimpleDisplayTime(dateStr)}</td>;
+			} else {
+				return <td>{this.props.lawcaseInfo[column[0]]}</td>;
+			}
+		});
 		
 		return (
 			<tr>
-				<td>{this.props.lawcaseInfo.respondentName}</td>
-				<td>{this.convertDateAsSimpleDisplayTime(joinDate)}</td>
-				<td>{this.props.lawcaseInfo.workPlaceAndPosition}</td>
-				<td>{this.props.lawcaseInfo.filingOffice}</td>
-				<td>{this.convertDateAsSimpleDisplayTime(caseFilingDate)}</td>
-				<td>{this.convertDateAsSimpleDisplayTime(caseCloseDate)}</td>
-				<td>{this.props.lawcaseInfo.partyDisciplinePunishment}</td>
-				<td>{this.props.lawcaseInfo.politicalDisciplinePunishment}</td>
+				{lawcaseInfo}
 			</tr>
 		)
 	}

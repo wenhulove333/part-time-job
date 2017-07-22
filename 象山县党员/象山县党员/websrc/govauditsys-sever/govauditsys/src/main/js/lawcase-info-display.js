@@ -24,13 +24,12 @@ class LawcaseInfoDisplay extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {lawcaseInfoes: [], attributes: [], page: 1, pageSize: 20, links: {}, startTime: '', endTime: '', partyDisciplinePunishmentGroup: []};
+		this.state = {lawcaseInfoes: [], attributes: [], page: 1, pageSize: 20, links: {}, startTime: '', endTime: '', columns: []};
 		this.onNavigate = this.onNavigate.bind(this);
 		this.onSearch = this.onSearch.bind(this);
 		this.handleSelectStartTime = this.handleSelectStartTime.bind(this);
 		this.handleSelectEndTime = this.handleSelectEndTime.bind(this);
 		this.onUpdate = this.onUpdate.bind(this);
-		this.loadPartyDisciplinePunishmentFromServer = this.loadPartyDisciplinePunishmentFromServer.bind(this);
 		this.handleChange = this.handleChange.bind(this);
 		this.handlePunishmentClassChange = this.handlePunishmentClassChange.bind(this);
 	}
@@ -58,31 +57,18 @@ class LawcaseInfoDisplay extends React.Component {
 		
 		this.setState(state);
 	}
-
-	loadFromServer(pageSize) {
-		root = "/api";
-		children = "lawcaseInfoes";
-		follow(client, root, [
-				{rel: children, params: {size: pageSize}}]
-		).then(lawcaseInfoCollection => {
-			this.page = lawcaseInfoCollection.entity.page;
-			this.links = lawcaseInfoCollection.entity._links;
-			return lawcaseInfoCollection.entity._embedded.lawcaseInfoes.map(lawcaseInfo =>
-					client({
-						method: 'GET',
-						path: lawcaseInfo._links.self.href
-					})
-			);
-		}).then(lawcaseInfoPromises => {
-			return when.all(lawcaseInfoPromises);
-		}).done(lawcaseInfoes => {
-			this.setState({
-				page: this.page,
-				lawcaseInfoes: lawcaseInfoes,
-				pageSize: pageSize,
-				links: this.links
-			});
+	
+	loadFromServer(accountName) {
+		client({
+			method: 'GET',
+			path: '/columnshowstatus',
+			params: {accountName: accountName, infoType: "lawcaseinfo"}
+		}).then(response => {
+			return response;
+		}).done(result => {
+			this.setState({columns: result.entity});
 		});
+		
 	}
 	
 	getlawcaseInfoesContaining(respondentName, filingOffice, punishmentContent, startTime, endTime, pageSize) {
@@ -219,27 +205,14 @@ class LawcaseInfoDisplay extends React.Component {
 			}
 		})
 	}
-
-	loadPartyDisciplinePunishmentFromServer() {
-		client({
-			method: 'GET',
-			path: '/lawcaseinfo/getpartydisciplinepunishmentcountgroup'
-		}).done(response => {
-			if (Array.isArray(response.entity)) {
-				if (response.entity.length != 0) {
-					this.setState({partyDisciplinePunishmentGroup: response.entity});
-				}
-			}
-		});
+	
+	componentDidMount() {
+		this.loadFromServer(this.props.accountName);
 	}
 	
-	// tag::register-handlers[]
-	componentDidMount() {
-		//this.loadFromServer(this.state.pageSize);
-		this.loadPartyDisciplinePunishmentFromServer();
-		//this.getlawcaseInfoesByName('张三', this.state.pageSize);
+	componentWillReceiveProps(nextProps) {
+		this.loadFromServer(nextProps.accountName);
 	}
-	// end::register-handlers[]
 
 	handleChange(event) {
 		document.getElementById("punishmentContent").value = event.target.value;
@@ -256,11 +229,6 @@ class LawcaseInfoDisplay extends React.Component {
 	}
 	
 	render() {
-		var options = [<option value ="">全部</option>];
-		this.state.partyDisciplinePunishmentGroup.map(elem => {
-			options.push(<option value ={elem.x}>{elem.x}</option>);
-		});
-		
 		var punishmentClassSelect = (
 			<select ref="selectPunishmentClass" onChange={this.handlePunishmentClassChange}>
 				<option value ="党纪">党纪</option>
@@ -310,7 +278,9 @@ class LawcaseInfoDisplay extends React.Component {
 								  links={this.state.links}
 								  pageSize={this.state.pageSize}
 								  onNavigate={this.onNavigate}
-							      onUpdate={this.onUpdate}/>
+							      onUpdate={this.onUpdate}
+					              columns={this.state.columns}
+					              role={this.props.role}/>
 				</div>
 			</div>
 		)
@@ -371,12 +341,19 @@ class LawcaseInfoList extends React.Component {
 	}
 
 	render() {
+		var lawcaseInfoHead = this.props.columns.map(column => <th>{column[1]}</th>);
+		if (this.props.role === "管理员") {
+			lawcaseInfoHead.push(<th></th>);
+		}
+		
 		var lawcaseInfoes = this.props.lawcaseInfoes.map(lawcaseInfo =>
 			<LawcaseInfo key={lawcaseInfo.entity._links.self.href}
 					  lawcaseInfo={lawcaseInfo}
 					  attributes={this.props.attributes}
 					  onUpdate={this.props.onUpdate}
-					  onDelete={this.props.onDelete}/>
+					  onDelete={this.props.onDelete}
+				      columns={this.props.columns}
+			          role={this.props.role}/>
 		);
 		
 		var navLinks = [];
@@ -419,15 +396,7 @@ class LawcaseInfoList extends React.Component {
 				<table>
 					<thead>
 						<tr>
-							<th>被调查人</th>
-							<th>入党日期</th>
-							<th>工作单位及职务</th>
-							<th>立案机关</th>
-							<th>立案时间</th>
-							<th>结案时间</th>
-							<th>党纪处分</th>
-							<th>政纪处分</th>
-							<th></th>
+							{lawcaseInfoHead}
 						</tr>
 					</thead>
 					<tbody>
@@ -465,24 +434,21 @@ class LawcaseInfo extends React.Component {
 	}
 
 	render() {
-		//var birthDate = new Date(this.props.lawcaseInfo.entity.birthDate.replace(/\+0000/, "Z"));
-		var joinDate = new Date(this.props.lawcaseInfo.entity.joinDate.replace(/\+0000/, "Z"));
-		var caseFilingDate = new Date(this.props.lawcaseInfo.entity.caseFilingDate.replace(/\+0000/, "Z"));
-		var caseCloseDate = new Date(this.props.lawcaseInfo.entity.caseCloseDate.replace(/\+0000/, "Z"));
+		var lawcaseInfo = this.props.columns.map(column => {
+			if (['joinDate', 'caseFilingDate', 'caseCloseDate'].includes(column[0])) {
+				var dateStr = new Date(this.props.lawcaseInfo.entity[column[0]].replace(/\+0000/, "Z"));
+				return <td>{this.convertDateAsSimpleDisplayTime(dateStr)}</td>;
+			} else {
+				return <td>{this.props.lawcaseInfo.entity[column[0]]}</td>;
+			}
+		});
+		if (this.props.role === "管理员") {
+			lawcaseInfo.push(<td><UpdateDialog lawcaseInfo={this.props.lawcaseInfo} onUpdate={this.props.onUpdate} columns={this.props.columns} /></td>);
+		}
 		
 		return (
 			<tr>
-				<td>{this.props.lawcaseInfo.entity.respondentName}</td>
-				<td>{this.convertDateAsSimpleDisplayTime(joinDate)}</td>
-				<td>{this.props.lawcaseInfo.entity.workPlaceAndPosition}</td>
-				<td>{this.props.lawcaseInfo.entity.filingOffice}</td>
-				<td>{this.convertDateAsSimpleDisplayTime(caseFilingDate)}</td>
-				<td>{this.convertDateAsSimpleDisplayTime(caseCloseDate)}</td>
-				<td>{this.props.lawcaseInfo.entity.partyDisciplinePunishment}</td>
-				<td>{this.props.lawcaseInfo.entity.politicalDisciplinePunishment}</td>
-				<td>
-					<UpdateDialog lawcaseInfo={this.props.lawcaseInfo} onUpdate={this.props.onUpdate} />
-				</td>
+				{lawcaseInfo}
 			</tr>
 		)
 	}
@@ -506,14 +472,10 @@ class UpdateDialog extends React.Component {
 	handleSubmit(e) {
 		e.preventDefault();
 		var updatedLawcaseInfo = {};
-		updatedLawcaseInfo['respondentName'] = ReactDOM.findDOMNode(this.refs['respondentName']).value.trim();
-		updatedLawcaseInfo['joinDate'] = ReactDOM.findDOMNode(this.refs['joinDate']).value.trim();
-		updatedLawcaseInfo['workPlaceAndPosition'] = ReactDOM.findDOMNode(this.refs['workPlaceAndPosition']).value.trim();
-		updatedLawcaseInfo['filingOffice'] = ReactDOM.findDOMNode(this.refs['filingOffice']).value.trim();
-		updatedLawcaseInfo['caseFilingDate'] = ReactDOM.findDOMNode(this.refs['caseFilingDate']).value.trim();
-		updatedLawcaseInfo['caseCloseDate'] = ReactDOM.findDOMNode(this.refs['caseCloseDate']).value.trim();
-		updatedLawcaseInfo['partyDisciplinePunishment'] = ReactDOM.findDOMNode(this.refs['partyDisciplinePunishment']).value.trim();
-		updatedLawcaseInfo['politicalDisciplinePunishment'] = ReactDOM.findDOMNode(this.refs['politicalDisciplinePunishment']).value.trim();
+		var updatedLawcaseInfo = this.props.lawcaseInfo.entity;
+		this.props.columns.map(column => {
+			updatedLawcaseInfo[column[0]] = ReactDOM.findDOMNode(this.refs[column[0]]).value.trim();
+		});
 		this.props.onUpdate(this.props.lawcaseInfo, updatedLawcaseInfo);
 		window.location = "#";
 	}
@@ -527,6 +489,15 @@ class UpdateDialog extends React.Component {
 		var caseFilingDate = new Date(this.props.lawcaseInfo.entity.caseFilingDate.replace(/\+0000/, "Z"));
 		var caseCloseDate = new Date(this.props.lawcaseInfo.entity.caseCloseDate.replace(/\+0000/, "Z"));
 		
+		var lawcaseInfoInputs = this.props.columns.map(column => {
+			if (['joinDate', 'caseFilingDate', 'caseCloseDate'].includes(column[0])) {
+				var dateStr = new Date(this.props.lawcaseInfo.entity[column[0]].replace(/\+0000/, "Z"));
+				return <p><input type="text" placeholder={"请输入" + column[1]} defaultValue={this.convertDateAsSimpleDisplayTime(dateStr)} ref={column[0]} className="field" /></p>;
+			} else {
+				return <p><input type="text" placeholder={"请输入" + column[1]} defaultValue={this.props.lawcaseInfo.entity[column[0]]} ref={column[0]} className="field" /></p>;
+			}
+		});
+		
 		return (
 				<div className="updatelawcaseInfoDialog">
 				<a href={"#updatelawcaseInfoDialog" + lawcaseInfoId}>修改处分人员信息</a>
@@ -538,14 +509,7 @@ class UpdateDialog extends React.Component {
 						<h2>修改处分人员信息</h2>
 
 						<form>
-							<p><input type="text" placeholder="请输入被调查人" defaultValue={this.props.lawcaseInfo.entity['respondentName']} ref="respondentName" className="field" /></p>
-							<p><input type="text" placeholder="请输入入党日期" defaultValue={this.convertDateAsSimpleDisplayTime(joinDate)} ref="joinDate" className="field" /></p>
-							<p><input type="text" placeholder="请输入工作单位及职务" defaultValue={this.props.lawcaseInfo.entity['workPlaceAndPosition']} ref="workPlaceAndPosition" className="field" /></p>
-							<p><input type="text" placeholder="请输入立案机关" defaultValue={this.props.lawcaseInfo.entity['filingOffice']} ref="filingOffice" className="field" /></p>
-							<p><input type="text" placeholder="请输入立案时间" defaultValue={this.convertDateAsSimpleDisplayTime(caseFilingDate)} ref="caseFilingDate" className="field" /></p>
-							<p><input type="text" placeholder="请输入结案时间" defaultValue={this.convertDateAsSimpleDisplayTime(caseCloseDate)} ref="caseCloseDate" className="field" /></p>
-							<p><input type="text" placeholder="请输入党纪处分" defaultValue={this.props.lawcaseInfo.entity['partyDisciplinePunishment']} ref="partyDisciplinePunishment" className="field" /></p>
-							<p><input type="text" placeholder="请输入政纪处分" defaultValue={this.props.lawcaseInfo.entity['politicalDisciplinePunishment']} ref="politicalDisciplinePunishment" className="field" /></p>
+							{lawcaseInfoInputs}
 							<button onClick={this.handleSubmit}>提交</button>
 						</form>
 					</div>

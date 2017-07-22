@@ -18,7 +18,7 @@ class MultiNamesSearchInspectPersonInfoDisplay extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {inspectPersonInfoes: [], page: 1, pageSize: 10, links: {}};
+		this.state = {inspectPersonInfoes: [], page: 1, pageSize: 10, links: {}, columns: []};
 		this.onNavigate = this.onNavigate.bind(this);
 	}
 
@@ -46,6 +46,18 @@ class MultiNamesSearchInspectPersonInfoDisplay extends React.Component {
 				});
 			}
 		});
+	}
+	
+	loadColumnsFromServer(accountName) {
+		client({
+			method: 'GET',
+			path: '/columnshowstatus',
+			params: {accountName: accountName, infoType: "inspectpersoninfo"}
+		}).then(response => {
+			return response;
+		}).done(result => {
+			this.setState({columns: result.entity});
+		});		
 	}
 
 	onNavigate(navUri) {
@@ -79,12 +91,15 @@ class MultiNamesSearchInspectPersonInfoDisplay extends React.Component {
 		} else {
 			this.setState({inspectPersonInfoes: [], page: 1, pageSize: this.state.pageSize, links: {}});
 		}
+		
+		this.loadColumnsFromServer(nextProps.accountName);
 	}
 	
 	componentDidMount() {
 		if (this.props.names.length != 0) {
 			this.loadFromServer(this.props.names, this.state.pageSize);
 		}
+		this.loadColumnsFromServer(this.props.accountName);
 	}
 
 	render() {
@@ -99,7 +114,8 @@ class MultiNamesSearchInspectPersonInfoDisplay extends React.Component {
 								  inspectPersonInfoes={this.state.inspectPersonInfoes}
 								  links={this.state.links}
 								  pageSize={this.state.pageSize}
-								  onNavigate={this.onNavigate}/>
+								  onNavigate={this.onNavigate}
+								  columns={this.state.columns}/>
 				</div>
 			</div>
 		)
@@ -150,8 +166,10 @@ class InspectPersonInfoList extends React.Component {
 
 	render() {
 		var inspectPersonInfoes = this.props.inspectPersonInfoes.map(inspectPersonInfo =>
-			<InspectPersonInfo inspectPersonInfo={inspectPersonInfo}/>
+			<InspectPersonInfo inspectPersonInfo={inspectPersonInfo} columns={this.props.columns}/>
 		);
+		
+		var inspectPersonInfoHead = this.props.columns.map(column => <th>{column[1]}</th>);
 
 		var navLinks = [];
 		if ("first" in this.props.links) {
@@ -193,11 +211,7 @@ class InspectPersonInfoList extends React.Component {
 				<table>
 					<thead>
 						<tr>
-							<th>姓名</th>
-							<th>身份证号</th>
-							<th>性别</th>
-							<th>学历</th>
-							<th>工作单位</th>
+							{inspectPersonInfoHead}
 						</tr>
 					</thead>
 					<tbody>
@@ -219,13 +233,11 @@ class InspectPersonInfo extends React.Component {
 	}
 	
 	render() {
+		var inspectPersonInfo = this.props.columns.map(column => <td>{this.props.inspectPersonInfo[column[0]]}</td>);
+		
 		return (
 			<tr>
-				<td>{this.props.inspectPersonInfo.name}</td>
-				<td>{this.props.inspectPersonInfo.idNumber}</td>
-				<td>{this.props.inspectPersonInfo.gender}</td>
-				<td>{this.props.inspectPersonInfo.education}</td>
-				<td>{this.props.inspectPersonInfo.workPlace}</td>
+				{inspectPersonInfo}
 			</tr>
 		)
 	}

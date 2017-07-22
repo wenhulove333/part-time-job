@@ -18,8 +18,9 @@ class MultiNamesSearchCommunistInfoDisplay extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {communistInfoes: [], page: 1, pageSize: 10, links: {}};
+		this.state = {communistInfoes: [], page: 1, pageSize: 10, links: {}, columns: []};
 		this.onNavigate = this.onNavigate.bind(this);
+		this.loadColumnsFromServer = this.loadColumnsFromServer.bind(this);
 	}
 
 	loadFromServer(names, pageSize) {
@@ -45,6 +46,18 @@ class MultiNamesSearchCommunistInfoDisplay extends React.Component {
 					links: response.entity._links
 				});
 			}
+		});
+	}
+	
+	loadColumnsFromServer(accountName) {
+		client({
+			method: 'GET',
+			path: '/columnshowstatus',
+			params: {accountName: accountName, infoType: "communist"}
+		}).then(response => {
+			return response;
+		}).done(result => {
+			this.setState({columns: result.entity});
 		});
 	}
 
@@ -79,12 +92,15 @@ class MultiNamesSearchCommunistInfoDisplay extends React.Component {
 		} else {
 			this.setState({communistInfoes: [], page: 1, pageSize: this.state.pageSize, links: {}});
 		}
+		
+		this.loadColumnsFromServer(nextProps.accountName);
 	}
 	
 	componentDidMount() {
 		if (this.props.names.length != 0) {
 			this.loadFromServer(this.props.names, this.state.pageSize);
 		}
+		this.loadColumnsFromServer(this.props.accountName);
 	}
 
 	render() {
@@ -99,7 +115,8 @@ class MultiNamesSearchCommunistInfoDisplay extends React.Component {
 								  communistInfoes={this.state.communistInfoes}
 								  links={this.state.links}
 								  pageSize={this.state.pageSize}
-								  onNavigate={this.onNavigate}/>
+								  onNavigate={this.onNavigate}
+					              columns={this.state.columns}/>
 				</div>
 			</div>
 		)
@@ -150,8 +167,10 @@ class CommunistInfoList extends React.Component {
 	
 	render() {
 		var communistInfoes = this.props.communistInfoes.map(communistInfo =>
-			<CommunistInfo communistInfo={communistInfo}/>
+			<CommunistInfo communistInfo={communistInfo} columns={this.props.columns}/>
 		);
+		
+		var communistInfoHead = this.props.columns.map(column => <th>{column[1]}</th>);
 
 		var navLinks = [];
 		if ("first" in this.props.links) {
@@ -193,16 +212,7 @@ class CommunistInfoList extends React.Component {
 				<table>
 					<thead>
 						<tr>
-							<th>党员姓名</th>
-							<th>身份证号</th>
-							<th>性别</th>
-							<th>入党日期</th>
-							<th>学历</th>
-							<th>党支部</th>
-							<th>上级组织</th>
-							<th>籍贯</th>
-							<th>民族</th>
-							<th>个人身份</th>
+							{communistInfoHead}
 						</tr>
 					</thead>
 					<tbody>
@@ -224,18 +234,11 @@ class CommunistInfo extends React.Component {
 	}
 	
 	render() {
+		var communistInfo = this.props.columns.map(column => <td>{this.props.communistInfo[column[0]]}</td>);
+		
 		return (
 			<tr>
-				<td>{this.props.communistInfo.name}</td>
-				<td>{this.props.communistInfo.idNumber}</td>
-				<td>{this.props.communistInfo.gender}</td>
-				<td>{this.props.communistInfo.joinDate}</td>
-				<td>{this.props.communistInfo.education}</td>
-				<td>{this.props.communistInfo.partyBranch}</td>
-				<td>{this.props.communistInfo.superiorOrg}</td>
-				<td>{this.props.communistInfo.nativePlace}</td>
-				<td>{this.props.communistInfo.nation}</td>
-				<td>{this.props.communistInfo.individualStatus}</td>
+				{communistInfo}
 			</tr>
 		)
 	}

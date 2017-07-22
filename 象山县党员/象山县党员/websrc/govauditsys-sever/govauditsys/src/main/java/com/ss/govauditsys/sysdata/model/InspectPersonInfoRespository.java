@@ -1,5 +1,7 @@
 package com.ss.govauditsys.sysdata.model;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -38,4 +40,8 @@ public interface InspectPersonInfoRespository extends PagingAndSortingRepository
 		String name, String idNumber, String gender, String education,
 		String workPlace, long id
 	);
+	
+	@Query("select inspectPersonInfo.disciplinaryInspection "
+			+ "from InspectPersonInfo inspectPersonInfo group by inspectPersonInfo.disciplinaryInspection")
+	List<String> findDisciplinaryInspectionGroup();
 }
