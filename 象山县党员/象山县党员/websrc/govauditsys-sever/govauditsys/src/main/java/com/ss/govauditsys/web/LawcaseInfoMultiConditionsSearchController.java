@@ -10,6 +10,7 @@ import org.springframework.hateoas.PagedResources;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -55,7 +56,8 @@ public class LawcaseInfoMultiConditionsSearchController {
 			method = RequestMethod.POST,
 			produces = {"application/json", "application/hal+json", "application/*+json;charset=UTF-8"})
 	public PagedResources<LawcaseInfo> multiRespondentNamePluasBirthDateSearchLawcaseInfo(
-			Pageable pageable, PagedResourcesAssembler assembler, @RequestBody List<String> payload) {
+			Pageable pageable, PagedResourcesAssembler assembler, @RequestBody List<String> payload,
+			@RequestParam("disciplinaryInspectDepartment") List<String> disciplinaryInspectDepartment) {
 		QLawcaseInfo lawcaseInfo = QLawcaseInfo.lawcaseInfo;
 		BooleanExpression expression = null;
 		BooleanExpression subExpression = null;
@@ -73,6 +75,8 @@ public class LawcaseInfoMultiConditionsSearchController {
 				
 				expression = expression.or(subExpression);
 			}
+			
+			expression = expression.and(lawcaseInfo.disciplinaryInspection.in(disciplinaryInspectDepartment));
 		} else {
 			expression = lawcaseInfo.respondentName.contains("!@#$%^&*()_+=-~`\"':;<>?/,.");
 		}

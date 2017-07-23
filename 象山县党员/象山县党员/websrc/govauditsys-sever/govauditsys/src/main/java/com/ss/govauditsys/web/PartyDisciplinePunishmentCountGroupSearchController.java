@@ -31,12 +31,16 @@ public class PartyDisciplinePunishmentCountGroupSearchController {
 		method = RequestMethod.GET
 	)
 	@ResponseBody
-	public List<DisciplinePunishmentCountGroup> getPartyDisciplinePunishmentGroupsByYear(@RequestParam("year") String year) {
+	public List<DisciplinePunishmentCountGroup> getPartyDisciplinePunishmentGroupsByYear(
+			@RequestParam("year") String year,
+			@RequestParam("disciplinaryInspectDepartment") List<String> disciplinaryInspectDepartment
+		) {
 		List<DisciplinePunishmentCountGroup> partyDisciplinePunishmentCountGroups = null;
 		
 		partyDisciplinePunishmentCountGroups = lawcaseInfoRepository.findPartyDisciplinePunishmentCountGroupByPeriod(
 			new StringToCalendar().convert(year + "-01-01 00:00:00"),
-			new StringToCalendar().convert(year + "-12-31 23:59:59")
+			new StringToCalendar().convert(year + "-12-31 23:59:59"),
+			disciplinaryInspectDepartment
 		);
 		
 		return partyDisciplinePunishmentCountGroups;
@@ -47,12 +51,16 @@ public class PartyDisciplinePunishmentCountGroupSearchController {
 			method = RequestMethod.GET
 		)
 		@ResponseBody
-		public List<DisciplinePunishmentCountGroup> getPoliticalDisciplinePunishmentGroupsByYear(@RequestParam("year") String year) {
+		public List<DisciplinePunishmentCountGroup> getPoliticalDisciplinePunishmentGroupsByYear(
+			@RequestParam("year") String year,
+			@RequestParam("disciplinaryInspectDepartment") List<String> disciplinaryInspectDepartment
+		) {
 			List<DisciplinePunishmentCountGroup> partyDisciplinePunishmentCountGroups = null;
 			
 			partyDisciplinePunishmentCountGroups = lawcaseInfoRepository.findPoliticalDisciplinePunishmentCountGroupByPeriod(
 				new StringToCalendar().convert(year + "-01-01 00:00:00"),
-				new StringToCalendar().convert(year + "-12-31 23:59:59")
+				new StringToCalendar().convert(year + "-12-31 23:59:59"),
+				disciplinaryInspectDepartment
 			);
 			
 			return partyDisciplinePunishmentCountGroups;

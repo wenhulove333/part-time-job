@@ -14,9 +14,12 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.web.servlet.view.document.AbstractExcelView;
 
+import com.ss.govauditsys.GlobalInfo;
 import com.ss.govauditsys.sysdata.model.CommunistInfo;
 import com.ss.govauditsys.sysdata.model.InspectPersonInfo;
 import com.ss.govauditsys.sysdata.model.LawcaseInfo;
+import com.ss.govauditsys.usermanager.model.SysUser;
+import com.ss.govauditsys.usermanager.model.SysUserRepository;
 
 @SuppressWarnings("deprecation")
 public class ExcelView extends AbstractExcelView {
@@ -28,88 +31,181 @@ public class ExcelView extends AbstractExcelView {
 
 		List<CommunistInfo> communistInfoes = (List<CommunistInfo>) model.get("communistInfoes");
 		
+		SysUser sysUser = (SysUser) model.get("accountInfo");
+		
 		HSSFSheet communistInfoSheet = workbook.createSheet("党员信息");
 		
 		HSSFRow communistInfoHeader = communistInfoSheet.createRow(0);
-		communistInfoHeader.createCell(0).setCellValue("党员姓名");
-		communistInfoHeader.createCell(1).setCellValue("身份证号");
-		communistInfoHeader.createCell(2).setCellValue("性别");
-		communistInfoHeader.createCell(3).setCellValue("入党日期");
-		communistInfoHeader.createCell(4).setCellValue("学历");
-		communistInfoHeader.createCell(5).setCellValue("党支部");
-		communistInfoHeader.createCell(6).setCellValue("上级组织");
-		communistInfoHeader.createCell(7).setCellValue("籍贯");
-		communistInfoHeader.createCell(8).setCellValue("民族");
-		communistInfoHeader.createCell(9).setCellValue("个人身份");
+		int pos = 0;
+		Integer communistInfoFrontEndShowStatus = sysUser.getCommunistInfoFrontEndShowStatus();
+		
+		for (int bitPos = 0; bitPos < GlobalInfo.getGlobalInfo().communistInfoColumnMap.size(); bitPos++) {
+			if (1 == ((communistInfoFrontEndShowStatus >> bitPos) & 1)) {
+				communistInfoHeader.createCell(pos).setCellValue(
+					GlobalInfo.getGlobalInfo().communistInfoColumnMap.get(bitPos).get(1)
+				);
+				pos++;
+			}
+		}
 		
 		int rowCount = 1;
+		pos = 0;
 		
 		for(CommunistInfo communistInfo : communistInfoes) {
 			HSSFRow communistInfoRow = communistInfoSheet.createRow(rowCount++);
-			communistInfoRow.createCell(0).setCellValue(communistInfo.getName());
-			communistInfoRow.createCell(1).setCellValue(communistInfo.getIdNumber());
-			communistInfoRow.createCell(2).setCellValue(communistInfo.getGender());
-			communistInfoRow.createCell(3).setCellValue(communistInfo.getJoinDate());
-			communistInfoRow.createCell(4).setCellValue(communistInfo.getEducation());
-			communistInfoRow.createCell(5).setCellValue(communistInfo.getPartyBranch());
-			communistInfoRow.createCell(6).setCellValue(communistInfo.getSuperiorOrg());
-			communistInfoRow.createCell(7).setCellValue(communistInfo.getNativePlace());
-			communistInfoRow.createCell(8).setCellValue(communistInfo.getNation());
-			communistInfoRow.createCell(9).setCellValue(communistInfo.getIndividualStatus());
+			for (int bitPos = 0; bitPos < GlobalInfo.getGlobalInfo().communistInfoColumnMap.size(); bitPos++) {
+				if (1 == ((communistInfoFrontEndShowStatus >> bitPos) & 1)) {
+					switch (GlobalInfo.getGlobalInfo().communistInfoColumnMap.get(bitPos).get(0)) {
+					case "name":
+						communistInfoRow.createCell(pos).setCellValue(communistInfo.getName());
+						break;
+					case "idNumber":
+						communistInfoRow.createCell(pos).setCellValue(communistInfo.getIdNumber());
+						break;
+					case "gender":
+						communistInfoRow.createCell(pos).setCellValue(communistInfo.getGender());
+						break;
+					case "joinDate":
+						communistInfoRow.createCell(pos).setCellValue(communistInfo.getJoinDate());
+						break;
+					case "education":
+						communistInfoRow.createCell(pos).setCellValue(communistInfo.getEducation());
+						break;
+					case "partyBranch":
+						communistInfoRow.createCell(pos).setCellValue(communistInfo.getPartyBranch());
+						break;
+					case "superiorOrg":
+						communistInfoRow.createCell(pos).setCellValue(communistInfo.getSuperiorOrg());
+						break;
+					case "nativePlace":
+						communistInfoRow.createCell(pos).setCellValue(communistInfo.getNativePlace());
+						break;
+					case "nation":
+						communistInfoRow.createCell(pos).setCellValue(communistInfo.getNation());
+						break;
+					case "individualStatus":
+						communistInfoRow.createCell(pos).setCellValue(communistInfo.getIndividualStatus());
+						break;
+					case "disciplinaryInspection":
+						communistInfoRow.createCell(pos).setCellValue(communistInfo.getDisciplinaryInspection());
+						break;
+					}
+					
+					pos++;
+				}
+			}
 		}
+		
+		pos = 0;
 		
 		List<InspectPersonInfo> inspectPersonInfoes = (List<InspectPersonInfo>) model.get("inspectPersonInfoes");
 		
 		HSSFSheet inspectPersonInfoSheet = workbook.createSheet("监察对象信息");
-		
 		HSSFRow inspectPersonInfoHeader = inspectPersonInfoSheet.createRow(0);
-		inspectPersonInfoHeader.createCell(0).setCellValue("姓名");
-		inspectPersonInfoHeader.createCell(1).setCellValue("身份证号");
-		inspectPersonInfoHeader.createCell(2).setCellValue("性别");
-		inspectPersonInfoHeader.createCell(3).setCellValue("学历");
-		inspectPersonInfoHeader.createCell(4).setCellValue("工作单位");
+		Integer inspectPersonInfoFrontEndShowStatus = sysUser.getInspectPersonInfoFrontEndShowStatus();
+		
+		for (int bitPos = 0; bitPos < GlobalInfo.getGlobalInfo().inspectPersonInfoColumnMap.size(); bitPos++) {
+			if (1 == ((inspectPersonInfoFrontEndShowStatus >> bitPos) & 1)) {
+				inspectPersonInfoHeader.createCell(pos).setCellValue(
+					GlobalInfo.getGlobalInfo().inspectPersonInfoColumnMap.get(bitPos).get(1)
+				);
+				pos++;
+			}
+		}
 		
 		rowCount = 1;
+		pos = 0;
 		
 		for(InspectPersonInfo inspectPersonInfo : inspectPersonInfoes) {
 			HSSFRow inspectPersonInfoRow = inspectPersonInfoSheet.createRow(rowCount++);
-			inspectPersonInfoRow.createCell(0).setCellValue(inspectPersonInfo.getName());
-			inspectPersonInfoRow.createCell(1).setCellValue(inspectPersonInfo.getIdNumber());
-			inspectPersonInfoRow.createCell(2).setCellValue(inspectPersonInfo.getGender());
-			inspectPersonInfoRow.createCell(3).setCellValue(inspectPersonInfo.getEducation());
-			inspectPersonInfoRow.createCell(4).setCellValue(inspectPersonInfo.getWorkPlace());
+			for (int bitPos = 0; bitPos < GlobalInfo.getGlobalInfo().inspectPersonInfoColumnMap.size(); bitPos++) {
+				if (1 == ((inspectPersonInfoFrontEndShowStatus >> bitPos) & 1)) {
+					switch (GlobalInfo.getGlobalInfo().inspectPersonInfoColumnMap.get(bitPos).get(0)) {
+					case "name":
+						inspectPersonInfoRow.createCell(pos).setCellValue(inspectPersonInfo.getName());
+						break;
+					case "idNumber":
+						inspectPersonInfoRow.createCell(pos).setCellValue(inspectPersonInfo.getIdNumber());
+						break;
+					case "gender":
+						inspectPersonInfoRow.createCell(pos).setCellValue(inspectPersonInfo.getGender());
+						break;
+					case "education":
+						inspectPersonInfoRow.createCell(pos).setCellValue(inspectPersonInfo.getEducation());
+						break;
+					case "workPlace":
+						inspectPersonInfoRow.createCell(pos).setCellValue(inspectPersonInfo.getWorkPlace());
+						break;
+					case "disciplinaryInspection":
+						inspectPersonInfoRow.createCell(pos).setCellValue(inspectPersonInfo.getDisciplinaryInspection());
+						break;
+					}
+					
+					pos++;
+				}
+			}
 		}
+		
+		pos = 0;
 		
 		List<LawcaseInfo> lawcaseInfoes = (List<LawcaseInfo>) model.get("lawcaseInfoes");
 		
 		HSSFSheet lawcaseInfoSheet = workbook.createSheet("处分人员信息");
 		
 		HSSFRow lawcaseInfoHeader = lawcaseInfoSheet.createRow(0);
-		lawcaseInfoHeader.createCell(0).setCellValue("被调查人");
-		//lawcaseInfoHeader.createCell(1).setCellValue("出生年月");
-		lawcaseInfoHeader.createCell(1).setCellValue("入党日期");
-		lawcaseInfoHeader.createCell(2).setCellValue("工作单位及职务");
-		lawcaseInfoHeader.createCell(3).setCellValue("立案机关");
-		lawcaseInfoHeader.createCell(4).setCellValue("立案时间");
-		lawcaseInfoHeader.createCell(5).setCellValue("结案时间");
-		lawcaseInfoHeader.createCell(6).setCellValue("党纪处分");
-		lawcaseInfoHeader.createCell(7).setCellValue("政纪处分");
+		Integer lawcaseInfoFrontEndShowStatus = sysUser.getLawcaseInfoFrontEndShowStatus();
+		
+		for (int bitPos = 0; bitPos < GlobalInfo.getGlobalInfo().lawcaseInfoColumnMap.size(); bitPos++) {
+			if (1 == ((lawcaseInfoFrontEndShowStatus >> bitPos) & 1)) {
+				lawcaseInfoHeader.createCell(pos).setCellValue(
+					GlobalInfo.getGlobalInfo().lawcaseInfoColumnMap.get(bitPos).get(1)
+				);
+				pos++;
+			}
+		}
 		
 		rowCount = 1;
+		pos = 0;
 		
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		
 		for(LawcaseInfo lawcaseInfo : lawcaseInfoes) {
 			HSSFRow lawcaseInfoRow = lawcaseInfoSheet.createRow(rowCount++);
-			lawcaseInfoRow.createCell(0).setCellValue(lawcaseInfo.getRespondentName());
-			//lawcaseInfoRow.createCell(1).setCellValue(simpleDateFormat.format(lawcaseInfo.getBirthDate().getTime()));
-			lawcaseInfoRow.createCell(1).setCellValue(simpleDateFormat.format(lawcaseInfo.getJoinDate().getTime()));
-			lawcaseInfoRow.createCell(2).setCellValue(lawcaseInfo.getWorkPlaceAndPosition());
-			lawcaseInfoRow.createCell(3).setCellValue(lawcaseInfo.getFilingOffice());
-			lawcaseInfoRow.createCell(4).setCellValue(simpleDateFormat.format(lawcaseInfo.getCaseFilingDate().getTime()));
-			lawcaseInfoRow.createCell(5).setCellValue(simpleDateFormat.format(lawcaseInfo.getCaseCloseDate().getTime()));
-			lawcaseInfoRow.createCell(6).setCellValue(lawcaseInfo.getPartyDisciplinePunishment());
-			lawcaseInfoRow.createCell(7).setCellValue(lawcaseInfo.getPoliticalDisciplinePunishment());
+			for (int bitPos = 0; bitPos < GlobalInfo.getGlobalInfo().lawcaseInfoColumnMap.size(); bitPos++) {
+				if (1 == ((lawcaseInfoFrontEndShowStatus >> bitPos) & 1)) {
+					switch (GlobalInfo.getGlobalInfo().inspectPersonInfoColumnMap.get(bitPos).get(0)) {
+					case "respondentName":
+						lawcaseInfoRow.createCell(pos).setCellValue(lawcaseInfo.getRespondentName());
+						break;
+					case "joinDate":
+						lawcaseInfoRow.createCell(pos).setCellValue(simpleDateFormat.format(lawcaseInfo.getJoinDate().getTime()));
+						break;
+					case "workPlaceAndPosition":
+						lawcaseInfoRow.createCell(pos).setCellValue(lawcaseInfo.getWorkPlaceAndPosition());
+						break;
+					case "filingOffice":
+						lawcaseInfoRow.createCell(pos).setCellValue(lawcaseInfo.getFilingOffice());
+						break;
+					case "caseFilingDate":
+						lawcaseInfoRow.createCell(pos).setCellValue(simpleDateFormat.format(lawcaseInfo.getCaseFilingDate().getTime()));
+						break;
+					case "caseCloseDate":
+						lawcaseInfoRow.createCell(pos).setCellValue(simpleDateFormat.format(lawcaseInfo.getCaseCloseDate().getTime()));
+						break;
+					case "partyDisciplinePunishment":
+						lawcaseInfoRow.createCell(pos).setCellValue(lawcaseInfo.getPartyDisciplinePunishment());
+						break;
+					case "politicalDisciplinePunishment":
+						lawcaseInfoRow.createCell(pos).setCellValue(lawcaseInfo.getPoliticalDisciplinePunishment());
+						break;
+					case "disciplinaryInspection":
+						lawcaseInfoRow.createCell(pos).setCellValue(lawcaseInfo.getDisciplinaryInspection());
+						break;
+					}
+					
+					pos++;
+				}
+			}
 		}
 		
 	}

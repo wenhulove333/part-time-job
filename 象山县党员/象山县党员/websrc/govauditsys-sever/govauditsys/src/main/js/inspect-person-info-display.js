@@ -21,7 +21,15 @@ class InspectPersonInfoDisplay extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {inspectPersonInfoes: [], attributes: [], page: 1, pageSize: 20, links: {}, columns: []};
+		this.state = {
+			inspectPersonInfoes: [],
+			attributes: [],
+			page: 1,
+			pageSize: 20,
+			links: {},
+			columns: [],
+			disciplinaryInspectDepartment: [""]
+		};
 		this.onNavigate = this.onNavigate.bind(this);
 		this.onSearch = this.onSearch.bind(this);
 		this.onUpdate = this.onUpdate.bind(this);
@@ -38,6 +46,15 @@ class InspectPersonInfoDisplay extends React.Component {
 			this.setState({columns: result.entity});
 		});
 		
+		client({
+			method: 'GET',
+			path: '/getdisciplinaryinpectiondepartment',
+			params: {accountName: accountName}
+		}).then(response => {
+			return response;
+		}).done(result => {
+			this.setState({disciplinaryInspectDepartment: result.entity});
+		});
 	}
 	
 	getInspectPersonInfoesContaining(name, workPlace, pageSize) {
@@ -54,7 +71,12 @@ class InspectPersonInfoDisplay extends React.Component {
 		}
 		
 		follow(client, root, [
-				{rel: children, params: {name: name, workPlace: workPlace, size: pageSize}}]
+				{
+					rel: children, params: {
+						name: name, workPlace: workPlace, size: pageSize,
+						disciplinaryInspectDepartment: this.state.disciplinaryInspectDepartment
+					}
+				}]
 		).then(inspectPersonInfoCollection => {
 			this.page = inspectPersonInfoCollection.entity.page;
 			this.links = inspectPersonInfoCollection.entity._links;

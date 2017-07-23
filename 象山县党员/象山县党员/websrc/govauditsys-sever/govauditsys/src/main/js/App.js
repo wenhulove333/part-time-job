@@ -22,7 +22,7 @@ const DatePickerDemo = require('./date-picker');
 class Entry extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {role: '普通用户', accountName: 'unknown'};
+		this.state = {role: '普通用户', accountName: 'unknown', disciplinaryInspections: [""]};
 	}
 	
 	handleSelect(index, last) {
@@ -85,7 +85,7 @@ class Entry extends React.Component {
 						<CommunistInfoAndInspectPersonInfoComparison accountName={this.state.accountName} />
 					</TabPanel>
 					<TabPanel>
-						<LawcaseInfoStatisticsAnalysis />
+						<LawcaseInfoStatisticsAnalysis accountName={this.state.accountName} />
 					</TabPanel>					
 					<TabPanel>
 						<AdminOps />
@@ -123,7 +123,7 @@ class Entry extends React.Component {
 						<CommunistInfoAndInspectPersonInfoComparison accountName={this.state.accountName} />
 					</TabPanel>
 					<TabPanel>
-						<LawcaseInfoStatisticsAnalysis />
+						<LawcaseInfoStatisticsAnalysis accountName={this.state.accountName} />
 					</TabPanel>	
 					<TabPanel>
 						<UserInfoDisplay />

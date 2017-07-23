@@ -1,6 +1,9 @@
 package com.ss.govauditsys.web;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -12,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ss.govauditsys.GlobalInfo;
 import com.ss.govauditsys.sysdata.model.CommunistInfoRespository;
+import com.ss.govauditsys.sysdata.model.InspectPersonInfoRespository;
+import com.ss.govauditsys.sysdata.model.LawcaseInfoRepository;
 import com.ss.govauditsys.usermanager.model.SysUser;
 import com.ss.govauditsys.usermanager.model.SysUserRepository;
 
@@ -19,6 +24,15 @@ import com.ss.govauditsys.usermanager.model.SysUserRepository;
 public class UserDetailsController {
 	@Autowired
 	SysUserRepository sysUserRepository;
+	
+	@Autowired
+	LawcaseInfoRepository lawcaseInfoRepository;
+	
+	@Autowired
+	CommunistInfoRespository communistInfoRespository;
+	
+	@Autowired
+	InspectPersonInfoRespository inspectPersonInfoRespository;
 	
 	@RequestMapping(value="/userdetails")
 	public UserDetails userdetails() {
@@ -64,5 +78,46 @@ public class UserDetailsController {
 		}
 		
 		return columnShowStatus;
+	}
+	
+	@RequestMapping(value="/getdisciplinaryinpectiondepartment")
+	public List<String> getDisciplinaryInspectionDepartment(
+		@RequestParam("accountName") String accountName,
+		HttpSession session
+	) {
+		String disciplinaryInspection = sysUserRepository.findByAccountName(accountName).getDisciplineInspectionDepartment();
+		
+		session.setAttribute("accountName", accountName);
+		
+		if (disciplinaryInspection.equals("象山县纪委")) {
+			List<String> disciplinaryInspections1 = communistInfoRespository.findDisciplinaryInspectionGroup();
+			List<String> disciplinaryInspections2 = inspectPersonInfoRespository.findDisciplinaryInspectionGroup();
+			List<String> disciplinaryInspections3 = lawcaseInfoRepository.findDisciplinaryInspectionGroup();
+			
+			for (String str : disciplinaryInspections2) {
+				if (!disciplinaryInspections1.contains(str)) {
+					disciplinaryInspections1.add(str);
+				}
+			}
+			
+			for (String str : disciplinaryInspections3) {
+				if (!disciplinaryInspections1.contains(str)) {
+					disciplinaryInspections1.add(str);
+				}
+			}
+			
+			session.setAttribute("disciplinaryInspections", disciplinaryInspections1);
+			
+			return disciplinaryInspections1;
+		} else {
+			List<String> disciplinaryInspections1 = new ArrayList<String>(){
+				{
+					add(disciplinaryInspection);
+				}
+			};
+			
+			session.setAttribute("disciplinaryInspections", disciplinaryInspections1);
+			return disciplinaryInspections1;
+		}
 	}
 }

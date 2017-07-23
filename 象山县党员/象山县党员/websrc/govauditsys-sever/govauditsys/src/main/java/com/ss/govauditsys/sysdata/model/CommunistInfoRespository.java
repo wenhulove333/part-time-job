@@ -11,6 +11,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ss.govauditsys.sysdata.search.DisciplinePunishmentCountGroup;
 
@@ -30,8 +31,11 @@ public interface CommunistInfoRespository extends PagingAndSortingRepository<Com
 	
 	@Query("select communistInfo from CommunistInfo communistInfo "
 			+ "where (communistInfo.name like %?1% or communistInfo.idNumber like %?1%) "
-			+ "and communistInfo.partyBranch like %?2%")
-	Page<CommunistInfo> findByNameContaining(@Param("name") String name, @Param("partyBranch") String partyBranch, Pageable pageable);
+			+ "and communistInfo.partyBranch like %?2% and communistInfo.disciplinaryInspection in (?3)")
+	Page<CommunistInfo> findByNameContaining(
+		@Param("name") String name, @Param("partyBranch") String partyBranch, Pageable pageable,
+		@Param("disciplinaryInspectDepartment") List<String> disciplinaryInspectDepartment
+	);
 	
 	@Transactional
 	@Modifying(clearAutomatically = true)

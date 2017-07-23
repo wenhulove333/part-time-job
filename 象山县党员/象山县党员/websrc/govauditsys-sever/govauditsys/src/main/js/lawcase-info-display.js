@@ -24,7 +24,17 @@ class LawcaseInfoDisplay extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {lawcaseInfoes: [], attributes: [], page: 1, pageSize: 20, links: {}, startTime: '', endTime: '', columns: []};
+		this.state = {
+			lawcaseInfoes: [],
+			attributes: [],
+			page: 1, 
+			pageSize: 20, 
+			links: {},
+			startTime: '',
+			endTime: '', 
+			columns: [],
+			disciplinaryInspectDepartment: ['']
+		};
 		this.onNavigate = this.onNavigate.bind(this);
 		this.onSearch = this.onSearch.bind(this);
 		this.handleSelectStartTime = this.handleSelectStartTime.bind(this);
@@ -68,7 +78,16 @@ class LawcaseInfoDisplay extends React.Component {
 		}).done(result => {
 			this.setState({columns: result.entity});
 		});
-		
+	
+		client({
+			method: 'GET',
+			path: '/getdisciplinaryinpectiondepartment',
+			params: {accountName: accountName}
+		}).then(response => {
+			return response;
+		}).done(result => {
+			this.setState({disciplinaryInspectDepartment: result.entity});
+		});
 	}
 	
 	getlawcaseInfoesContaining(respondentName, filingOffice, punishmentContent, startTime, endTime, pageSize) {
@@ -90,7 +109,7 @@ class LawcaseInfoDisplay extends React.Component {
 					punishmentContent: punishmentContent,
 					startTime: startTime,
 					endTime: endTime,
-					size: pageSize}}]
+					size: pageSize, disciplinaryInspectDepartment: this.state.disciplinaryInspectDepartment}}]
 		).then(lawcaseInfoCollection => {
 			this.page = lawcaseInfoCollection.entity.page;
 			this.links = lawcaseInfoCollection.entity._links;

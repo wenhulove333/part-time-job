@@ -179,47 +179,60 @@ class LineChartAnalysis extends React.Component {
 class LawcaseInfoStatisticsAnalysis extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {dataSrc : {}, options: [<option value ="全部">全部</option>], currentOption: "全部"};
+		this.state = {dataSrc : {}, options: [<option value ="全部">全部</option>], currentOption: "全部", disciplinaryInspectDepartment: ['']};
 		this.handleChange = this.handleChange.bind(this);
 	}
 	
 	loadFromServer(years, punishmentClass) {
 		var dataSrc = {};
+		var disciplinaryInspectDepartment = this.state.disciplinaryInspectDepartment;
 		var defaultPath = "/lawcaseinfo/getpartydisciplinepunishmentcountgroupbyyear";
 
 		if (punishmentClass === "政纪") {
 			defaultPath = "/lawcaseinfo/getpoliticaldisciplinepunishmentcountgroupbyyear";
 		}
 		
-		Promise.all(years.map(year => new Promise(function(resolve, reject) {
-			client({
-				method: 'GET',
-				path: defaultPath,
-				params: {year: year},
-			}).done(response => {
-				if (!Array.isArray(response.entity)) {
-					reject('Exception');
-				} else {
-					if (response.entity.length != 0) {
-						dataSrc[year] = response.entity;
+		client({
+			method: 'GET',
+			path: '/getdisciplinaryinpectiondepartment',
+			params: {accountName: this.props.accountName}
+		}).then(response => {
+			return response;
+		}).done(result => {
+			this.state.disciplinaryInspectDepartment = result.entity;
+			disciplinaryInspectDepartment = result.entity;
+			Promise.all(years.map(year => new Promise(function(resolve, reject) {
+				client({
+					method: 'GET',
+					path: defaultPath,
+					params: {year: year, disciplinaryInspectDepartment: disciplinaryInspectDepartment},
+				}).done(response => {
+					if (!Array.isArray(response.entity)) {
+						reject('Exception');
+					} else {
+						if (response.entity.length != 0) {
+							dataSrc[year] = response.entity;
+						}
+						resolve('Success');
 					}
-					resolve('Success');
+				});
+			}))).then(() => {
+				var state = this.state;
+				state.dataSrc = dataSrc;
+				for(var key in dataSrc) {
+					state.options.push(<option value ={key}>{key}</option>);
 				}
+				state.disciplinaryInspectDepartment = disciplinaryInspectDepartment;
+				this.setState(state);
+			}).catch(() => {
+				this.setState({dataSrc : {}, options: [<option value ="全部">全部</option>], currentOption: "全部"});
 			});
-		}))).then(() => {
-			var state = this.state;
-			state.dataSrc = dataSrc;
-			for(var key in dataSrc) {
-				state.options.push(<option value ={key}>{key}</option>);
-			}
-			this.setState(state);
-		}).catch(() => {
-			this.setState({dataSrc : {}, options: [<option value ="全部">全部</option>], currentOption: "全部"});
 		});
 	}
 	
 	loadFromServerBySelectedYear(years, punishmentClass) {
 		var dataSrc = {};
+		var disciplinaryInspectDepartment = this.state.disciplinaryInspectDepartment;
 		
 		var defaultPath = "/lawcaseinfo/getpartydisciplinepunishmentcountgroupbyyear";
 
@@ -231,7 +244,7 @@ class LawcaseInfoStatisticsAnalysis extends React.Component {
 			client({
 				method: 'GET',
 				path: defaultPath,
-				params: {year: year},
+				params: {year: year, disciplinaryInspectDepartment: disciplinaryInspectDepartment},
 			}).done(response => {
 				if (!Array.isArray(response.entity)) {
 					reject('Exception');

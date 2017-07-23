@@ -29,13 +29,14 @@ public interface LawcaseInfoRepository  extends PagingAndSortingRepository<Lawca
 	@Query("select lawcaseInfo from LawcaseInfo lawcaseInfo "
 			+ "where lawcaseInfo.respondentName like %?1% and lawcaseInfo.filingOffice like %?2% and "
 			+ "(lawcaseInfo.partyDisciplinePunishment like %?3% or lawcaseInfo.politicalDisciplinePunishment like %?3%) "
-			+ "and lawcaseInfo.caseCloseDate >= ?4 and lawcaseInfo.caseCloseDate <= ?5 ")
+			+ "and lawcaseInfo.caseCloseDate >= ?4 and lawcaseInfo.caseCloseDate <= ?5 and lawcaseInfo.disciplinaryInspection in (?6)")
 	Page<LawcaseInfo> findByRespondentNameContaining(
 		@Param("respondentName") String respondentName,
 		@Param("filingOffice") String filingOffice,
 		@Param("punishmentContent") String punishmentContent,
 		@Param("startTime") Calendar startTime,
 		@Param("endTime") Calendar endTime,
+		@Param("disciplinaryInspectDepartment") List<String> disciplinaryInspectDepartment,
 		Pageable pageable
 	);
 
@@ -51,18 +52,20 @@ public interface LawcaseInfoRepository  extends PagingAndSortingRepository<Lawca
 
 	@Query("select new com.ss.govauditsys.sysdata.search.DisciplinePunishmentCountGroup(lawcaseInfo.partyDisciplinePunishment, count(lawcaseInfo.partyDisciplinePunishment)) "
 			+ "from LawcaseInfo lawcaseInfo where lawcaseInfo.caseCloseDate >= ?1 and lawcaseInfo.caseCloseDate <= ?2 "
-			+ "and lawcaseInfo.partyDisciplinePunishment <> '' group by lawcaseInfo.partyDisciplinePunishment")
+			+ "and lawcaseInfo.disciplinaryInspection in (?3) and lawcaseInfo.partyDisciplinePunishment <> '' group by lawcaseInfo.partyDisciplinePunishment")
 	List<DisciplinePunishmentCountGroup> findPartyDisciplinePunishmentCountGroupByPeriod(
 		@Param("startTime") Calendar startTime,
-		@Param("endTime") Calendar endTime
+		@Param("endTime") Calendar endTime,
+		@Param("disciplinaryInspectDepartment") List<String> disciplinaryInspectDepartment
 	);
 	
 	@Query("select new com.ss.govauditsys.sysdata.search.DisciplinePunishmentCountGroup(lawcaseInfo.politicalDisciplinePunishment, count(lawcaseInfo.politicalDisciplinePunishment)) "
 			+ "from LawcaseInfo lawcaseInfo where lawcaseInfo.caseCloseDate >= ?1 and lawcaseInfo.caseCloseDate <= ?2 "
-			+ "and lawcaseInfo.politicalDisciplinePunishment <> '' group by lawcaseInfo.politicalDisciplinePunishment")
+			+ "and lawcaseInfo.disciplinaryInspection in (?3) and lawcaseInfo.politicalDisciplinePunishment <> '' group by lawcaseInfo.politicalDisciplinePunishment")
 	List<DisciplinePunishmentCountGroup> findPoliticalDisciplinePunishmentCountGroupByPeriod(
 		@Param("startTime") Calendar startTime,
-		@Param("endTime") Calendar endTime
+		@Param("endTime") Calendar endTime,
+		@Param("disciplinaryInspectDepartment") List<String> disciplinaryInspectDepartment
 	);
 	
 	@Query("select new com.ss.govauditsys.sysdata.search.DisciplinePunishmentCountGroup(lawcaseInfo.partyDisciplinePunishment, count(lawcaseInfo.partyDisciplinePunishment)) "

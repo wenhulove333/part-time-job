@@ -18,7 +18,7 @@ class MultiNamesSearchInspectPersonInfoDisplay extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {inspectPersonInfoes: [], page: 1, pageSize: 10, links: {}, columns: []};
+		this.state = {inspectPersonInfoes: [], page: 1, pageSize: 10, links: {}, columns: [], disciplinaryInspectDepartment: ['']};
 		this.onNavigate = this.onNavigate.bind(this);
 	}
 
@@ -26,7 +26,7 @@ class MultiNamesSearchInspectPersonInfoDisplay extends React.Component {
 		client({
 			method: 'POST',
 			path: '/inspectpersoninfo/multinamesearch',
-			params: {size: pageSize},
+			params: {size: pageSize, disciplinaryInspectDepartment: this.state.disciplinaryInspectDepartment},
 			entity: names,
 			headers: {'Content-Type': 'application/json'}
 		}).done(response => {
@@ -57,7 +57,17 @@ class MultiNamesSearchInspectPersonInfoDisplay extends React.Component {
 			return response;
 		}).done(result => {
 			this.setState({columns: result.entity});
-		});		
+		});	
+		
+		client({
+			method: 'GET',
+			path: '/getdisciplinaryinpectiondepartment',
+			params: {accountName: accountName}
+		}).then(response => {
+			return response;
+		}).done(result => {
+			this.setState({disciplinaryInspectDepartment: result.entity});
+		});
 	}
 
 	onNavigate(navUri) {

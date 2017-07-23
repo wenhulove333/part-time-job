@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.ss.govauditsys.sysdata.model.CommunistInfo;
@@ -26,6 +27,7 @@ import com.ss.govauditsys.sysdata.model.LawcaseInfoRepository;
 import com.ss.govauditsys.sysdata.model.QCommunistInfo;
 import com.ss.govauditsys.sysdata.model.QInspectPersonInfo;
 import com.ss.govauditsys.sysdata.model.QLawcaseInfo;
+import com.ss.govauditsys.usermanager.model.SysUserRepository;
 
 @Controller
 public class Export {
@@ -38,7 +40,13 @@ public class Export {
 	@Autowired
 	LawcaseInfoRepository lawcaseInfoRepository;
 	
-	private Iterable<CommunistInfo> multiNamesPlusIdNumberSearchCommunistinfo(List<String> payload) {
+	@Autowired
+	SysUserRepository sysUserRepository;
+	
+	private Iterable<CommunistInfo> multiNamesPlusIdNumberSearchCommunistinfo(
+		List<String> payload,
+		List<String> disciplinaryInspectDepartment
+	) {
 		QCommunistInfo communistInfo = QCommunistInfo.communistInfo;
 		BooleanExpression expression = null;
 		
@@ -56,6 +64,8 @@ public class Export {
 					expression = expression.or(communistInfo.idNumber.contains(payload.get(index + 1)));
 				}
 			}
+			
+			expression = expression.and(communistInfo.disciplinaryInspection.in(disciplinaryInspectDepartment));
 		} else {
 			expression = communistInfo.idNumber.contains("!@#$%^&*()_+=-~`\"':;<>?/,.");
 		}
@@ -65,7 +75,10 @@ public class Export {
 		);
 	}
 	
-	private Iterable<InspectPersonInfo> multiNamesPlusIdNumberSearchInspectPersonInfo(List<String> payload) {
+	private Iterable<InspectPersonInfo> multiNamesPlusIdNumberSearchInspectPersonInfo(
+		List<String> payload,
+		List<String> disciplinaryInspectDepartment
+	) {
 		QInspectPersonInfo inspectPersonInfo = QInspectPersonInfo.inspectPersonInfo;
 		BooleanExpression expression = null;
 		
@@ -83,6 +96,8 @@ public class Export {
 					expression = expression.or(inspectPersonInfo.idNumber.contains(payload.get(index + 1)));
 				}
 			}
+			
+			expression = expression.and(inspectPersonInfo.disciplinaryInspection.in(disciplinaryInspectDepartment));
 		} else {
 			expression = inspectPersonInfo.idNumber.contains("!@#$%^&*()_+=-~`\"':;<>?/,.");
 		}
@@ -92,7 +107,10 @@ public class Export {
 		);
 	}
 	
-	public Iterable<LawcaseInfo> multiRespondentNamePluasBirthDateSearchLawcaseInfo(List<String> payload) {
+	public Iterable<LawcaseInfo> multiRespondentNamePluasBirthDateSearchLawcaseInfo(
+		List<String> payload,
+		List<String> disciplinaryInspectDepartment
+	) {
 		QLawcaseInfo lawcaseInfo = QLawcaseInfo.lawcaseInfo;
 		BooleanExpression expression = null;
 		BooleanExpression subExpression = null;
@@ -112,6 +130,8 @@ public class Export {
 				
 				expression = expression.or(subExpression);
 			}
+			
+			expression = expression.and(lawcaseInfo.disciplinaryInspection.in(disciplinaryInspectDepartment));
 		} else {
 			expression = lawcaseInfo.respondentName.contains("!@#$%^&*()_+=-~`\"':;<>?/,.");
 		}
@@ -122,22 +142,27 @@ public class Export {
 	}
 	
 	@RequestMapping(value="/downloadcomparisoninfo", method = RequestMethod.GET)
-	public String downloadComparisonInfo(Model model, HttpSession session) {
+	public String downloadComparisonInfo(
+		Model model, HttpSession session
+	) {
 		List<String> payload = (List<String>)session.getAttribute("payloadComparison");
+		List<String> disciplinaryInspectDepartment = (List<String>)session.getAttribute("disciplinaryInspections");
+		String accountName = (String)session.getAttribute("accountName");
+		model.addAttribute("accountInfo", sysUserRepository.findByAccountName(accountName));
 		
-		Iterable<CommunistInfo> communistInfoes = multiNamesPlusIdNumberSearchCommunistinfo(payload);
+		Iterable<CommunistInfo> communistInfoes = multiNamesPlusIdNumberSearchCommunistinfo(payload, disciplinaryInspectDepartment);
 		
 		List<CommunistInfo> listCommunistInfoes = new ArrayList<>();
 		communistInfoes.forEach(elem -> {listCommunistInfoes.add(elem);});
 		model.addAttribute("communistInfoes", listCommunistInfoes);
 		
-		Iterable<InspectPersonInfo> inspectPersonInfoes = multiNamesPlusIdNumberSearchInspectPersonInfo(payload);
+		Iterable<InspectPersonInfo> inspectPersonInfoes = multiNamesPlusIdNumberSearchInspectPersonInfo(payload, disciplinaryInspectDepartment);
 		
 		List<InspectPersonInfo> listinspectPersonInfoes = new ArrayList<>();
 		inspectPersonInfoes.forEach(elem -> {listinspectPersonInfoes.add(elem);});
 		model.addAttribute("inspectPersonInfoes", listinspectPersonInfoes);
 		
-		Iterable<LawcaseInfo> lawcaseInfoes = multiRespondentNamePluasBirthDateSearchLawcaseInfo(payload);
+		Iterable<LawcaseInfo> lawcaseInfoes = multiRespondentNamePluasBirthDateSearchLawcaseInfo(payload, disciplinaryInspectDepartment);
 		
 		List<LawcaseInfo> listLawcaseInfoes = new ArrayList<>();
 		lawcaseInfoes.forEach(elem -> {listLawcaseInfoes.add(elem);});

@@ -21,7 +21,15 @@ class CommunistInfoDisplay extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {communistInfoes: [], attributes: [], page: 1, pageSize: 20, links: {}, columns: []};
+		this.state = {
+			communistInfoes: [],
+			attributes: [],
+			page: 1,
+			pageSize: 20,
+			links: {},
+			columns: [],
+			disciplinaryInspectDepartment: [""]
+		};
 		this.onNavigate = this.onNavigate.bind(this);
 		this.onSearch = this.onSearch.bind(this);
 		this.onUpdate = this.onUpdate.bind(this);
@@ -38,6 +46,15 @@ class CommunistInfoDisplay extends React.Component {
 			this.setState({columns: result.entity});
 		});
 		
+		client({
+			method: 'GET',
+			path: '/getdisciplinaryinpectiondepartment',
+			params: {accountName: accountName}
+		}).then(response => {
+			return response;
+		}).done(result => {
+			this.setState({disciplinaryInspectDepartment: result.entity});
+		});
 	}
 	
 	getCommunistInfoesContaining(name, partyBranch, pageSize) {
@@ -54,7 +71,12 @@ class CommunistInfoDisplay extends React.Component {
 		}
 		
 		follow(client, root, [
-				{rel: children, params: {name: name, partyBranch: partyBranch, size: pageSize}}]
+				{rel: children, params: {
+					name: name,
+					partyBranch: partyBranch,
+					size: pageSize,
+					disciplinaryInspectDepartment: this.state.disciplinaryInspectDepartment
+				}}]
 		).then(communistInfoCollection => {
 			this.page = communistInfoCollection.entity.page;
 			this.links = communistInfoCollection.entity._links;
