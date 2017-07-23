@@ -776,6 +776,9 @@ class UpdateDialog extends React.Component {
 	        }
 	    });
 		
+		ReactDOM.findDOMNode(this.refs['disciplineInspectionDepartment']).value = this.props.sysUser.entity['disciplineInspectionDepartment'];
+		ReactDOM.findDOMNode(this.refs['roles']).value = this.props.sysUser.entity['roles'][0];
+		
 		return false;
 	}
 	
@@ -874,7 +877,7 @@ class UpdateDialog extends React.Component {
 									<option value ="象山县纪委">象山县纪委</option>
 							    </select>
 							</p>	
-							<p><select ref="roles" value={this.state.value} onChange={this.handleChange}>
+							<p><select ref="roles" defaultValue={this.props.sysUser.entity['roles'][0]}>
 								<option value ="普通用户">普通用户</option>
 								<option value ="管理员">管理员</option>
 							</select></p>
