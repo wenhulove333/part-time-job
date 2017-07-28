@@ -320,7 +320,7 @@ class SysUserList extends React.Component {
 							<th>用户所在地</th>
 							<th>用户职务</th>
 							<th>角色</th>
-							<th>纪检部门</th>
+							<th>所属纪检部门</th>
 							<th> </th>
 							<th> </th>
 						</tr>
@@ -572,7 +572,7 @@ class CreateDialog extends React.Component {
 			    <input type="checkbox" name="communistinfo" value="籍贯" defaultChecked="checked" /><span>籍贯</span>
 			    <input type="checkbox" name="communistinfo" value="民族" defaultChecked="checked" /><span>民族</span>
 			    <input type="checkbox" name="communistinfo" value="个人身份" defaultChecked="checked" /><span>个人身份</span>
-			    <input type="checkbox" name="communistinfo" value="纪检部门" defaultChecked="checked" /><span>纪检部门</span>
+			    <input type="checkbox" name="communistinfo" value="所属纪检部门" defaultChecked="checked" /><span>所属纪检部门</span>
 			    </div>
 			</p>
 		);
@@ -586,7 +586,7 @@ class CreateDialog extends React.Component {
 			    <input type="checkbox" name="inspectpersoninfo" value="性别" defaultChecked="checked" /><span>性别</span>
 			    <input type="checkbox" name="inspectpersoninfo" value="学历" defaultChecked="checked" /><span>学历</span>	
 			    <input type="checkbox" name="inspectpersoninfo" value="工作单位" defaultChecked="checked" /><span>工作单位</span>
-		    	<input type="checkbox" name="inspectpersoninfo" value="纪检部门" defaultChecked="checked" /><span>纪检部门</span>
+		    	<input type="checkbox" name="inspectpersoninfo" value="所属纪检部门" defaultChecked="checked" /><span>所属纪检部门</span>
 			    <input type="checkbox" name="inspectpersoninfo" value="上级组织" defaultChecked="checked" /><span>上级组织</span>
 			    </div>
 			</p>
@@ -604,7 +604,7 @@ class CreateDialog extends React.Component {
 		    	<input type="checkbox" name="lawcaseInfo" value="结案时间" defaultChecked="checked" /><span>结案时间</span>
 			    <input type="checkbox" name="lawcaseInfo" value="党纪处分" defaultChecked="checked" /><span>党纪处分</span>
 			    <input type="checkbox" name="lawcaseInfo" value="政纪处分" defaultChecked="checked" /><span>政纪处分</span>
-			    <input type="checkbox" name="lawcaseInfo" value="纪检部门" defaultChecked="checked" /><span>纪检部门</span>
+			    <input type="checkbox" name="lawcaseInfo" value="所属纪检部门" defaultChecked="checked" /><span>所属纪检部门</span>
 			    </div>
 			</p>
 		);
@@ -655,9 +655,9 @@ class UpdateDialog extends React.Component {
 		this.state = {
 			value: '管理员',
 			firstRender: true,
-			communistColumnsTitles: ["党员姓名", "身份证号", "性别", "入党日期", "学历", "党支部", "上级组织", "籍贯", "民族", "个人身份", "纪检部门"],
-			inpsectPersonInfoTitles: ["姓名", "身份证号", "性别", "学历", "工作单位", "纪检部门"],
-			lawcaseinfoTitles: ["被调查人", "入党日期", "工作单位及职务", "立案机关", "立案时间", "结案时间", "党纪处分", "政纪处分", "纪检部门"]
+			communistColumnsTitles: ["党员姓名", "身份证号", "性别", "入党日期", "学历", "党支部", "上级组织", "籍贯", "民族", "个人身份", "所属纪检部门"],
+			inpsectPersonInfoTitles: ["姓名", "身份证号", "性别", "学历", "工作单位", "所属纪检部门"],
+			lawcaseinfoTitles: ["被调查人", "入党日期", "工作单位及职务", "立案机关", "立案时间", "结案时间", "党纪处分", "政纪处分", "所属纪检部门"]
 		};
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.handleChange = this.handleChange.bind(this);
