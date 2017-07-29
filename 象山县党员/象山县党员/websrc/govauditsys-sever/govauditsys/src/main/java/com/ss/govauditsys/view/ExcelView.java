@@ -173,7 +173,7 @@ public class ExcelView extends AbstractExcelView {
 			HSSFRow lawcaseInfoRow = lawcaseInfoSheet.createRow(rowCount++);
 			for (int bitPos = 0; bitPos < GlobalInfo.getGlobalInfo().lawcaseInfoColumnMap.size(); bitPos++) {
 				if (1 == ((lawcaseInfoFrontEndShowStatus >> bitPos) & 1)) {
-					switch (GlobalInfo.getGlobalInfo().inspectPersonInfoColumnMap.get(bitPos).get(0)) {
+					switch (GlobalInfo.getGlobalInfo().lawcaseInfoColumnMap.get(bitPos).get(0)) {
 					case "respondentName":
 						lawcaseInfoRow.createCell(pos).setCellValue(lawcaseInfo.getRespondentName());
 						break;
