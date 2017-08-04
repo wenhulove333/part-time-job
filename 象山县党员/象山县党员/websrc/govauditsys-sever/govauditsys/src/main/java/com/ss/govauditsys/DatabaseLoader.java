@@ -49,19 +49,8 @@ public class DatabaseLoader implements CommandLineRunner {
 				"administrator",
 				"后台系统",
 				"内置账户",
-				"县纪委",
+				"象山县纪委",
 				2047, 63, 511));
-		}
-		if (sysUserRepository.findByAccountName("wenhuzha") == null) {
-			sysUserRepository.save(new SysUser(
-				"普通用户",
-				"123456",
-				new String[]{"普通用户"},
-				"wenhuzha",
-				"后台系统",
-				"内置账户",
-				"县纪委",
-				2045, 63, 511));
 		}
 	}
 }
