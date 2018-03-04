@@ -1,0 +1,30 @@
+
+1、学生管理：删除后台报错。接口为:/Api/deleteStudent
+2、教师管理: 删除后台报错。接口为：/Api/deleteTeacher
+3、试题管理批量导入、导出
+4、真题还原：缺少接口
+
+5、智能组卷：缺少接口
+6、试卷管理
+	a>查询接口没有条件查询，接口为：/Api/testPaper/list
+	b>新建试卷时，点击完成后台报错。接口为：/Api/EndComplete
+	c>编辑试卷后台一直返回‘没有查询到信息’。接口为：/Api/EditTestAttr
+	d>删除试卷后台一直返回‘没有查询到信息’。接口为：/Api/delAttrTest
+	e>下载的word文档内容格式乱掉了。
+	f>现在分享码生成一次后，第二次会提示已生成过。这样会不会不合理？如果用户第一次点击了之后，
+	没有用分享码去分享，第二次想重新点击分享。
+7、考试列表：
+	a>发布成绩接口后台报415错误，且每个选项的勾选状态没有参数接收
+	b>新建考试设置时间时科目列表返回为空：接口为/Api/Exam/ExamSubjectSel
+	c>缺少下载接口
+8、作业列表：
+	a>新建考试设置时间时科目列表返回为空：接口为/Api/Task/TaskSubjectSel
+	b>缺少下载接口
+9、套题列表:
+	a>套题基本信息查询接口返回数据中少一个"学部"字段，接口为：/Api/SetsProblem/InfoSel
+	b> 编辑套题基本信息后台返回，‘修改套题基础信息异常,请联系管理员", 接口为：SetsProblem/InfoUpdate。
+	目前从参数来看，infoUpdate少接收了一个inSubjectIds 参数
+	c>套题试卷列表和作业试卷列表是否都和考试列表中的查询试卷列表使用同一个接口？考试列表中的试卷列表查询
+	接口为：/Api/Exam/ExamTestPaperSel
+	d>删除接口返回"套题信息删除异常,请联系管理员"，接口为：Api/SetsProblem/InfoDel
+
